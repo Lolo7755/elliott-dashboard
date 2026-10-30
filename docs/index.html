@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elliott-Dashboard</title>
+<script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121a2e; --panel2:#18223b; --line:#25304d; --txt:#e6ebf5; --mute:#8a96b3;
+    --green:#22c55e; --orange:#f59e0b; --red:#ef4444; --blue:#3b82f6; --zone:#2563eb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--line)}
+  h1{font-size:20px;margin:0;letter-spacing:.2px}
+  h1 small{color:var(--mute);font-weight:400;font-size:13px;margin-left:8px}
+  .btn{display:inline-block;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);text-decoration:none;font-size:13px;cursor:pointer}
+  .btn:hover{border-color:var(--blue)}
+  main{padding:20px 24px;max-width:1400px;margin:0 auto}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .card .k{color:var(--mute);font-size:12px}
+  .card .v{font-size:24px;font-weight:650;margin-top:2px}
+  .today{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:18px}
+  .today h2{font-size:15px;margin:0 0 8px}
+  .today ul{margin:0;padding-left:18px}
+  .today li{margin:3px 0}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+  .toolbar .btn.active{border-color:var(--blue);background:#1d2b4f}
+  input[type=search]{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 10px;min-width:200px}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  th{color:var(--mute);font-weight:500;font-size:12px;background:var(--panel2);cursor:pointer;user-select:none}
+  tr.row{cursor:pointer} tr.row:hover{background:#16213b}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+  .gruen{background:var(--green)} .orange{background:var(--orange)} .rot{background:var(--red)}
+  .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line)}
+  .new{background:#3b2a07;border-color:#7c5a10;color:#fcd34d;margin-left:6px}
+  .sig{white-space:normal;min-width:260px}
+  .mute{color:var(--mute)}
+  .pos{color:var(--green)} .neg{color:var(--red)}
+  #detail{display:none;margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  #detail h2{margin:0 0 4px;font-size:18px}
+  .grid2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr} .hide-m{display:none}}
+  #chart{height:440px}
+  .plan td{padding:6px 8px}
+  .box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+  .box h3{margin:0 0 6px;font-size:13px;color:var(--mute);font-weight:500}
+  .legend span{margin-right:12px;font-size:12px;color:var(--mute)}
+  .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px}
+  footer{color:var(--mute);font-size:12px;padding:20px 24px;max-width:1400px;margin:0 auto}
+  .demo{background:#3b1d1d;border:1px solid #7f2a2a;color:#fecaca;padding:8px 12px;border-radius:8px;margin-bottom:14px;display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>Elliott-Dashboard <small id="stand">lädt …</small></h1>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn" id="editWl" target="_blank" rel="noopener">✏️ Watchlist bearbeiten</a>
+    <a class="btn" id="runNow" target="_blank" rel="noopener">▶️ Analyse jetzt starten</a>
+    <a class="btn" href="signal_historie.csv" target="_blank">📜 Signal-Historie</a>
+  </div>
+</header>
+
+<main>
+  <div class="demo" id="demo">Demo-Daten: Diese Werte stammen aus einem Testlauf mit synthetischen Kursen. Echte Analysen erscheinen nach dem ersten Lauf auf GitHub.</div>
+
+  <div class="cards">
+    <div class="card"><div class="k">Analysierte Werte</div><div class="v" id="cAll">–</div></div>
+    <div class="card"><div class="k"><span class="dot gruen"></span> Kaufen / Halten</div><div class="v" id="cG">–</div></div>
+    <div class="card"><div class="k"><span class="dot orange"></span> Abwarten / Teilverkauf</div><div class="v" id="cO">–</div></div>
+    <div class="card"><div class="k"><span class="dot rot"></span> Verkaufen / Invalidiert</div><div class="v" id="cR">–</div></div>
+  </div>
+
+  <div class="today">
+    <h2>🌙 Handlungsbedarf heute Abend</h2>
+    <ul id="todo"><li class="mute">–</li></ul>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn active" data-f="alle">Alle</button>
+    <button class="btn" data-f="kauf">Kaufen</button>
+    <button class="btn" data-f="verkauf">Verkaufen</button>
+    <button class="btn" data-f="warten">Abwarten</button>
+    <button class="btn" data-f="rot">Invalidiert</button>
+    <input type="search" id="q" placeholder="Aktie suchen …">
+  </div>
+
+  <div style="overflow-x:auto">
+  <table>
+    <thead><tr>
+      <th data-s="ampel"></th>
+      <th data-s="name">Aktie</th>
+      <th data-s="kurs" class="num">Kurs</th>
+      <th data-s="status">Status</th>
+      <th>Signal</th>
+      <th class="num hide-m" data-s="dist">Abstand Zone</th>
+      <th class="num hide-m">Zone (38,2–50 %)</th>
+      <th class="num hide-m" data-s="t1">Ziel 1</th>
+      <th class="num hide-m">Invalidierung</th>
+      <th class="hide-m" data-s="trend">Trend (50/200)</th>
+    </tr></thead>
+    <tbody id="tb"></tbody>
+  </table>
+  </div>
+
+  <section id="detail"></section>
+</main>
+
+<footer>
+  Regelbasierte Elliott-Wellen-Analyse (Fibonacci-Retracements der laufenden Hauptwelle). Mechanische Zählung – keine Anlageberatung.
+  Szenarien können jederzeit invalidiert werden.
+</footer>
+
+<script>
+const AMPEL_ORDER = {gruen:0, orange:1, rot:2};
+let DATA = [], filter = "alle", sortKey = "ampel", sortDir = 1, chart = null;
+
+// GitHub-Links automatisch aus der Pages-Adresse ableiten (user.github.io/repo)
+(function(){
+  const m = location.hostname.match(/^([^.]+)\.github\.io$/);
+  const repo = location.pathname.split("/").filter(Boolean)[0];
+  if (m && repo) {
+    const base = `https://github.com/${m[1]}/${repo}`;
+    document.getElementById("editWl").href = `${base}/edit/main/watchlist.csv`;
+    document.getElementById("runNow").href = `${base}/actions/workflows/analyse.yml`;
+  } else {
+    document.getElementById("editWl").href = "https://github.com";
+    document.getElementById("runNow").href = "https://github.com";
+  }
+})();
+
+const fmt = (x, c="") => x==null ? "–" : x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}) + (c?` ${c}`:"");
+const pct = (a, b) => (a/b - 1) * 100;
+const pctTxt = v => `<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v.toFixed(1).replace('.',',')} %</span>`;
+
+function kategorie(a){
+  const s = a.signal.toLowerCase();
+  if (a.ampel==="rot" && a.status==="Invalidiert") return "rot";
+  if (s.startsWith("teilverkauf") ) return "verkauf";
+  if (s.startsWith("teilkauf") || s.startsWith("letzter nachkauf") || s.startsWith("kleine position")) return "kauf";
+  return "warten";
+}
+
+async function load(){
+  const r = await fetch("data.json?ts=" + Date.now());
+  const d = await r.json();
+  DATA = d.aktien.map(a => ({...a, dist: pct(a.kurs, a.zone.oben), t1: a.ziele.t1}));
+  document.getElementById("stand").textContent = "Stand: " + new Date(d.erstellt).toLocaleString("de-DE");
+  if (d.demo) document.getElementById("demo").style.display = "block";
+  document.getElementById("cAll").textContent = DATA.length;
+  ["gruen","orange","rot"].forEach((k,i)=>document.getElementById(["cG","cO","cR"][i]).textContent = DATA.filter(a=>a.ampel===k).length);
+  const todo = DATA.filter(a => ["kauf","verkauf"].includes(kategorie(a)) || (a.status_vorher && a.status_vorher!==a.status));
+  document.getElementById("todo").innerHTML = todo.length ? todo.map(a =>
+    `<li><span class="dot ${a.ampel}"></span> <b>${a.name}</b> (${fmt(a.kurs,a.currency)}): ${a.signal}${a.status_vorher && a.status_vorher!==a.status ? ` <span class="tag new">neu: ${a.status_vorher} → ${a.status}</span>`:""}</li>`).join("")
+    : '<li class="mute">Nichts zu tun – alle Werte im Wartemodus.</li>';
+  if (d.fehler && d.fehler.length) document.getElementById("todo").innerHTML += `<li class="mute">Keine Daten für: ${d.fehler.map(e=>e.symbol).join(", ")}</li>`;
+  render();
+}
+
+function render(){
+  const q = document.getElementById("q").value.toLowerCase();
+  let rows = DATA.filter(a => (filter==="alle" || kategorie(a)===filter) && (a.name+a.symbol).toLowerCase().includes(q));
+  rows.sort((a,b)=>{
+    let x=a[sortKey], y=b[sortKey];
+    if (sortKey==="ampel"){ x=AMPEL_ORDER[x]; y=AMPEL_ORDER[y]; if (x===y){x=Math.abs(a.dist); y=Math.abs(b.dist);} }
+    return (x>y?1:x<y?-1:0)*sortDir;
+  });
+  document.getElementById("tb").innerHTML = rows.map(a=>`
+    <tr class="row" data-sym="${a.symbol}">
+      <td><span class="dot ${a.ampel}"></span></td>
+      <td><b>${a.name}</b> <span class="mute">${a.symbol}</span></td>
+      <td class="num">${fmt(a.kurs, a.currency)}</td>
+      <td>${a.status}${a.status_vorher && a.status_vorher!==a.status?'<span class="tag new">neu</span>':''}</td>
+      <td class="sig">${a.signal}</td>
+      <td class="num hide-m">${pctTxt(a.dist)}</td>
+      <td class="num hide-m">${fmt(a.zone.oben)} – ${fmt(a.zone.unten)}</td>
+      <td class="num hide-m">${fmt(a.ziele.t1)}</td>
+      <td class="num hide-m">${fmt(a.zone.invalidierung)}</td>
+      <td class="hide-m">${a.trend_tageschart}</td>
+    </tr>`).join("");
+  document.querySelectorAll("tr.row").forEach(tr => tr.onclick = () => showDetail(tr.dataset.sym));
+}
+
+function showDetail(sym){
+  const a = DATA.find(x=>x.symbol===sym), c = a.currency, k = a.kurs;
+  const planRow = (label, v, color) => v==null ? "" :
+    `<tr><td><span class="dot" style="background:${color}"></span> ${label}</td><td class="num">${fmt(v,c)}</td><td class="num">${pctTxt(pct(v,k))}</td></tr>`;
+  const el = document.getElementById("detail");
+  el.style.display = "block";
+  el.innerHTML = `
+    <h2><span class="dot ${a.ampel}"></span> ${a.name} <span class="mute">${a.symbol}</span></h2>
+    <div class="mute" style="margin-bottom:12px">Kurs ${fmt(k,c)} · Stand ${a.stand} · ${a.status}</div>
+    <div class="grid2">
+      <div>
+        <div id="chart"></div>
+        <div class="legend" style="margin-top:6px">
+          <span><i style="background:var(--zone)"></i>Einstiegszone</span>
+          <span><i style="background:#93c5fd"></i>Nachkauf 61,8 %</span>
+          <span><i style="background:var(--red)"></i>Invalidierung</span>
+          <span><i style="background:var(--green)"></i>Ziele</span>
+        </div>
+      </div>
+      <div>
+        <div class="box"><h3>Signal</h3><b>${a.signal}</b></div>
+        <div class="box"><h3>Handlungsplan</h3>
+          <table class="plan" style="border:0;background:none;width:100%">
+            ${planRow("Teilkauf 1 (38,2 %)", a.plan.teilkauf_1, "#2563eb")}
+            ${planRow("Teilkauf 2 (50 %)", a.plan.teilkauf_2, "#2563eb")}
+            ${planRow("Teilkauf 3 (61,8 %)", a.plan.teilkauf_3, "#93c5fd")}
+            ${planRow("Invalidierung (78,6 %)", a.plan.invalidierung, "#ef4444")}
+            ${planRow("Teilverkauf 1 (altes Hoch)", a.plan.teilverkauf_1, "#22c55e")}
+            ${planRow("Teilverkauf 2 (127,2 %)", a.plan.teilverkauf_2, "#22c55e")}
+            ${planRow("Teilverkauf 3 (161,8 %)", a.plan.teilverkauf_3, "#22c55e")}
+          </table>
+        </div>
+        <div class="box"><h3>Wellenstruktur</h3>
+          Start ${fmt(a.welle.start.price)} (${a.welle.start.date}) → Hoch ${fmt(a.welle.hoch.price)} (${a.welle.hoch.date})<br>
+          Korrektur aktuell ${a.welle.retracement_aktuell_pct.toLocaleString("de-DE")} % · max. ${a.welle.retracement_max_pct.toLocaleString("de-DE")} %<br>
+          Zählqualität: ${a.welle.zaehlung_qualitaet ? a.welle.zaehlung_qualitaet + " / 100" : "keine gültige 5-Wellen-Zählung gefunden"}<br>
+          <span class="mute">50-Tage ${fmt(a.sma50)} · 200-Tage ${fmt(a.sma200)} · Trend ${a.trend_tageschart}</span>
+        </div>
+        <div class="box"><h3>🤖 KI-Einschätzung</h3>${a.kommentar ? a.kommentar : '<span class="mute">Noch kein Kommentar. Frag Claude nach einer Einschätzung zu diesem Wert.</span>'}</div>
+      </div>
+    </div>`;
+  drawChart(a);
+  el.scrollIntoView({behavior:"smooth"});
+}
+
+function drawChart(a){
+  const box = document.getElementById("chart");
+  chart = LightweightCharts.createChart(box, {
+    layout:{background:{color:"#121a2e"}, textColor:"#8a96b3"},
+    grid:{vertLines:{color:"#1b2440"}, horzLines:{color:"#1b2440"}},
+    rightPriceScale:{borderColor:"#25304d"}, timeScale:{borderColor:"#25304d"},
+    autoSize:true,
+  });
+  const s = chart.addCandlestickSeries({upColor:"#22c55e",downColor:"#ef4444",borderVisible:false,wickUpColor:"#22c55e",wickDownColor:"#ef4444"});
+  s.setData(a.chart);
+  const line = (price, color, title, style=0, w=2) => s.createPriceLine({price, color, lineWidth:w, lineStyle:style, axisLabelVisible:true, title});
+  line(a.zone.oben, "#2563eb", "Zone oben");
+  line(a.zone.unten, "#2563eb", "Zone unten");
+  line(a.zone.nachkauf, "#93c5fd", "Nachkauf", 2, 1);
+  line(a.zone.invalidierung, "#ef4444", "Invalidierung", 2, 1);
+  line(a.ziele.t1, "#22c55e", "Ziel 1", 2, 1);
+  line(a.ziele.t2, "#22c55e", "Ziel 2", 2, 1);
+  const times = new Set(a.chart.map(c=>c.time));
+  const markers = a.welle.labels.filter(l=>times.has(l.date)).map(l=>{
+    const low = l.label==="0"||l.label==="2"||l.label==="4"||l.label==="Start"||l.label==="Korr.-Tief";
+    return {time:l.date, position: low?"belowBar":"aboveBar", color: low?"#fbbf24":"#e6ebf5", shape: low?"arrowUp":"arrowDown",
+            text: /^\d$/.test(l.label) ? `(${l.label})` : l.label};
+  }).sort((x,y)=>x.time<y.time?-1:1);
+  s.setMarkers(markers);
+  chart.timeScale().fitContent();
+}
+
+document.querySelectorAll("[data-f]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-f]").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); filter = b.dataset.f; render();
+});
+document.querySelectorAll("th[data-s]").forEach(th => th.onclick = () => {
+  const k = th.dataset.s; sortDir = (sortKey===k) ? -sortDir : 1; sortKey = k; render();
+});
+document.getElementById("q").oninput = render;
+load().catch(e => { document.getElementById("stand").textContent = "Fehler beim Laden der Daten: " + e; });
+</script>
+</body>
+</html>
