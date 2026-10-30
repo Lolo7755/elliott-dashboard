@@ -72,7 +72,7 @@
     <div class="card"><div class="k">Analysierte Werte</div><div class="v" id="cAll">–</div></div>
     <div class="card"><div class="k"><span class="dot gruen"></span> Kaufen / Halten</div><div class="v" id="cG">–</div></div>
     <div class="card"><div class="k"><span class="dot orange"></span> Abwarten / Teilverkauf</div><div class="v" id="cO">–</div></div>
-    <div class="card"><div class="k"><span class="dot rot"></span> Verkaufen / Invalidiert</div><div class="v" id="cR">–</div></div>
+    <div class="card"><div class="k"><span class="dot rot"></span> Abwärtstrend / Verkaufen</div><div class="v" id="cR">–</div></div>
   </div>
 
   <div class="today">
@@ -85,7 +85,7 @@
     <button class="btn" data-f="kauf">Kaufen</button>
     <button class="btn" data-f="verkauf">Verkaufen</button>
     <button class="btn" data-f="warten">Abwarten</button>
-    <button class="btn" data-f="rot">Invalidiert</button>
+    <button class="btn" data-f="rot">Abwärtstrend</button>
     <input type="search" id="q" placeholder="Aktie suchen …">
   </div>
 
@@ -135,11 +135,11 @@ let DATA = [], filter = "alle", sortKey = "ampel", sortDir = 1, chart = null;
 
 const fmt = (x, c="") => x==null ? "–" : x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}) + (c?` ${c}`:"");
 const pct = (a, b) => (a/b - 1) * 100;
-const pctTxt = v => `<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v.toFixed(1).replace('.',',')} %</span>`;
+const pctTxt = v => !isFinite(v) ? "–" : `<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v.toFixed(1).replace('.',',')} %</span>`;
 
 function kategorie(a){
   const s = a.signal.toLowerCase();
-  if (a.ampel==="rot" && a.status==="Invalidiert") return "rot";
+  if (a.status==="Abwärtstrend") return "rot";
   if (s.startsWith("teilverkauf") ) return "verkauf";
   if (s.startsWith("teilkauf") || s.startsWith("letzter nachkauf") || s.startsWith("kleine position")) return "kauf";
   return "warten";
