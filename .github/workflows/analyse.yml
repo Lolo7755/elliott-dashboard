@@ -1,0 +1,30 @@
+name: Elliott-Analyse
+
+on:
+  schedule:
+    # Mo–Fr 22:45 Uhr deutscher Winterzeit (21:45 UTC), nach US-Börsenschluss
+    - cron: "45 21 * * 1-5"
+  workflow_dispatch: {}        # Button "Run workflow" = Analyse sofort starten
+  push:
+    paths: ["watchlist.csv"]   # Watchlist geändert -> sofort neu analysieren
+
+permissions:
+  contents: write
+
+jobs:
+  analyse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m analyzer.run
+      - name: Ergebnisse speichern
+        run: |
+          git config user.name "elliott-bot"
+          git config user.email "elliott-bot@users.noreply.github.com"
+          git add docs/data.json docs/signal_historie.csv
+          git diff --cached --quiet || git commit -m "Analyse $(date -u +%Y-%m-%d)"
+          git push
