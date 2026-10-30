@@ -32,3 +32,117 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-10-28,XPEV,9.32,Invalidiert,Abwärtstrend,"Kein Long-Einstieg – erst über 20,48 (letztes Zwischenhoch) wieder interessant"
 2026-10-30,DRO.AX,1.42,Invalidiert,Abwärtstrend,"Kein Long-Einstieg – erst über 2,28 (letztes Zwischenhoch) wieder interessant"
 2026-10-28,CGC,0.67,Invalidiert,Abwärtstrend,"Kein Long-Einstieg – erst über 1,51 (letztes Zwischenhoch) wieder interessant"
+2026-10-29,GOOGL,283.82,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,MA,635.7,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-10-29,AAPL,348.91,,Zulaufend,"Abwarten – Kauflimit bei 310,36 (-11,0 % vom aktuellen Kurs)"
+2026-10-29,MSFT,530.14,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,NVDA,213.66,,Zulaufend,"Abwarten – Kauflimit bei 154,53 (-27,7 % vom aktuellen Kurs)"
+2026-10-29,AMZN,243.79,,Zulaufend,"Abwarten – Kauflimit bei 208,60 (-14,4 % vom aktuellen Kurs)"
+2026-10-29,META,624.52,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-29,AVGO,345.0,,Zulaufend,"Abwarten – Kauflimit bei 311,86 (-9,6 % vom aktuellen Kurs)"
+2026-10-29,ORCL,139.56,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-29,CRM,230.9,,Zulaufend,"Abwarten – Kauflimit bei 221,69 (-4,0 % vom aktuellen Kurs)"
+2026-10-29,ADBE,248.12,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,AMD,566.42,,Zulaufend,"Abwarten – Kauflimit bei 436,18 (-23,0 % vom aktuellen Kurs)"
+2026-10-29,QCOM,185.41,,Zulaufend,"Abwarten – Kauflimit bei 181,80 (-1,9 % vom aktuellen Kurs)"
+2026-10-29,CSCO,108.59,,Zulaufend,"Abwarten – Kauflimit bei 97,57 (-10,2 % vom aktuellen Kurs)"
+2026-10-29,IBM,258.28,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,NOW,109.67,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-10-29,PLTR,196.42,,Zulaufend,"Abwarten – Kauflimit bei 133,86 (-31,9 % vom aktuellen Kurs)"
+2026-10-29,CRWD,261.15,,Zulaufend,"Abwarten – Kauflimit bei 196,54 (-24,7 % vom aktuellen Kurs)"
+2026-10-29,PANW,380.57,,Zulaufend,"Abwarten – Kauflimit bei 292,43 (-23,2 % vom aktuellen Kurs)"
+2026-10-29,SNOW,330.27,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,MU,934.27,,Zulaufend,"Abwarten – Kauflimit bei 894,58 (-4,2 % vom aktuellen Kurs)"
+2026-10-29,ANET,184.22,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,UBER,65.74,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,SHOP,166.89,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,ABNB,166.45,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-29,BKNG,150.43,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,SPOT,557.24,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,MELI,1660.13,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-29,TSLA,403.3,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,COST,996.08,,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-10-29,WMT,121.25,,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-10-29,MCD,257.38,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-10-29,NKE,38.42,,Abwärtstrend,"Kein Long-Einstieg – erst über 68,49 (letztes Zwischenhoch) wieder interessant"
+2026-10-29,SBUX,105.51,,Zulaufend,"Abwarten – Kauflimit bei 105,21 (-0,3 % vom aktuellen Kurs)"
+2026-10-29,DIS,110.91,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,KO,92.82,,Zulaufend,"Abwarten – Kauflimit bei 72,79 (-21,6 % vom aktuellen Kurs)"
+2026-10-29,PEP,133.79,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-10-29,JPM,343.58,,Zulaufend,"Abwarten – Kauflimit bei 265,19 (-22,8 % vom aktuellen Kurs)"
+2026-10-29,BAC,51.14,,Zulaufend,"Abwarten – Kauflimit bei 49,85 (-2,5 % vom aktuellen Kurs)"
+2026-10-29,GS,927.73,,Zulaufend,"Abwarten – Kauflimit bei 819,30 (-11,7 % vom aktuellen Kurs)"
+2026-10-29,MS,190.0,,Zulaufend,"Abwarten – Kauflimit bei 170,05 (-10,5 % vom aktuellen Kurs)"
+2026-10-29,V,410.54,,Zulaufend,"Abwarten – Kauflimit bei 322,92 (-21,3 % vom aktuellen Kurs)"
+2026-10-29,AXP,323.71,,Zulaufend,"Abwarten – Kauflimit bei 289,38 (-10,6 % vom aktuellen Kurs)"
+2026-10-29,BLK,1176.24,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,BRK-B,541.96,,Zulaufend,"Abwarten – Kauflimit bei 439,14 (-19,0 % vom aktuellen Kurs)"
+2026-10-29,COIN,160.59,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-10-29,HOOD,91.59,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,NU,12.05,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,RY,206.03,,Zulaufend,"Abwarten – Kauflimit bei 164,83 (-20,0 % vom aktuellen Kurs)"
+2026-10-29,LLY,1373.7,,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-10-29,JNJ,275.2,,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-10-29,ABBV,290.79,,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-10-29,MRK,146.33,,Zulaufend,"Abwarten – Kauflimit bei 138,19 (-5,6 % vom aktuellen Kurs)"
+2026-10-29,PFE,29.95,,Zulaufend,"Abwarten – Kauflimit bei 27,83 (-7,1 % vom aktuellen Kurs)"
+2026-10-29,TMO,709.18,,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-10-29,ISRG,448.76,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,VRTX,540.0,,Zulaufend,"Abwarten – Kauflimit bei 413,60 (-23,4 % vom aktuellen Kurs)"
+2026-10-29,CAT,647.39,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,DE,660.0,,Zulaufend,"Abwarten – Kauflimit bei 575,67 (-12,8 % vom aktuellen Kurs)"
+2026-10-29,GE,313.05,,Zulaufend,"Abwarten – Kauflimit bei 254,57 (-18,7 % vom aktuellen Kurs)"
+2026-10-29,HON,222.14,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,BA,172.65,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-29,LMT,643.59,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,RTX,199.4,,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-10-29,UPS,107.33,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-29,XOM,183.29,,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-10-29,CVX,231.46,,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-10-29,NEE,82.14,,Zulaufend,"Abwarten – Kauflimit bei 79,04 (-3,8 % vom aktuellen Kurs)"
+2026-10-30,SIE.DE,267.15,,Zulaufend,"Abwarten – Kauflimit bei 216,05 (-19,1 % vom aktuellen Kurs)"
+2026-10-30,ALV.DE,439.2,,Zulaufend,"Abwarten – Kauflimit bei 340,62 (-22,4 % vom aktuellen Kurs)"
+2026-10-30,DTE.DE,25.88,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-30,MBG.DE,40.84,,Abwärtstrend,"Kein Long-Einstieg – erst über 48,63 (letztes Zwischenhoch) wieder interessant"
+2026-10-30,BMW.DE,57.94,,Abwärtstrend,"Kein Long-Einstieg – erst über 64,46 (letztes Zwischenhoch) wieder interessant"
+2026-10-30,VOW3.DE,70.5,,Abwärtstrend,"Kein Long-Einstieg – erst über 83,76 (letztes Zwischenhoch) wieder interessant"
+2026-10-30,BAS.DE,53.33,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-10-30,BAYN.DE,49.82,,Zulaufend,"Abwarten – Kauflimit bei 45,91 (-7,8 % vom aktuellen Kurs)"
+2026-10-30,IFX.DE,51.69,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-30,ADS.DE,169.7,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-30,RHM.DE,1037.6,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-30,MUV2.DE,566.0,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-30,DBK.DE,30.38,,Zulaufend,"Abwarten – Kauflimit bei 25,19 (-17,1 % vom aktuellen Kurs)"
+2026-10-30,ENR.DE,128.14,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-30,DHL.DE,59.06,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-30,ZAL.DE,27.03,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-30,PUM.DE,26.9,,Zulaufend,"Abwarten – Kauflimit bei 26,22 (-2,5 % vom aktuellen Kurs)"
+2026-10-30,ASML.AS,1423.2,,Zulaufend,"Abwarten – Kauflimit bei 1219,47 (-14,3 % vom aktuellen Kurs)"
+2026-10-30,AIR.PA,194.46,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-30,MC.PA,387.25,,Abwärtstrend,"Kein Long-Einstieg – erst über 537,20 (letztes Zwischenhoch) wieder interessant"
+2026-10-30,OR.PA,431.65,,Zulaufend,"Abwarten – Kauflimit bei 400,20 (-7,3 % vom aktuellen Kurs)"
+2026-10-30,TTE.PA,85.57,,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-10-30,SAN.PA,79.79,,Abwärtstrend,"Kein Long-Einstieg – erst über 84,04 (letztes Zwischenhoch) wieder interessant"
+2026-10-30,NESN.SW,84.41,,Zulaufend,"Abwarten – Kauflimit bei 82,23 (-2,6 % vom aktuellen Kurs)"
+2026-10-30,NOVN.SW,133.84,,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-10-30,UBSG.SW,39.16,,Zulaufend,"Abwarten – Kauflimit bei 35,73 (-8,8 % vom aktuellen Kurs)"
+2026-10-30,NOVO-B.CO,265.3,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-10-30,SHEL.L,4048.33,,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-10-30,AZN.L,13642.53,,Zulaufend,"Abwarten – Kauflimit bei 13379,45 (-1,9 % vom aktuellen Kurs)"
+2026-10-30,HSBA.L,1287.0,,Zulaufend,"Abwarten – Kauflimit bei 1120,87 (-12,9 % vom aktuellen Kurs)"
+2026-10-30,RR.L,1237.8,,Zulaufend,"Abwarten – Kauflimit bei 1013,17 (-18,1 % vom aktuellen Kurs)"
+2026-10-30,ITX.MC,56.46,,Zulaufend,"Abwarten – Kauflimit bei 43,81 (-22,4 % vom aktuellen Kurs)"
+2026-10-29,TSM,431.81,,Zulaufend,"Abwarten – Kauflimit bei 323,96 (-25,0 % vom aktuellen Kurs)"
+2026-10-30,005930.KS,225000.0,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-30,000660.KS,1418000.0,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-30,7203.T,3070.0,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-30,6758.T,3958.0,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-30,9984.T,4481.0,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-30,8035.T,9514.0,,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-10-30,0700.HK,383.6,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-10-30,1211.HK,68.25,,Abwärtstrend,"Kein Long-Einstieg – erst über 96,65 (letztes Zwischenhoch) wieder interessant"
+2026-10-30,3690.HK,71.6,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-10-29,INFY,12.2,,Abwärtstrend,"Kein Long-Einstieg – erst über 13,30 (letztes Zwischenhoch) wieder interessant"
+2026-10-30,RELIANCE.NS,1164.9,,Zulaufend,"Abwarten – Kauflimit bei 1149,01 (-1,4 % vom aktuellen Kurs)"
+2026-10-29,HDB,21.8,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-10-29,BHP,81.82,,Zulaufend,"Abwarten – Kauflimit bei 71,15 (-13,0 % vom aktuellen Kurs)"
