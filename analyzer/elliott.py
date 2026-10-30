@@ -145,24 +145,30 @@ def fit_impulse(pivots: list[Pivot], start: Pivot, end: Pivot):
     return best, best_seq
 
 
-def _decline_into(pivots: list[Pivot], k: int) -> float:
-    """Prozentualer Rückgang vom vorherigen Hoch-Pivot in das Tief pivots[k]."""
-    prev_h = [p for p in pivots[:k] if p.kind == "H"]
-    if not prev_h:
-        return float("inf")
-    return 1 - pivots[k].price / prev_h[-1].price
+def _decline_into(w: pd.DataFrame, i: int) -> float:
+    """
+    Rückgang IN das Tief bei Wochenindex i, gemessen vom höchsten Hoch seit dem
+    letzten noch tieferen Tief (= Beginn der Korrektur, die in i endet).
+    """
+    lows, highs = w["Low"].values, w["High"].values
+    L, peak, j = lows[i], highs[i], i - 1
+    while j >= 0 and lows[j] >= L:
+        peak = max(peak, highs[j])
+        j -= 1
+    return 1 - L / peak
 
 
-def _max_internal_decline(pivots: list[Pivot], start_i: int, end_i: int) -> float:
-    seg = [p for p in pivots if start_i <= p.i <= end_i]
-    m = 0.0
-    for a, b in zip(seg, seg[1:]):
-        if a.kind == "H" and b.kind == "L":
-            m = max(m, 1 - b.price / a.price)
-    return m
+def _max_internal_dd(w: pd.DataFrame, a: int, b: int) -> float:
+    """Grösster Rückgang (Hoch -> Tief) innerhalb der Wochen a..b."""
+    highs = w["High"].values[a + 1:b + 1]
+    lows = w["Low"].values[a + 1:b + 1]
+    if len(highs) == 0:
+        return 0.0
+    peak = np.maximum.accumulate(highs)
+    return float(np.max(1 - lows / peak))
 
 
-def select_start(pivots: list[Pivot], H: Pivot, w: pd.DataFrame):
+def select_start(pivots: list[Pivot], H: Pivot, w: pd.DataFrame, min_i: int = 0):
     """
     Wählt den Startpunkt S der Aufwärtswelle, die im Hoch H endet.
     Bedingungen (vom jüngsten Tief rückwärts geprüft):
@@ -176,11 +182,11 @@ def select_start(pivots: list[Pivot], H: Pivot, w: pd.DataFrame):
     fallback = None
     for k in range(len(pivots) - 1, -1, -1):
         p = pivots[k]
-        if p.kind != "L" or p.i >= H.i:
+        if p.kind != "L" or p.i >= H.i or p.i < min_i:
             continue
         if lowsH[p.i:H.i + 1].min() < p.price - 1e-9:
             continue
-        if _decline_into(pivots, k) + 1e-9 < _max_internal_decline(pivots, p.i, H.i):
+        if _decline_into(w, p.i) + 1e-9 < _max_internal_dd(w, p.i, H.i):
             continue
         score, seq = fit_impulse(pivots, p, H)
         if seq:
@@ -189,9 +195,40 @@ def select_start(pivots: list[Pivot], H: Pivot, w: pd.DataFrame):
             fallback = p
     if fallback is not None:
         return fallback, 0.0, None
-    lo_idx = int(np.argmin(lowsH[: max(H.i, 1)]))
+    lo_idx = min_i + int(np.argmin(lowsH[min_i: max(H.i, min_i + 1)]))
     S = Pivot(lo_idx, w.index[lo_idx].strftime("%Y-%m-%d"), float(lowsH[lo_idx]), "L")
     return S, 0.0, None
+
+
+def _pivot_at(w: pd.DataFrame, i: int, col: str, kind: str) -> Pivot:
+    return Pivot(i, w.index[i].strftime("%Y-%m-%d"), float(w[col].iloc[i]), kind)
+
+
+def _cycle(w: pd.DataFrame, piv: list[Pivot], h_idx: int, min_i: int, last: float) -> dict:
+    """Berechnet Start, Zählung, Fibonacci-Level und Korrekturdaten für das Hoch h_idx."""
+    H = _pivot_at(w, h_idx, "High", "H")
+    S, score, seq = select_start(piv, H, w, min_i)
+    rng = H.price - S.price
+    lvl = lambda f: H.price - f * rng  # noqa: E731
+    after = w.iloc[H.i + 1:]
+    if len(after):
+        c_idx = int(np.argmin(after["Low"].values)) + H.i + 1
+        corr_low = float(w["Low"].iloc[c_idx])
+    else:
+        c_idx, corr_low = H.i, H.price
+    return {
+        "S": S, "H": H, "score": score, "seq": seq, "rng": rng,
+        "zone_top": lvl(FIB_ZONE_TOP), "zone_bot": lvl(FIB_ZONE_BOTTOM),
+        "nachkauf": lvl(FIB_NACHKAUF), "invalid": lvl(FIB_INVALID),
+        "c_idx": c_idx, "corr_low": corr_low,
+        "corr_low_date": w.index[c_idx].strftime("%Y-%m-%d"),
+        "retr_now": (H.price - last) / rng if rng > 0 else 0.0,
+        "retr_max": (H.price - corr_low) / rng if rng > 0 else 0.0,
+    }
+
+
+def _is_invalid(c: dict, last: float) -> bool:
+    return c["retr_max"] > FIB_INVALID and last < c["invalid"]
 
 
 # --------------------------------------------------------------------------- #
@@ -206,28 +243,28 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
     last = float(daily["Close"].iloc[-1])
     last_date = daily.index[-1].strftime("%Y-%m-%d")
     piv_mid = zigzag(w, mid)
+    highs, lows, n = w["High"].values, w["Low"].values, len(w)
 
-    # Hoch H = höchstes Hoch der letzten 10 Jahre
-    hi_idx = int(np.argmax(w["High"].values))
-    H = Pivot(hi_idx, w.index[hi_idx].strftime("%Y-%m-%d"), float(w["High"].iloc[hi_idx]), "H")
+    # Grad wählen: zuerst der Zyklus des 10-Jahres-Hochs. Ist er invalidiert,
+    # auf den jüngeren Zyklus (tiefstes Tief danach -> höchstes Hoch danach) wechseln.
+    h_idx, min_i = int(np.argmax(highs)), 0
+    cyc = _cycle(w, piv_mid, h_idx, min_i, last)
+    grad = 1
+    while _is_invalid(cyc, last) and grad < 4:
+        l_idx = h_idx + 1 + int(np.argmin(lows[h_idx + 1:]))
+        if l_idx >= n - 4:          # Tief ist ganz frisch -> kein jüngerer Zyklus
+            break
+        h2 = l_idx + 1 + int(np.argmax(highs[l_idx + 1:]))
+        if highs[h2] / lows[l_idx] - 1 < 2 * mid:  # Erholung zu klein für einen Zyklus
+            break
+        h_idx, min_i = h2, l_idx
+        cyc = _cycle(w, piv_mid, h_idx, min_i, last)
+        grad += 1
 
-    S, score, seq = select_start(piv_mid, H, w)
-
-    rng = H.price - S.price
-    lvl = lambda f: H.price - f * rng  # noqa: E731
-    zone_top, zone_bot = lvl(FIB_ZONE_TOP), lvl(FIB_ZONE_BOTTOM)
-    nachkauf, invalid = lvl(FIB_NACHKAUF), lvl(FIB_INVALID)
-
-    # Korrektur seit dem Hoch
-    after = w.iloc[H.i + 1:]
-    if len(after):
-        c_idx = int(np.argmin(after["Low"].values)) + H.i + 1
-        corr_low = float(w["Low"].iloc[c_idx])
-        corr_low_date = w.index[c_idx].strftime("%Y-%m-%d")
-    else:
-        c_idx, corr_low, corr_low_date = H.i, H.price, H.date
-    retr_now = (H.price - last) / rng if rng > 0 else 0.0
-    retr_max = (H.price - corr_low) / rng if rng > 0 else 0.0
+    S, H, score, seq = cyc["S"], cyc["H"], cyc["score"], cyc["seq"]
+    zone_top, zone_bot, nachkauf, invalid = cyc["zone_top"], cyc["zone_bot"], cyc["nachkauf"], cyc["invalid"]
+    c_idx, corr_low, corr_low_date = cyc["c_idx"], cyc["corr_low"], cyc["corr_low_date"]
+    retr_now, retr_max = cyc["retr_now"], cyc["retr_max"]
     rebound = last / corr_low - 1 if corr_low > 0 else 0.0
 
     labels = []
@@ -255,10 +292,14 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
     near_high = last >= H.price * 0.97
     corr_done_alt = retr_max < FIB_ZONE_TOP and rebound >= mid  # Alternativ: Korrektur ohne Zone vorbei
     bounced_from_zone = FIB_ZONE_TOP <= retr_max <= FIB_INVALID and rebound >= mid
+    trigger = None
 
-    if retr_max > FIB_INVALID and last < invalid:
-        status, ampel = "Invalidiert", "rot"
-        signal = "Nicht kaufen – Szenario gekippt, Positionen reduzieren"
+    if _is_invalid(cyc, last):
+        # Abwärtstrend: Wiedereinstieg erst über dem letzten Zwischenhoch
+        hs = [p for p in piv_mid if p.kind == "H" and p.i > H.i and p.price > last * (1 + mid / 2)]
+        trigger = hs[-1].price if hs else H.price
+        status, ampel = "Abwärtstrend", "rot"
+        signal = f"Kein Long-Einstieg – erst über {trigger:.2f} (letztes Zwischenhoch) wieder interessant".replace(".", ",")
     elif last >= t2:
         status, ampel = "Ziel 2 erreicht", "rot"
         signal = "Teilverkauf 2 (weiteres Drittel), Rest mit Ziel 3"
@@ -341,6 +382,7 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
         "zone": {"oben": r(zone_top), "unten": r(zone_bot), "nachkauf": r(nachkauf), "invalidierung": r(invalid)},
         "ziele": {"t1": r(t1), "t2": r(t2), "t3": r(t3)},
         "plan": plan,
-        "parameter": {"vol_jahr_pct": round(vol * 100, 1), "zigzag_mittel_pct": round(mid * 100)},
+        "parameter": {"vol_jahr_pct": round(vol * 100, 1), "zigzag_mittel_pct": round(mid * 100), "grad": grad},
+        "einstiegs_trigger": r(trigger),
         "chart": candles,
     }
