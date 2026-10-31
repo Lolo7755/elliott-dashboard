@@ -146,3 +146,6 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-10-30,RELIANCE.NS,1164.9,,Zulaufend,"Abwarten – Kauflimit bei 1149,01 (-1,4 % vom aktuellen Kurs)"
 2026-10-29,HDB,21.8,,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
 2026-10-29,BHP,81.82,,Zulaufend,"Abwarten – Kauflimit bei 71,15 (-13,0 % vom aktuellen Kurs)"
+2026-10-29,ENR.DE,136.28,In Zone,Zulaufend,"Abwarten – Kauflimit bei 134,42 (-1,4 % vom aktuellen Kurs)"
+2026-10-29,PUM.DE,25.21,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-29,AZN.L,13052.0,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
