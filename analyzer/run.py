@@ -25,6 +25,7 @@ from analyzer.analysts import fetch_analysts
 from analyzer.backtest import backtest
 from analyzer.elliott import analyze
 from analyzer.extras import fetch_meta, fetch_news, fetch_termine
+from analyzer.market import fetch_market
 from analyzer.notify import send as send_telegram
 from analyzer.scenarios import build as build_scenarios
 
@@ -67,10 +68,12 @@ def fetch(symbol: str):
 
 def main() -> int:
     DOCS.mkdir(exist_ok=True)
-    old = {}
+    old, old_markt = {}, {}
     if (DOCS / "data.json").exists():
         try:
-            old = {a["symbol"]: a for a in json.loads((DOCS / "data.json").read_text())["aktien"]}
+            prev_data = json.loads((DOCS / "data.json").read_text())
+            old = {a["symbol"]: a for a in prev_data["aktien"]}
+            old_markt = prev_data.get("markt") or {}
         except Exception:
             old = {}
     kommentare = {}
@@ -123,9 +126,16 @@ def main() -> int:
             r["szenarien"] = None
             print(f"     {r['symbol']}: Szenario-Fehler {e}", file=sys.stderr)
 
+    try:
+        markt = fetch_market(results, old_markt.get("stimmung"))
+    except Exception as e:
+        markt = None
+        print(f"Markt-Fehler {e}", file=sys.stderr)
+
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (DOCS / "data.json").write_text(
-        json.dumps({"erstellt": now, "trefferquote": gesamt, "aktien": results, "fehler": errors}, ensure_ascii=False),
+        json.dumps({"erstellt": now, "trefferquote": gesamt, "markt": markt, "aktien": results, "fehler": errors},
+                   ensure_ascii=False),
         encoding="utf-8",
     )
 
