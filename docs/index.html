@@ -1,101 +1,136 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elliott-Dashboard</title>
+<script>
+  // Theme so früh wie möglich setzen (kein Aufblitzen)
+  (function(){ let t = "auto"; try { t = localStorage.getItem("theme") || "auto"; } catch(e) {}
+    const dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light"; document.documentElement.dataset.pref = t; })();
+</script>
 <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <style>
   :root{
-    --bg:#0b1020; --panel:#121a2e; --panel2:#18223b; --line:#25304d; --txt:#e6ebf5; --mute:#8a96b3;
-    --green:#22c55e; --orange:#f59e0b; --red:#ef4444; --blue:#3b82f6; --zone:#2563eb;
+    --green:#16a34a; --red:#dc2626; --orange:#d97706; --zone:#3b82f6; --accent:#0d9488;
+    --radius:16px; --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  [data-theme="dark"]{
+    --bg:#0b0c0f; --bg2:#101216; --panel:#15171c; --panel2:#1b1e24; --line:#262a32; --txt:#eceef2; --mute:#9399a5;
+    --hover:#1e2229; --shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.25);
+    --green:#22c55e; --red:#f05252; --orange:#f5a524; --accent:#2dd4bf;
+    --warn-bg:rgba(245,165,36,.14); --warn-txt:#fbbf24; --new-bg:rgba(45,212,191,.12); --new-txt:#5eead4;
+    --chart-grid:#1d2027;
+  }
+  [data-theme="light"]{
+    --bg:#f3f4f6; --bg2:#eef0f3; --panel:#ffffff; --panel2:#f6f7f9; --line:#e4e7ec; --txt:#111318; --mute:#667085;
+    --hover:#f5f7fa; --shadow:0 1px 2px rgba(16,24,40,.05), 0 4px 16px rgba(16,24,40,.06);
+    --warn-bg:#fff4e0; --warn-txt:#b45309; --new-bg:#e6f7f5; --new-txt:#0f766e;
+    --chart-grid:#eef0f3;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 var(--font);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
   a{color:inherit}
-  header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line)}
-  h1{font-size:19px;margin:0}
-  h1 small{color:var(--mute);font-weight:400;font-size:13px;margin-left:8px}
-  .btn{display:inline-block;padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);text-decoration:none;font-size:13px;cursor:pointer}
-  .btn:hover{border-color:var(--blue)} .btn.active{border-color:var(--blue);background:#1d2b4f}
-  main{padding:14px 20px;max-width:2400px;margin:0 auto}
+  ::-webkit-scrollbar{width:10px;height:10px} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
 
-  /* Indizes-Leiste */
-  .ticker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-  .tk{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;white-space:nowrap}
+  header{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+    padding:12px 24px;background:color-mix(in srgb, var(--bg) 85%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;
+    background:linear-gradient(135deg,#0d9488,#2563eb)}
+  .brand h1{font-size:17px;margin:0;font-weight:700;letter-spacing:-.01em}
+  .brand small{display:block;color:var(--mute);font-size:12px;font-weight:400}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);
+    color:var(--txt);text-decoration:none;font-size:13px;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s}
+  .btn:hover{border-color:var(--accent)} .btn.active{border-color:var(--accent);background:var(--new-bg);color:var(--new-txt)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+  .seg button{border:0;background:none;color:var(--mute);padding:7px 10px;cursor:pointer;font:inherit;font-size:13px}
+  .seg button.on{background:var(--panel2);color:var(--txt)}
+  main{padding:18px 24px 8px;max-width:2400px;margin:0 auto}
+
+  .ticker{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;padding-bottom:2px}
+  .tk{flex:none;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12.5px;white-space:nowrap}
   .tk b{font-weight:600;margin-right:6px}
 
-  /* Kopfzeile: Stimmung + Kennzahlen */
-  .top{display:grid;grid-template-columns:minmax(300px,1.3fr) repeat(5,minmax(130px,1fr));gap:12px;margin-bottom:14px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-  .card .k{color:var(--mute);font-size:12px}
-  .card .v{font-size:24px;font-weight:650;margin-top:2px}
-  .mood{display:flex;gap:14px;align-items:center}
-  .mood svg{flex:none}
-  .mood .lbl{font-size:18px;font-weight:650}
-  .mood .exp{font-size:12px;color:var(--mute);margin-top:4px}
+  .top{display:grid;grid-template-columns:minmax(380px,2fr) repeat(5,minmax(130px,1fr));gap:14px;margin-bottom:18px}
+  .card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card{padding:14px 16px}
+  .k{color:var(--mute);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .v{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-top:4px}
+  .sub{color:var(--mute);font-size:12px;margin-top:2px}
+  .mood{display:flex;gap:16px;align-items:center;margin-top:6px}
+  .mood svg{flex:none;color:var(--txt)}
+  .mood .lbl{font-size:20px;font-weight:700}
+  .mood .exp{font-size:12px;color:var(--mute);margin-top:3px}
 
-  /* Hauptbereich: Tabelle links, Seitenleiste rechts */
-  .layout{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:14px;align-items:start}
-  .side{display:flex;flex-direction:column;gap:14px;position:sticky;top:12px}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-  .panel h2{font-size:15px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:18px;align-items:start}
+  .side{display:flex;flex-direction:column;gap:16px;position:sticky;top:76px}
+  .panel{padding:14px 16px}
+  .panel h2{font-size:15px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
   .scroll{overflow:auto;padding-right:4px}
-  .side .todo{max-height:32vh}
-  .side .cal{max-height:40vh}
+  .side .todo{max-height:34vh}
+  .side .cal{max-height:38vh}
   ul.list{margin:0;padding:0;list-style:none}
-  ul.list li{padding:6px 0;border-bottom:1px solid var(--line)}
+  ul.list li{padding:8px 0;border-bottom:1px solid var(--line)}
   ul.list li:last-child{border-bottom:0}
-  .tabs{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
-  .tabs .btn{padding:5px 9px;font-size:12px}
-  .date{display:inline-block;min-width:62px;color:var(--mute);font-variant-numeric:tabular-nums}
-  .kat{font-size:11px;padding:1px 6px;border-radius:999px;border:1px solid var(--line);color:var(--mute);margin-left:4px}
+  .grp{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:600;margin:8px 0 2px}
+  .task{display:flex;gap:10px;align-items:flex-start;cursor:pointer;border-radius:10px;padding:8px !important;border:0 !important;margin-bottom:6px;background:var(--panel2)}
+  .task:hover{background:var(--hover)}
+  .pill{flex:none;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;margin-top:1px}
+  .pill.kauf{background:color-mix(in srgb, var(--green) 16%, transparent);color:var(--green)}
+  .pill.verkauf{background:color-mix(in srgb, var(--red) 15%, transparent);color:var(--red)}
+  .empty{color:var(--mute);padding:14px;text-align:center;background:var(--panel2);border-radius:10px}
+  .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+  .tabs .btn{padding:5px 10px;font-size:12px}
+  .date{display:inline-block;min-width:70px;color:var(--mute);font-variant-numeric:tabular-nums;font-size:12.5px}
+  .kat{font-size:10.5px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--mute);margin-left:6px}
 
-  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
-  input[type=search],select{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 10px}
-  input[type=search]{min-width:180px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  input[type=search],select{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:7px 11px;font:inherit;font-size:13px}
+  input[type=search]{min-width:200px}
+  input:focus,select:focus{outline:2px solid color-mix(in srgb, var(--accent) 40%, transparent);border-color:var(--accent)}
 
-  .tablewrap{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:calc(100vh - 300px);min-height:420px}
+  .tablewrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:auto;max-height:calc(100vh - 330px);min-height:440px}
   table{width:100%;border-collapse:collapse}
-  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
-  thead th{position:sticky;top:0;z-index:1;color:var(--mute);font-weight:500;font-size:12px;background:var(--panel2);cursor:pointer;user-select:none}
-  tr.row{cursor:pointer} tr.row:hover{background:#16213b}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  thead th{position:sticky;top:0;z-index:1;color:var(--mute);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--panel2);cursor:pointer;user-select:none}
+  tr.row{cursor:pointer;transition:background .12s} tr.row:hover{background:var(--hover)}
   td.num{text-align:right;font-variant-numeric:tabular-nums}
   .sig{white-space:normal;min-width:220px;max-width:340px}
-  .dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:none}
   .gruen{background:var(--green)} .orange{background:var(--orange)} .rot{background:var(--red)}
-  .tag{display:inline-block;padding:1px 7px;border-radius:999px;font-size:11px;border:1px solid var(--line)}
-  .new{background:#3b2a07;border-color:#7c5a10;color:#fcd34d;margin-left:6px}
-  .warn{background:#3b2a07;border-color:#7c5a10;color:#fcd34d}
+  .tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600}
+  .new{background:var(--new-bg);color:var(--new-txt);margin-left:6px}
+  .warn{background:var(--warn-bg);color:var(--warn-txt)}
   .mute{color:var(--mute)} .small{font-size:12px}
   .pos{color:var(--green)} .neg{color:var(--red)}
-  .demo{background:#3b1d1d;border:1px solid #7f2a2a;color:#fecaca;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:none}
+  .demo{background:var(--warn-bg);color:var(--warn-txt);padding:8px 12px;border-radius:10px;margin-bottom:12px;display:none}
 
-  /* Detailansicht als Overlay */
-  #ov{position:fixed;inset:0;background:rgba(3,6,15,.72);display:none;z-index:50;overflow:auto;padding:24px}
-  #detail{max-width:1700px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;position:relative}
-  #detail h2{margin:0 0 4px;font-size:19px}
-  .close{position:absolute;top:12px;right:12px}
-  .grid2{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) minmax(0,1fr);gap:14px}
-  .grid2 .chartcol{grid-column:1}
-  #chart{height:62vh;min-height:380px}
-  .plan td{padding:5px 6px}
-  .box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px;margin-bottom:12px}
-  .box h3{margin:0 0 6px;font-size:13px;color:var(--mute);font-weight:500}
-  .legend span{margin-right:12px;font-size:12px;color:var(--mute)}
-  .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px}
-  .news a{text-decoration:none} .news a:hover{color:var(--blue)} .news li{margin:6px 0}
-  .scen{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
-  .scen i{display:inline-block;width:18px;height:0;border-top:3px dashed;margin-top:8px;flex:none}
-  footer{color:var(--mute);font-size:12px;padding:14px 20px;max-width:2400px;margin:0 auto}
+  #ov{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);display:none;z-index:50;overflow:auto;padding:28px}
+  #detail{max-width:1700px;margin:0 auto;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+  #detail h2{margin:0 0 2px;font-size:21px;letter-spacing:-.01em}
+  .close{position:absolute;top:16px;right:16px}
+  .grid2{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) minmax(0,1fr);gap:16px}
+  .chartbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px}
+  #chart{height:60vh;min-height:380px}
+  .plan td{padding:6px 6px}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+  .box h3{margin:0 0 8px;font-size:11.5px;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+  .legend{margin-top:8px} .legend span{margin-right:14px;font-size:12px;color:var(--mute)}
+  .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+  .news a{text-decoration:none} .news a:hover{color:var(--accent)} .news li{margin:7px 0}
+  .scen{display:flex;gap:8px;align-items:flex-start;margin:7px 0}
+  .scen i{display:inline-block;width:18px;height:0;border-top:3px dashed;margin-top:9px;flex:none}
+  footer{color:var(--mute);font-size:12px;padding:16px 24px 24px;max-width:2400px;margin:0 auto}
 
-  /* Mittlere Bildschirme */
   @media (max-width:1500px){
-    .top{grid-template-columns:minmax(300px,1.4fr) repeat(3,minmax(120px,1fr))}
+    .top{grid-template-columns:minmax(360px,2fr) repeat(3,minmax(120px,1fr))}
     .top .opt{display:none}
     .grid2{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
-    .grid2 .col3{grid-column:1 / -1;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+    .grid2 .col3{grid-column:1 / -1;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
     .grid2 .col3 .box{margin-bottom:0}
   }
   @media (max-width:1150px){
@@ -103,28 +138,34 @@
     .side{position:static;display:grid;grid-template-columns:1fr 1fr}
     .tablewrap{max-height:none}
   }
-  /* Handy */
   @media (max-width:760px){
-    main{padding:10px}
+    header{padding:10px 12px} main{padding:12px}
     .top{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
     .mood{flex-direction:column;align-items:flex-start}
     .top .moodcard{grid-column:1 / -1}
     .side{grid-template-columns:1fr;order:-1}
-    .side .todo,.side .cal{max-height:260px}
+    .side .todo,.side .cal{max-height:280px}
     .hide-m{display:none}
     .grid2{grid-template-columns:1fr}
     #ov{padding:0} #detail{border-radius:0}
     #chart{height:48vh}
+    .btn .lbl{display:none}
   }
 </style>
 </head>
 <body>
 <header>
-  <h1>Elliott-Dashboard <small id="stand">lädt …</small></h1>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <a class="btn" id="editWl" target="_blank" rel="noopener">✏️ Watchlist bearbeiten</a>
-    <a class="btn" id="runNow" target="_blank" rel="noopener">▶️ Analyse jetzt starten</a>
-    <a class="btn" href="signal_historie.csv" target="_blank">📜 Signal-Historie</a>
+  <div class="brand">
+    <div class="logo">EW</div>
+    <div><h1>Elliott-Dashboard</h1><small id="stand">lädt …</small></div>
+  </div>
+  <div class="actions">
+    <a class="btn" id="editWl" target="_blank" rel="noopener">✏️ <span class="lbl">Watchlist</span></a>
+    <a class="btn" id="runNow" target="_blank" rel="noopener">▶️ <span class="lbl">Analyse starten</span></a>
+    <a class="btn" href="signal_historie.csv" target="_blank">📜 <span class="lbl">Historie</span></a>
+    <div class="seg" id="themeSeg" title="Darstellung">
+      <button data-theme-set="light">☀️ Hell</button><button data-theme-set="dark">🌙 Dunkel</button><button data-theme-set="auto">Auto</button>
+    </div>
   </div>
 </header>
 
@@ -133,19 +174,19 @@
   <div class="ticker" id="ticker"></div>
 
   <div class="top">
-    <div class="card moodcard" id="mood"><div class="k">Marktstimmung</div><div class="mute">–</div></div>
+    <div class="card moodcard" id="mood"><div class="k">Marktstimmung</div><div class="sub">–</div></div>
     <div class="card"><div class="k"><span class="dot gruen"></span> Kaufen / Halten</div><div class="v" id="cG">–</div></div>
-    <div class="card"><div class="k"><span class="dot orange"></span> Abwarten / Teilverkauf</div><div class="v" id="cO">–</div></div>
+    <div class="card"><div class="k"><span class="dot orange"></span> Abwarten</div><div class="v" id="cO">–</div></div>
     <div class="card"><div class="k"><span class="dot rot"></span> Abwärtstrend</div><div class="v" id="cR">–</div></div>
-    <div class="card opt"><div class="k">🎯 Trefferquote (Backtest)</div><div class="v" id="cQ">–</div><div class="k" id="cQs"></div></div>
-    <div class="card opt"><div class="k">Analysierte Werte</div><div class="v" id="cAll">–</div></div>
+    <div class="card opt"><div class="k">🎯 Trefferquote</div><div class="v" id="cQ">–</div><div class="sub" id="cQs"></div></div>
+    <div class="card opt"><div class="k">Analysierte Werte</div><div class="v" id="cAll">–</div><div class="sub">aus 18 Ländern</div></div>
   </div>
 
   <div class="layout">
     <section>
       <div class="toolbar">
         <button class="btn active" data-f="alle">Alle</button>
-        <button class="btn" data-f="kauf">Kaufen</button>
+        <button class="btn" data-f="kauf">Kaufbereich</button>
         <button class="btn" data-f="verkauf">Verkaufen</button>
         <button class="btn" data-f="warten">Abwarten</button>
         <button class="btn" data-f="rot">Abwärtstrend</button>
@@ -177,18 +218,18 @@
 
     <aside class="side">
       <div class="panel">
-        <h2>🌙 Handlungsbedarf <span class="mute small" id="todoN"></span></h2>
-        <div class="scroll todo"><ul class="list" id="todo"><li class="mute">–</li></ul></div>
+        <h2>🌙 Heute zu tun <span class="mute small" id="todoDate"></span></h2>
+        <div class="scroll todo" id="todo"><div class="empty">–</div></div>
       </div>
       <div class="panel">
         <h2>📅 Termine</h2>
         <div class="tabs">
-          <button class="btn active" data-t="earn">Earnings (60 T.)</button>
+          <button class="btn active" data-t="earn">Earnings · 60 T.</button>
           <button class="btn" data-t="makro">Makro & Politik</button>
           <button class="btn" data-t="div">Dividenden</button>
         </div>
         <div class="scroll cal"><ul class="list" id="cal"><li class="mute">–</li></ul></div>
-        <div class="mute small" id="calInfo" style="margin-top:6px"></div>
+        <div class="mute small" id="calInfo" style="margin-top:8px"></div>
       </div>
     </aside>
   </div>
@@ -203,7 +244,20 @@
 
 <script>
 const AMPEL_ORDER = {gruen:0, orange:1, rot:2};
-let DATA = [], MAKRO = [], filter = "alle", sortKey = "ampel", sortDir = 1, chart = null, calTab = "earn";
+let DATA = [], MAKRO = [], filter = "alle", sortKey = "ampel", sortDir = 1, chart = null, calTab = "earn", openSym = null;
+
+// ---------- Theme (Hell / Dunkel / Auto) ----------
+function applyTheme(pref){
+  try { localStorage.setItem("theme", pref); } catch(e) {}
+  const dark = pref === "dark" || (pref === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  document.documentElement.dataset.pref = pref;
+  document.querySelectorAll("[data-theme-set]").forEach(b => b.classList.toggle("on", b.dataset.themeSet === pref));
+  if (openSym) showDetail(openSym);
+}
+document.querySelectorAll("[data-theme-set]").forEach(b => b.onclick = () => applyTheme(b.dataset.themeSet));
+document.querySelectorAll("[data-theme-set]").forEach(b => b.classList.toggle("on", b.dataset.themeSet === document.documentElement.dataset.pref));
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
 // GitHub-Links automatisch aus der Pages-Adresse ableiten (user.github.io/repo)
 (function(){
@@ -227,23 +281,54 @@ function earnWarn(a){
   return ` <span class="tag warn">⚠️ Earnings ${t.earnings_in_tagen === 0 ? "heute" : "in " + t.earnings_in_tagen + " T."}</span>`;
 }
 
+// ---------- Tagesaufgaben ----------
+// Eine Aufgabe entsteht nur, wenn sich der Status seit dem letzten Börsentag geändert hat.
+// Am nächsten Abend gilt sie als erledigt und verschwindet.
+const HALTEN = ["In Zone", "In Zone (unten)", "Nachkaufbereich", "Welle 5 läuft", "Ziel 1 erreicht", "Ziel 2 erreicht"];
+const AKTION = {
+  "In Zone":          ["kauf",    "Kaufen",     a => `Teilkauf 1 (ca. 1/3) bei ${fmt(a.kurs, a.currency)}`],
+  "In Zone (unten)":  ["kauf",    "Nachkaufen", a => `Teilkauf 2 (ca. 1/3) bei ${fmt(a.kurs, a.currency)}`],
+  "Nachkaufbereich":  ["kauf",    "Nachkaufen", a => `Teilkauf 3 (Rest) – Invalidierung ${fmt(a.zone.invalidierung)}`],
+  "Ziel 1 erreicht":  ["verkauf", "Teilverkauf", a => `ca. 1/3 verkaufen bei ${fmt(a.kurs, a.currency)}`],
+  "Ziel 2 erreicht":  ["verkauf", "Teilverkauf", a => `weiteres Drittel verkaufen, Rest bis ${fmt(a.ziele.t3)}`],
+  "Abwärtstrend":     ["verkauf", "Verkaufen",  a => `Szenario invalidiert – Restposition auflösen`],
+};
+function aufgaben(){
+  return DATA.filter(a => {
+    if (!a.status_vorher || a.status === a.status_vorher || !AKTION[a.status]) return false;
+    if (a.status === "Abwärtstrend") return HALTEN.includes(a.status_vorher);   // nur wenn man die Aktie hält
+    return true;
+  });
+}
+function renderTodo(stand){
+  const list = aufgaben(), el = document.getElementById("todo");
+  document.getElementById("todoDate").textContent = stand ? dateWd(stand) : "";
+  if (!list.length) { el.innerHTML = '<div class="empty">Heute keine neuen Aufgaben.<br><span class="small">Bestehende Positionen einfach halten.</span></div>'; return; }
+  const grp = (typ, title) => { const xs = list.filter(a => AKTION[a.status][0] === typ); if (!xs.length) return "";
+    return `<div class="grp">${title} · ${xs.length}</div>` + xs.map(a => { const [t, lbl, txt] = AKTION[a.status];
+      return `<div class="task" data-sym="${a.symbol}"><span class="pill ${t}">${lbl}</span><div><b>${a.name}</b><br><span class="small mute">${txt(a)}</span>${earnWarn(a)}</div></div>`; }).join(""); };
+  el.innerHTML = grp("kauf", "Kaufen") + grp("verkauf", "Verkaufen");
+  el.querySelectorAll(".task").forEach(t => t.onclick = () => showDetail(t.dataset.sym));
+}
+
 // ---------- Marktstimmung ----------
 function gauge(v){
   const ang = Math.PI * (1 - v / 100), r = 52, cx = 60, cy = 60;
   const x = cx + r * Math.cos(ang), y = cy - r * Math.sin(ang);
   const seg = (a0, a1, col) => { const p = t => [cx + r * Math.cos(Math.PI * (1 - t)), cy - r * Math.sin(Math.PI * (1 - t))];
-    const [x0, y0] = p(a0), [x1, y1] = p(a1); return `<path d="M${x0},${y0} A${r},${r} 0 0 1 ${x1},${y1}" stroke="${col}" stroke-width="10" fill="none"/>`; };
-  return `<svg width="120" height="70" viewBox="0 0 120 70">${seg(0,.25,"#ef4444")}${seg(.25,.45,"#f97316")}${seg(.45,.55,"#eab308")}${seg(.55,.75,"#84cc16")}${seg(.75,1,"#22c55e")}
-    <line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e6ebf5" stroke-width="3" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="4" fill="#e6ebf5"/></svg>`;
+    const [x0, y0] = p(a0), [x1, y1] = p(a1); return `<path d="M${x0},${y0} A${r},${r} 0 0 1 ${x1},${y1}" stroke="${col}" stroke-width="10" fill="none" stroke-linecap="butt"/>`; };
+  return `<svg width="124" height="72" viewBox="0 0 120 70">${seg(0,.25,"#ef4444")}${seg(.25,.45,"#f97316")}${seg(.45,.55,"#eab308")}${seg(.55,.75,"#84cc16")}${seg(.75,1,"#22c55e")}
+    <line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="4" fill="currentColor"/></svg>`;
 }
 function renderMood(m){
   const el = document.getElementById("mood");
-  if (!m || !m.stimmung) { el.innerHTML = '<div class="k">Marktstimmung</div><div class="mute small">Wird beim nächsten Lauf berechnet.</div>'; return; }
-  const s = m.stimmung, col = s.wert < 25 ? "neg" : s.wert < 45 ? "neg" : s.wert <= 55 ? "" : "pos";
-  const vt = s.vortag != null ? ` <span class="mute small">(Vortag ${s.vortag})</span>` : "";
-  el.innerHTML = `<div class="k">Marktstimmung · Angst & Gier</div><div class="mood">${gauge(s.wert)}
+  if (!m || !m.stimmung) { el.innerHTML = '<div class="k">Marktstimmung</div><div class="sub">Wird beim nächsten Lauf berechnet.</div>'; return; }
+  const s = m.stimmung, col = s.wert < 45 ? "neg" : s.wert <= 55 ? "" : "pos";
+  const vt = s.vortag != null ? ` <span class="mute small">Vortag ${s.vortag}</span>` : "";
+  el.innerHTML = `<div class="k">Marktstimmung · Angst & Gier <span title="${s.erklaerung}" style="cursor:help">ⓘ</span></div><div class="mood">${gauge(s.wert)}
     <div><div><span class="lbl ${col}">${s.wert} · ${s.label}</span>${vt}</div>
-    <div class="exp">${s.teile.join(" · ")}</div><div class="exp">${s.erklaerung}</div></div></div>`;
+    <div class="exp">${s.teile.join(" · ")}</div></div></div>`;
+  el.title = s.erklaerung;
 }
 function renderTicker(m){
   if (!m || !m.indizes) return;
@@ -265,13 +350,13 @@ function renderCal(){
     document.getElementById("calInfo").textContent = "Dividendentermine der nächsten 90 Tage.";
   } else {
     MAKRO.forEach(t => { if (daysTo(t.datum) >= -1 && daysTo(t.datum) <= 220)
-      items.push([t.datum, `<b>${t.titel}</b><span class="kat">${t.kategorie}</span>${t.info ? `<div class="mute small" style="margin-left:66px">${t.info}</div>` : ""}`]); });
+      items.push([t.datum, `<b>${t.titel}</b><span class="kat">${t.kategorie}</span>${t.info ? `<div class="mute small" style="margin-left:74px">${t.info}</div>` : ""}`]); });
     document.getElementById("calInfo").textContent = "Notenbanken, Konjunkturdaten, Politik und Börsentermine (Quellen: Fed, EZB, BLS).";
   }
   items.sort((x, y) => x[0] < y[0] ? -1 : 1);
   document.getElementById("cal").innerHTML = items.length ? items.map(([d, html]) => {
-    const n = daysTo(d), hl = n === 0 ? ' style="background:#16213b"' : "";
-    return `<li${hl}><span class="date">${dateWd(d)}</span> ${html}${n === 0 ? ' <span class="tag warn">heute</span>' : ""}</li>`; }).join("")
+    const n = daysTo(d);
+    return `<li><span class="date">${dateWd(d)}</span> ${html}${n === 0 ? ' <span class="tag warn">heute</span>' : ""}</li>`; }).join("")
     : '<li class="mute">Keine Termine im Zeitraum.</li>';
 }
 
@@ -348,23 +433,19 @@ async function load(){
     [...new Set(DATA.map(a => a.meta && a.meta[key]).filter(Boolean))].sort().forEach(v => el.add(new Option(v, v))); };
   fill("fLand", "land"); fill("fSektor", "sektor");
   renderMood(d.markt); renderTicker(d.markt); renderCal();
+  const stand = DATA.map(a => a.stand).sort().pop();
+  renderTodo(stand);
   const tq = d.trefferquote;
   if (tq && tq.quote_pct != null) {
     document.getElementById("cQ").textContent = tq.quote_pct + " %";
-    document.getElementById("cQs").textContent = `${tq.treffer} Treffer · ${tq.fehler} Fehler · ${tq.offen} offen`;
+    document.getElementById("cQs").textContent = `${tq.treffer} Treffer · ${tq.fehler} Fehler`;
   }
-  document.getElementById("stand").textContent = "Stand: " + new Date(d.erstellt).toLocaleString("de-DE");
+  document.getElementById("stand").textContent = "Stand " + new Date(d.erstellt).toLocaleString("de-DE", {dateStyle: "medium", timeStyle: "short"});
   if (d.demo) document.getElementById("demo").style.display = "block";
   document.getElementById("cAll").textContent = DATA.length;
+  const nL = new Set(DATA.map(a => a.meta && a.meta.land).filter(Boolean)).size;
+  document.querySelector("#cAll + .sub").textContent = nL ? `aus ${nL} Ländern` : "";
   ["gruen","orange","rot"].forEach((k,i)=>document.getElementById(["cG","cO","cR"][i]).textContent = DATA.filter(a=>a.ampel===k).length);
-  const todo = DATA.filter(a => ["kauf","verkauf"].includes(kategorie(a)) || (a.status_vorher && a.status_vorher!==a.status))
-    .sort((x, y) => (y.status_vorher && y.status_vorher !== y.status) - (x.status_vorher && x.status_vorher !== x.status));
-  document.getElementById("todoN").textContent = todo.length ? `${todo.length} Werte` : "";
-  document.getElementById("todo").innerHTML = todo.length ? todo.map(a =>
-    `<li data-sym="${a.symbol}" style="cursor:pointer"><span class="dot ${a.ampel}"></span> <b>${a.name}</b> <span class="mute small">${fmt(a.kurs,a.currency)}</span><br><span class="small">${a.signal}</span>${earnWarn(a)}${a.status_vorher && a.status_vorher!==a.status ? ` <span class="tag new">neu: ${a.status}</span>`:""}</li>`).join("")
-    : '<li class="mute">Nichts zu tun – alle Werte im Wartemodus.</li>';
-  document.querySelectorAll("#todo li[data-sym]").forEach(li => li.onclick = () => showDetail(li.dataset.sym));
-  if (d.fehler && d.fehler.length) document.getElementById("todo").insertAdjacentHTML("beforeend", `<li class="mute small">Keine Daten für: ${d.fehler.map(e=>e.symbol).join(", ")}</li>`);
   render();
 }
 
@@ -398,8 +479,9 @@ function render(){
 }
 
 // ---------- Detail (Overlay) ----------
-function closeDetail(){ document.getElementById("ov").style.display = "none"; document.body.style.overflow = ""; if (chart) { chart.remove(); chart = null; } }
+function closeDetail(){ openSym = null; document.getElementById("ov").style.display = "none"; document.body.style.overflow = ""; if (chart) { chart.remove(); chart = null; } }
 function showDetail(sym){
+  openSym = sym;
   const a = DATA.find(x=>x.symbol===sym), c = a.currency, k = a.kurs;
   const planRow = (label, v, color) => v==null ? "" :
     `<tr><td><span class="dot" style="background:${color}"></span> ${label}</td><td class="num">${fmt(v,c)}</td><td class="num">${pctTxt(pct(v,k))}</td></tr>`;
@@ -408,26 +490,26 @@ function showDetail(sym){
   el.innerHTML = `
     <button class="btn close" id="closeBtn">✕ Schließen</button>
     <h2><span class="dot ${a.ampel}"></span> ${a.name} <span class="mute">${a.symbol}</span></h2>
-    <div class="mute" style="margin-bottom:12px">Kurs ${fmt(k,c)} · Stand ${a.stand} · ${a.status}${a.meta ? " · " + [a.meta.land, a.meta.sektor].filter(Boolean).join(" · ") : ""}</div>
+    <div class="mute" style="margin-bottom:14px">Kurs ${fmt(k,c)} · Stand ${a.stand} · ${a.status}${a.meta ? " · " + [a.meta.land, a.meta.sektor].filter(Boolean).join(" · ") : ""}</div>
     <div class="grid2">
-      <div class="chartcol">
-        <div id="chart"></div>
-        <div class="legend" style="margin-top:6px">
+      <div>
+        <div class="chartbox"><div id="chart"></div>
+        <div class="legend">
           <span><i style="background:var(--zone)"></i>Einstiegszone</span>
           <span><i style="background:#93c5fd"></i>Nachkauf 61,8 %</span>
           <span><i style="background:var(--red)"></i>Invalidierung</span>
           <span><i style="background:var(--green)"></i>Ziele</span>
           ${a.szenarien ? `<span><i style="height:0;border-top:3px dashed #22c55e"></i>Hauptszenario${a.szenarien.haupt.prob_pct != null ? " " + a.szenarien.haupt.prob_pct + " %" : ""}</span>
           <span><i style="height:0;border-top:3px dashed #f97316"></i>Alternative${a.szenarien.alternative.prob_pct != null ? " " + a.szenarien.alternative.prob_pct + " %" : ""}</span>` : ""}
-        </div>
+        </div></div>
       </div>
       <div>
         <div class="box"><h3>Signal</h3><b>${a.signal}</b>${earnWarn(a)}</div>
         <div class="box"><h3>🔮 Szenarien</h3>${scBox(a)}</div>
         <div class="box"><h3>Handlungsplan</h3>
           <table class="plan" style="width:100%">
-            ${planRow("Teilkauf 1 (38,2 %)", a.plan.teilkauf_1, "#2563eb")}
-            ${planRow("Teilkauf 2 (50 %)", a.plan.teilkauf_2, "#2563eb")}
+            ${planRow("Teilkauf 1 (38,2 %)", a.plan.teilkauf_1, "#3b82f6")}
+            ${planRow("Teilkauf 2 (50 %)", a.plan.teilkauf_2, "#3b82f6")}
             ${planRow("Teilkauf 3 (61,8 %)", a.plan.teilkauf_3, "#93c5fd")}
             ${planRow("Invalidierung (78,6 %)", a.plan.invalidierung, "#ef4444")}
             ${planRow("Teilverkauf 1 (altes Hoch)", a.plan.teilverkauf_1, "#22c55e")}
@@ -446,11 +528,11 @@ function showDetail(sym){
         <div class="box"><h3>📊 Analysten</h3>${anBox(a)}</div>
         <div class="box"><h3>📅 Termine</h3>${termBox(a)}</div>
         <div class="box"><h3>📰 News</h3>${newsBox(a)}</div>
-        <div class="box"><h3>🎯 Trefferquote dieser Aktie (Backtest)</h3>${btBox(a)}</div>
+        <div class="box"><h3>🎯 Trefferquote dieser Aktie</h3>${btBox(a)}</div>
         <div class="box"><h3>🤖 KI-Einschätzung</h3>${a.kommentar ? a.kommentar : '<span class="mute">Noch kein Kommentar. Frag Claude nach einer Einschätzung zu diesem Wert.</span>'}</div>
       </div>
     </div>`;
-  ov.style.display = "block"; ov.scrollTop = 0; document.body.style.overflow = "hidden";
+  ov.style.display = "block"; document.body.style.overflow = "hidden";
   document.getElementById("closeBtn").onclick = closeDetail;
   drawChart(a);
 }
@@ -458,24 +540,25 @@ function showDetail(sym){
 function drawChart(a){
   const box = document.getElementById("chart");
   chart = LightweightCharts.createChart(box, {
-    layout:{background:{color:"#121a2e"}, textColor:"#8a96b3"},
-    grid:{vertLines:{color:"#1b2440"}, horzLines:{color:"#1b2440"}},
-    rightPriceScale:{borderColor:"#25304d"}, timeScale:{borderColor:"#25304d"},
+    layout:{background:{color: cssVar("--panel")}, textColor: cssVar("--mute"), fontFamily: "Inter, system-ui, sans-serif"},
+    grid:{vertLines:{color: cssVar("--chart-grid")}, horzLines:{color: cssVar("--chart-grid")}},
+    rightPriceScale:{borderColor: cssVar("--line")}, timeScale:{borderColor: cssVar("--line")},
     autoSize:true,
   });
   const s = chart.addCandlestickSeries({upColor:"#22c55e",downColor:"#ef4444",borderVisible:false,wickUpColor:"#22c55e",wickDownColor:"#ef4444"});
   s.setData(a.chart);
   const line = (price, color, title, style=0, w=2) => s.createPriceLine({price, color, lineWidth:w, lineStyle:style, axisLabelVisible:true, title});
-  line(a.zone.oben, "#2563eb", "Zone oben");
-  line(a.zone.unten, "#2563eb", "Zone unten");
+  line(a.zone.oben, "#3b82f6", "Zone oben");
+  line(a.zone.unten, "#3b82f6", "Zone unten");
   line(a.zone.nachkauf, "#93c5fd", "Nachkauf", 2, 1);
   line(a.zone.invalidierung, "#ef4444", "Invalidierung", 2, 1);
   line(a.ziele.t1, "#22c55e", "Ziel 1", 2, 1);
   line(a.ziele.t2, "#22c55e", "Ziel 2", 2, 1);
   const times = new Set(a.chart.map(c=>c.time));
+  const lblCol = cssVar("--txt");
   const markers = a.welle.labels.filter(l=>times.has(l.date)).map(l=>{
     const low = l.label==="0"||l.label==="2"||l.label==="4"||l.label==="Start"||l.label==="Korr.-Tief";
-    return {time:l.date, position: low?"belowBar":"aboveBar", color: low?"#fbbf24":"#e6ebf5", shape: low?"arrowUp":"arrowDown",
+    return {time:l.date, position: low?"belowBar":"aboveBar", color: low?"#f59e0b":lblCol, shape: low?"arrowUp":"arrowDown",
             text: /^\d$/.test(l.label) ? `(${l.label})` : l.label};
   }).sort((x,y)=>x.time<y.time?-1:1);
   s.setMarkers(markers);
@@ -511,6 +594,7 @@ document.getElementById("fLand").onchange = render;
 document.getElementById("fSektor").onchange = render;
 document.getElementById("ov").onclick = e => { if (e.target.id === "ov") closeDetail(); };
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (document.documentElement.dataset.pref === "auto") applyTheme("auto"); });
 load().catch(e => { document.getElementById("stand").textContent = "Fehler beim Laden der Daten: " + e; });
 </script>
 </body>
