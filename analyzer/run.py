@@ -26,7 +26,6 @@ from analyzer.backtest import backtest
 from analyzer.elliott import analyze
 from analyzer.extras import fetch_meta, fetch_news, fetch_termine
 from analyzer.market import fetch_market
-from analyzer.notify import send as send_telegram
 from analyzer.scenarios import build as build_scenarios
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -97,8 +96,14 @@ def main() -> int:
                 print(f"     {sym}: Backtest-Fehler {e}", file=sys.stderr)
             res["kommentar"] = kommentare.get(sym)
             prev = old.get(sym)
-            res["signal_vorher"] = prev["signal"] if prev else None
-            res["status_vorher"] = prev["status"] if prev else None
+            if prev and prev.get("stand") == res["stand"]:
+                # erneuter Lauf am selben Börsentag: weiterhin gegen den Vortag vergleichen,
+                # damit die Tagesaufgaben bei manuellen Zusatzläufen nicht verschwinden
+                res["status_vorher"], res["signal_vorher"] = prev.get("status_vorher"), prev.get("signal_vorher")
+            else:
+                res["status_vorher"] = prev["status"] if prev else None
+                res["signal_vorher"] = prev["signal"] if prev else None
+            res["status_letzter_lauf"] = prev["status"] if prev else None
             results.append(res)
             bt = res["backtest"] or {}
             an = res["analysten"] or {}
@@ -147,10 +152,9 @@ def main() -> int:
         if new_file:
             wr.writerow(["datum", "symbol", "kurs", "status_alt", "status_neu", "signal_neu"])
         for r in results:
-            if r["status"] != r["status_vorher"]:
-                wr.writerow([r["stand"], r["symbol"], r["kurs"], r["status_vorher"] or "", r["status"], r["signal"]])
+            if r["status"] != r.get("status_letzter_lauf"):
+                wr.writerow([r["stand"], r["symbol"], r["kurs"], r.get("status_letzter_lauf") or "", r["status"], r["signal"]])
     print(f"{len(results)} analysiert, {len(errors)} Fehler, Trefferquote gesamt: {gesamt}")
-    send_telegram(results, gesamt)
     return 0 if results else 1
 
 
