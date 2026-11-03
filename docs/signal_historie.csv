@@ -149,3 +149,38 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-10-29,ENR.DE,136.28,In Zone,Zulaufend,"Abwarten – Kauflimit bei 134,42 (-1,4 % vom aktuellen Kurs)"
 2026-10-29,PUM.DE,25.21,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
 2026-10-29,AZN.L,13052.0,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-02,MRVL,171.41,Welle 5 läuft,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-02,PG,163.56,In Zone,Zulaufend,"Abwarten – Kauflimit bei 163,39 (-0,1 % vom aktuellen Kurs)"
+2026-11-02,ROL,36.03,Abwärtstrend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-02,CSGP,31.82,Abwärtstrend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-02,ORCL,119.22,In Zone (unten),Abwärtstrend,"Kein Long-Einstieg – erst über 170,70 (letztes Zwischenhoch) wieder interessant"
+2026-11-02,QCOM,162.08,Zulaufend,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-02,SNOW,290.68,In Zone,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-02,MU,833.59,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-02,ANET,164.14,In Zone,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-02,ABNB,171.11,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-02,MCD,265.64,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-02,SBUX,104.4,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-02,KO,95.83,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-02,PEP,140.42,Nachkaufbereich,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-02,BAC,49.57,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-02,V,425.51,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-02,AXP,327.98,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-02,BRK-B,556.11,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-02,LLY,1410.99,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 1220,80 (-13,5 % vom aktuellen Kurs)"
+2026-11-02,JNJ,270.56,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 228,03 (-15,7 % vom aktuellen Kurs)"
+2026-11-02,ABBV,288.84,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 247,42 (-14,3 % vom aktuellen Kurs)"
+2026-11-02,PFE,30.67,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-02,TMO,682.65,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 606,20 (-11,2 % vom aktuellen Kurs)"
+2026-11-02,VRTX,553.15,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-02,XOM,179.67,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 147,32 (-18,0 % vom aktuellen Kurs)"
+2026-11-02,CVX,227.77,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 171,04 (-24,9 % vom aktuellen Kurs)"
+2026-11-02,NEE,85.03,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-30,DTE.DE,26.09,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-30,BAYN.DE,50.58,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-10-30,ENR.DE,126.92,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-10-30,PUM.DE,26.62,In Zone,Zulaufend,"Abwarten – Kauflimit bei 26,22 (-1,5 % vom aktuellen Kurs)"
+2026-11-02,NOVN.SW,131.52,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 108,96 (-17,2 % vom aktuellen Kurs)"
+2026-10-30,AZN.L,13960.0,In Zone,Zulaufend,"Abwarten – Kauflimit bei 13379,45 (-4,2 % vom aktuellen Kurs)"
+2026-11-02,INFY,12.53,Abwärtstrend,Zulaufend,"Abwarten – Kauflimit bei 12,09 (-3,5 % vom aktuellen Kurs)"
+2026-11-02,RELIANCE.NS,1300.0,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
