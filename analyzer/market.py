@@ -15,6 +15,38 @@ INDIZES = [
 ]
 
 
+SEKTOREN = [
+    ("XLK", "Technologie"), ("SMH", "Halbleiter"), ("BOTZ", "KI & Robotik"), ("XLC", "Kommunikation"),
+    ("XLY", "Zyklischer Konsum"), ("XLP", "Basiskonsum"), ("XLF", "Finanzen"), ("XLV", "Gesundheit"),
+    ("XLI", "Industrie"), ("ITA", "Rüstung"), ("XLE", "Energie"), ("XLB", "Rohstoffe"),
+    ("XLU", "Versorger"), ("XLRE", "Immobilien"), ("TAN", "Solar"), ("IBB", "Biotech"),
+]
+
+
+def _perf(h, tage: int):
+    if h is None or len(h) <= tage:
+        return None
+    return round((float(h.iloc[-1]) / float(h.iloc[-1 - tage]) - 1) * 100, 2)
+
+
+def fetch_sektoren() -> list[dict]:
+    """Sektor-Performance über US-Sektor-ETFs (1 Tag, 1 Woche, 1 Monat, seit Jahresbeginn)."""
+    import yfinance as yf
+
+    out = []
+    for sym, name in SEKTOREN:
+        try:
+            h = yf.Ticker(sym).history(period="1y", interval="1d")["Close"].dropna()
+            h.index = h.index.tz_localize(None)
+            ytd_base = h[h.index.year < h.index[-1].year]
+            ytd = round((float(h.iloc[-1]) / float(ytd_base.iloc[-1]) - 1) * 100, 2) if len(ytd_base) else None
+            out.append({"symbol": sym, "name": name, "tag": _perf(h, 1), "woche": _perf(h, 5),
+                        "monat": _perf(h, 21), "ytd": ytd})
+        except Exception:
+            pass
+    return out
+
+
 def _clip(x: float) -> float:
     return max(0.0, min(100.0, x))
 
@@ -76,4 +108,8 @@ def fetch_market(results: list[dict], previous: dict | None = None) -> dict:
             "erklaerung": ("Hohe Werte = Gier: Viele kaufen, Kurse sind gelaufen – Rücksetzer werden wahrscheinlicher. "
                            "Niedrige Werte = Angst: Viele verkaufen – oft gute Einstiegsphasen für Langfrist-Anleger."),
         }
-    return {"indizes": indizes, "stimmung": stimmung}
+    try:
+        sektoren = fetch_sektoren()
+    except Exception:
+        sektoren = []
+    return {"indizes": indizes, "stimmung": stimmung, "sektoren": sektoren}
