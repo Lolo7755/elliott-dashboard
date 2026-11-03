@@ -1,7 +1,11 @@
 """Zusatzdaten pro Aktie aus Yahoo Finance: Sektor/Land, Termine, News."""
 from __future__ import annotations
 
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as ET
 from datetime import date, datetime, timezone
+from email.utils import parsedate_to_datetime
 
 SECTOR_DE = {
     "Technology": "Technologie", "Communication Services": "Kommunikation",
@@ -83,7 +87,37 @@ def fetch_termine(ticker) -> dict:
     return out
 
 
-def fetch_news(ticker, n: int = 5) -> list[dict]:
+def fetch_google_news(name: str, n: int = 5) -> list[dict]:
+    """Deutschsprachige Schlagzeilen über den Google-News-RSS-Feed (kostenlos, ohne Schlüssel)."""
+    q = urllib.parse.quote(f'"{name}" Aktie')
+    url = f"https://news.google.com/rss/search?q={q}&hl=de&gl=DE&ceid=DE:de"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            root = ET.fromstring(r.read())
+    except Exception:
+        return []
+    out = []
+    for it in root.iter("item"):
+        title, link = it.findtext("title"), it.findtext("link")
+        src = it.findtext("source")
+        if title and src and title.endswith(" - " + src):
+            title = title[: -len(src) - 3]
+        try:
+            d = parsedate_to_datetime(it.findtext("pubDate")).date().isoformat()
+        except Exception:
+            d = None
+        if title and link:
+            out.append({"titel": title, "url": link, "datum": d, "quelle": src})
+    out.sort(key=lambda x: x["datum"] or "", reverse=True)
+    return out[:n]
+
+
+def fetch_news(ticker, n: int = 5, name: str | None = None) -> list[dict]:
+    if name:
+        g = fetch_google_news(name, n)
+        if g:
+            return g
     try:
         items = ticker.news or []
     except Exception:
