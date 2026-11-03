@@ -133,8 +133,8 @@ function hinweis(a, tag){
     if (a.earnings_heute) return ["o", "Reaktion auf Quartalszahlen – erst Stabilisierung abwarten"];
     return ["o", "Abwarten – erst Boden abwarten, dann Zone prüfen"];
   }
-  if (["Impuls vollendet", "Ziel 1 erreicht", "Ziel 2 erreicht"].includes(a.status) || sc < 40) return ["o", "Gewinnmitnahme prüfen – Teil sichern"];
   if (a.status === "Abwärtstrend") return ["o", "Gegenbewegung im Abwärtstrend – nicht hinterherlaufen"];
+  if (["Impuls vollendet", "Ziel 1 erreicht", "Ziel 2 erreicht"].includes(a.status) || sc < 40) return ["o", "Gewinnmitnahme prüfen – Teil sichern"];
   return ["g", "Starker Ausbruch – halten, nicht hinterherkaufen"];
 }
 function renderOutliers(){
