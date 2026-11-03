@@ -86,7 +86,7 @@ def main() -> int:
             res["analysten"] = fetch_analysts(ticker, res["kurs"])
             res["meta"] = fetch_meta(ticker)
             res["termine"] = fetch_termine(ticker)
-            res["news"] = fetch_news(ticker)
+            res["news"] = fetch_news(ticker, name=item["name"])
             try:
                 res["backtest"] = backtest(df, sym)
             except Exception as e:
