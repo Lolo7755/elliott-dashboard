@@ -28,6 +28,13 @@
   .today li{margin:3px 0}
   .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
   .toolbar .btn.active{border-color:var(--blue);background:#1d2b4f}
+  select{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 10px}
+  .small{font-size:12px}
+  .warn{background:#3b2a07;border-color:#7c5a10;color:#fcd34d}
+  .news a{color:var(--txt);text-decoration:none} .news a:hover{color:var(--blue)}
+  .news li{margin:6px 0}
+  .scen{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+  .scen i{display:inline-block;width:18px;height:0;border-top:3px dashed;margin-top:8px;flex:none}
   input[type=search]{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 10px;min-width:200px}
   table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
   th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
@@ -81,6 +88,11 @@
     <ul id="todo"><li class="mute">–</li></ul>
   </div>
 
+  <div class="today">
+    <h2>📅 Termine der nächsten 14 Tage</h2>
+    <ul id="termine"><li class="mute">–</li></ul>
+  </div>
+
   <div class="toolbar">
     <button class="btn active" data-f="alle">Alle</button>
     <button class="btn" data-f="kauf">Kaufen</button>
@@ -88,6 +100,8 @@
     <button class="btn" data-f="warten">Abwarten</button>
     <button class="btn" data-f="rot">Abwärtstrend</button>
     <input type="search" id="q" placeholder="Aktie suchen …">
+    <select id="fLand"><option value="">Alle Länder</option></select>
+    <select id="fSektor"><option value="">Alle Sektoren</option></select>
   </div>
 
   <div style="overflow-x:auto">
@@ -100,6 +114,7 @@
       <th>Signal</th>
       <th data-s="anScore">Analysten</th>
       <th class="num" data-s="quote">Treffer</th>
+      <th data-s="earn">Earnings</th>
       <th class="num hide-m" data-s="dist">Abstand Zone</th>
       <th class="num hide-m">Zone (38,2–50 %)</th>
       <th class="num hide-m" data-s="t1">Ziel 1</th>
@@ -139,6 +154,31 @@ let DATA = [], filter = "alle", sortKey = "ampel", sortDir = 1, chart = null;
 const fmt = (x, c="") => x==null ? "–" : x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}) + (c?` ${c}`:"");
 const pct = (a, b) => (a/b - 1) * 100;
 const pctTxt = v => !isFinite(v) ? "–" : `<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v.toFixed(1).replace('.',',')} %</span>`;
+
+function daysTo(iso){ return Math.round((new Date(iso) - new Date(new Date().toDateString())) / 864e5); }
+function dateDe(iso){ const [y,m,d] = iso.split("-"); return `${d}.${m}.${y.slice(2)}`; }
+function earnWarn(a){
+  const t = a.termine; if (!t || t.earnings_in_tagen == null || t.earnings_in_tagen > 7) return "";
+  return ` <span class="tag warn">⚠️ Earnings in ${t.earnings_in_tagen} T.</span>`;
+}
+function scBox(a){
+  const s = a.szenarien; if (!s) return '<span class="mute">–</span>';
+  const pr = x => x.prob_pct != null ? ` <b>${x.prob_pct} %</b>` : "";
+  return `<div class="scen"><i style="border-color:#22c55e"></i><div><b>Haupt:</b> ${s.haupt.name}${pr(s.haupt)}<br><span class="mute">${s.haupt.text}</span></div></div>
+    <div class="scen"><i style="border-color:#f97316"></i><div><b>Alternative:</b> ${s.alternative.name}${pr(s.alternative)}<br><span class="mute">${s.alternative.text}</span></div></div>
+    <div class="mute small">Wahrscheinlichkeit: ${s.basis === "Backtest" ? "aus dem Backtest aller Aktien abgeleitet" : "keine Backtest-Basis für Abwärtstrends"}. Pfade sind schematisch, Zeitachse grob geschätzt.</div>`;
+}
+function newsBox(a){
+  const n = a.news || []; if (!n.length) return '<span class="mute">Keine aktuellen News.</span>';
+  return `<ul class="news" style="padding-left:16px;margin:0">${n.map(x => `<li><a href="${x.url}" target="_blank" rel="noopener">${x.titel}</a><br><span class="mute small">${[x.quelle, x.datum ? dateDe(x.datum) : ""].filter(Boolean).join(" · ")}</span></li>`).join("")}</ul>`;
+}
+function termBox(a){
+  const t = a.termine || {}; const r = [];
+  if (t.earnings) r.push(`Quartalszahlen: <b>${dateDe(t.earnings)}</b> <span class="mute">(in ${t.earnings_in_tagen} Tagen)</span>`);
+  if (t.ex_dividende) r.push(`Ex-Dividende: ${dateDe(t.ex_dividende)}`);
+  if (t.dividende_zahltag) r.push(`Dividenden-Zahltag: ${dateDe(t.dividende_zahltag)}`);
+  return r.length ? r.join("<br>") : '<span class="mute">Keine anstehenden Termine bekannt.</span>';
+}
 
 function anTxt(a){
   const x = a.analysten;
@@ -185,7 +225,19 @@ async function load(){
   const d = await r.json();
   DATA = d.aktien.map(a => ({...a, dist: pct(a.kurs, a.zone.oben), t1: a.ziele.t1,
     anScore: (a.analysten && a.analysten.score) || 9,
-    quote: (a.backtest && a.backtest.quote_pct != null) ? a.backtest.quote_pct : -1}));
+    quote: (a.backtest && a.backtest.quote_pct != null) ? a.backtest.quote_pct : -1,
+    earn: (a.termine && a.termine.earnings) || "9999"}));
+  const fill = (id, key) => { const el = document.getElementById(id);
+    [...new Set(DATA.map(a => a.meta && a.meta[key]).filter(Boolean))].sort().forEach(v => el.add(new Option(v, v))); };
+  fill("fLand", "land"); fill("fSektor", "sektor");
+  const soon = [];
+  DATA.forEach(a => { const t = a.termine || {};
+    if (t.earnings && t.earnings_in_tagen <= 14) soon.push([t.earnings, `<b>${a.name}</b>: Quartalszahlen`, a]);
+    if (t.ex_dividende && daysTo(t.ex_dividende) <= 14) soon.push([t.ex_dividende, `<b>${a.name}</b>: Ex-Dividende`, a]); });
+  soon.sort((x, y) => x[0] < y[0] ? -1 : 1);
+  document.getElementById("termine").innerHTML = soon.length ? soon.map(([d, txt, a]) =>
+    `<li>${dateDe(d)} · <span class="dot ${a.ampel}"></span> ${txt} <span class="mute">(${a.status})</span></li>`).join("")
+    : '<li class="mute">Keine Termine in den nächsten 14 Tagen.</li>';
   const tq = d.trefferquote;
   if (tq && tq.quote_pct != null) {
     document.getElementById("cQ").textContent = tq.quote_pct + " %";
@@ -197,7 +249,7 @@ async function load(){
   ["gruen","orange","rot"].forEach((k,i)=>document.getElementById(["cG","cO","cR"][i]).textContent = DATA.filter(a=>a.ampel===k).length);
   const todo = DATA.filter(a => ["kauf","verkauf"].includes(kategorie(a)) || (a.status_vorher && a.status_vorher!==a.status));
   document.getElementById("todo").innerHTML = todo.length ? todo.map(a =>
-    `<li><span class="dot ${a.ampel}"></span> <b>${a.name}</b> (${fmt(a.kurs,a.currency)}): ${a.signal}${a.status_vorher && a.status_vorher!==a.status ? ` <span class="tag new">neu: ${a.status_vorher} → ${a.status}</span>`:""}</li>`).join("")
+    `<li><span class="dot ${a.ampel}"></span> <b>${a.name}</b> (${fmt(a.kurs,a.currency)}): ${a.signal}${earnWarn(a)}${a.status_vorher && a.status_vorher!==a.status ? ` <span class="tag new">neu: ${a.status_vorher} → ${a.status}</span>`:""}</li>`).join("")
     : '<li class="mute">Nichts zu tun – alle Werte im Wartemodus.</li>';
   if (d.fehler && d.fehler.length) document.getElementById("todo").innerHTML += `<li class="mute">Keine Daten für: ${d.fehler.map(e=>e.symbol).join(", ")}</li>`;
   render();
@@ -205,7 +257,9 @@ async function load(){
 
 function render(){
   const q = document.getElementById("q").value.toLowerCase();
-  let rows = DATA.filter(a => (filter==="alle" || kategorie(a)===filter) && (a.name+a.symbol).toLowerCase().includes(q));
+  const fl = document.getElementById("fLand").value, fs = document.getElementById("fSektor").value;
+  let rows = DATA.filter(a => (filter==="alle" || kategorie(a)===filter) && (a.name+a.symbol).toLowerCase().includes(q)
+    && (!fl || (a.meta && a.meta.land === fl)) && (!fs || (a.meta && a.meta.sektor === fs)));
   rows.sort((a,b)=>{
     let x=a[sortKey], y=b[sortKey];
     if (sortKey==="ampel"){ x=AMPEL_ORDER[x]; y=AMPEL_ORDER[y]; if (x===y){x=Math.abs(a.dist); y=Math.abs(b.dist);} }
@@ -214,12 +268,13 @@ function render(){
   document.getElementById("tb").innerHTML = rows.map(a=>`
     <tr class="row" data-sym="${a.symbol}">
       <td><span class="dot ${a.ampel}"></span></td>
-      <td><b>${a.name}</b> <span class="mute">${a.symbol}</span></td>
+      <td><b>${a.name}</b> <span class="mute">${a.symbol}</span>${a.meta ? `<div class="mute small">${[a.meta.land, a.meta.sektor].filter(Boolean).join(" · ")}</div>` : ""}</td>
       <td class="num">${fmt(a.kurs, a.currency)}</td>
       <td>${a.status}${a.status_vorher && a.status_vorher!==a.status?'<span class="tag new">neu</span>':''}</td>
       <td class="sig">${a.signal}</td>
       <td>${anTxt(a)}</td>
       <td class="num">${qTxt(a)}</td>
+      <td>${a.termine && a.termine.earnings ? dateDe(a.termine.earnings) + earnWarn(a) : '<span class="mute">–</span>'}</td>
       <td class="num hide-m">${pctTxt(a.dist)}</td>
       <td class="num hide-m">${fmt(a.zone.oben)} – ${fmt(a.zone.unten)}</td>
       <td class="num hide-m">${fmt(a.ziele.t1)}</td>
@@ -246,10 +301,13 @@ function showDetail(sym){
           <span><i style="background:#93c5fd"></i>Nachkauf 61,8 %</span>
           <span><i style="background:var(--red)"></i>Invalidierung</span>
           <span><i style="background:var(--green)"></i>Ziele</span>
+          ${a.szenarien ? `<span><i style="background:#22c55e;height:0;border-top:3px dashed #22c55e"></i>Hauptszenario${a.szenarien.haupt.prob_pct != null ? " " + a.szenarien.haupt.prob_pct + " %" : ""}</span>
+          <span><i style="background:#f97316;height:0;border-top:3px dashed #f97316"></i>Alternative${a.szenarien.alternative.prob_pct != null ? " " + a.szenarien.alternative.prob_pct + " %" : ""}</span>` : ""}
         </div>
       </div>
       <div>
-        <div class="box"><h3>Signal</h3><b>${a.signal}</b></div>
+        <div class="box"><h3>Signal</h3><b>${a.signal}</b>${earnWarn(a)}</div>
+        <div class="box"><h3>🔮 Szenarien</h3>${scBox(a)}</div>
         <div class="box"><h3>Handlungsplan</h3>
           <table class="plan" style="border:0;background:none;width:100%">
             ${planRow("Teilkauf 1 (38,2 %)", a.plan.teilkauf_1, "#2563eb")}
@@ -269,6 +327,8 @@ function showDetail(sym){
         </div>
         <div class="box"><h3>📊 Analysten</h3>${anBox(a)}</div>
         <div class="box"><h3>🎯 Trefferquote dieser Aktie (Backtest)</h3>${btBox(a)}</div>
+        <div class="box"><h3>📅 Termine</h3>${termBox(a)}</div>
+        <div class="box"><h3>📰 News</h3>${newsBox(a)}</div>
         <div class="box"><h3>🤖 KI-Einschätzung</h3>${a.kommentar ? a.kommentar : '<span class="mute">Noch kein Kommentar. Frag Claude nach einer Einschätzung zu diesem Wert.</span>'}</div>
       </div>
     </div>`;
@@ -300,6 +360,19 @@ function drawChart(a){
             text: /^\d$/.test(l.label) ? `(${l.label})` : l.label};
   }).sort((x,y)=>x.time<y.time?-1:1);
   s.setMarkers(markers);
+  if (a.szenarien) {
+    const expand = pfad => { const out = [];
+      for (let i = 0; i < pfad.length - 1; i++) {
+        const a0 = new Date(pfad[i].time), a1 = new Date(pfad[i + 1].time);
+        const n = Math.max(1, Math.round((a1 - a0) / 6048e5));
+        for (let k = 0; k < n; k++) out.push({time: new Date(a0.getTime() + k * 6048e5).toISOString().slice(0, 10),
+          value: pfad[i].value + (pfad[i + 1].value - pfad[i].value) * k / n});
+      }
+      out.push(pfad[pfad.length - 1]); return out; };
+    const ls = (pfad, color, w) => { const l = chart.addLineSeries({color, lineWidth: w, lineStyle: 2, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false}); l.setData(expand(pfad)); };
+    ls(a.szenarien.alternative.pfad, "#f97316", 2);
+    ls(a.szenarien.haupt.pfad, "#22c55e", 3);
+  }
   chart.timeScale().fitContent();
 }
 
@@ -311,6 +384,8 @@ document.querySelectorAll("th[data-s]").forEach(th => th.onclick = () => {
   const k = th.dataset.s; sortDir = (sortKey===k) ? -sortDir : 1; sortKey = k; render();
 });
 document.getElementById("q").oninput = render;
+document.getElementById("fLand").onchange = render;
+document.getElementById("fSektor").onchange = render;
 load().catch(e => { document.getElementById("stand").textContent = "Fehler beim Laden der Daten: " + e; });
 </script>
 </body>
