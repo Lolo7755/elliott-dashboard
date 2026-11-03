@@ -69,6 +69,15 @@ def build(res: dict, rates: dict) -> dict | None:
             alt = ("Rücksetzer in die Zone",
                    f"Neuer Rücksetzer bis in die Zone um {de(zmid)}, bevor es weiter aufwärts geht.",
                    p((8, zmid)))
+    elif st == "Impuls vollendet":
+        vk = bt.get("verkauf") or {}
+        prob = _mix(vk.get("treffer", 0), vk.get("fehler", 0), rates.get("verkauf_erfolg"))
+        haupt = ("ABC-Korrektur nach 5 Wellen",
+                 f"Nach dem vollendeten Impuls Rücksetzer Richtung {de(z['oben'])}–{de(z['unten'])}; dort wieder Kaufchance.",
+                 p((max(8, corr_w), zmid)))
+        alt = ("Welle 5 verlängert sich",
+               f"Der Trend läuft ohne Korrektur weiter, etwa Richtung {de(ziel['t1'] * 1.08)}.",
+               p((max(6, up_w // 3), ziel["t1"] * 1.08)))
     elif st == "Abwärtstrend":
         trig = res.get("einstiegs_trigger") or ziel["t1"]
         haupt = ("Abwärtstrend hält an",
