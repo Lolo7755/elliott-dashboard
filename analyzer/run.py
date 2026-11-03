@@ -24,6 +24,9 @@ import pandas as pd
 from analyzer.analysts import fetch_analysts
 from analyzer.backtest import backtest
 from analyzer.elliott import analyze
+from analyzer.extras import fetch_meta, fetch_news, fetch_termine
+from analyzer.notify import send as send_telegram
+from analyzer.scenarios import build as build_scenarios
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
@@ -81,6 +84,9 @@ def main() -> int:
             df, cur, ticker = fetch(sym)
             res = analyze(df, sym, item["name"], cur)
             res["analysten"] = fetch_analysts(ticker, res["kurs"])
+            res["meta"] = fetch_meta(ticker)
+            res["termine"] = fetch_termine(ticker)
+            res["news"] = fetch_news(ticker)
             try:
                 res["backtest"] = backtest(df, sym)
             except Exception as e:
@@ -105,6 +111,18 @@ def main() -> int:
     o = sum((r.get("backtest") or {}).get("offen", 0) for r in results)
     gesamt = {"treffer": t, "fehler": f, "offen": o, "quote_pct": round(t / (t + f) * 100) if (t + f) else None}
 
+    # Szenarien: Wahrscheinlichkeiten aus den Backtest-Basisraten aller Aktien
+    zz = sum(((r.get("backtest") or {}).get("zulauf") or {}).get("zone", 0) for r in results)
+    zd = sum(((r.get("backtest") or {}).get("zulauf") or {}).get("direkt", 0) for r in results)
+    rates = {"zone_erfolg": t / (t + f) if (t + f) else None, "zulauf_zone": zz / (zz + zd) if (zz + zd) else None}
+    gesamt["zulauf_zone_pct"] = round(rates["zulauf_zone"] * 100) if rates["zulauf_zone"] is not None else None
+    for r in results:
+        try:
+            r["szenarien"] = build_scenarios(r, rates)
+        except Exception as e:
+            r["szenarien"] = None
+            print(f"     {r['symbol']}: Szenario-Fehler {e}", file=sys.stderr)
+
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (DOCS / "data.json").write_text(
         json.dumps({"erstellt": now, "trefferquote": gesamt, "aktien": results, "fehler": errors}, ensure_ascii=False),
@@ -122,6 +140,7 @@ def main() -> int:
             if r["status"] != r["status_vorher"]:
                 wr.writerow([r["stand"], r["symbol"], r["kurs"], r["status_vorher"] or "", r["status"], r["signal"]])
     print(f"{len(results)} analysiert, {len(errors)} Fehler, Trefferquote gesamt: {gesamt}")
+    send_telegram(results, gesamt)
     return 0 if results else 1
 
 
