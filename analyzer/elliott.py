@@ -234,11 +234,17 @@ def _is_invalid(c: dict, last: float) -> bool:
 # --------------------------------------------------------------------------- #
 # Hauptanalyse
 # --------------------------------------------------------------------------- #
-def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = "") -> dict:
+def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = "", horizon: str = "lang") -> dict:
+    """horizon = "lang": Wochenchart, 10 Jahre (Monate bis Jahre)
+       horizon = "kurz": Tageschart, ca. 1,5 Jahre (Wochen bis Monate)"""
     daily = daily.dropna(subset=["High", "Low", "Close"]).copy()
-    w = to_weekly(daily.iloc[-252 * 10:])  # max. 10 Jahre Wochenchart
     vol = annual_vol(daily)
-    mid = float(np.clip(0.45 * vol, 0.10, 0.30))  # Schwelle für Unterwellen
+    if horizon == "kurz":
+        w = daily.iloc[-380:][["Open", "High", "Low", "Close"]]
+        mid = float(np.clip(0.18 * vol, 0.04, 0.12))
+    else:
+        w = to_weekly(daily.iloc[-252 * 10:])  # max. 10 Jahre Wochenchart
+        mid = float(np.clip(0.45 * vol, 0.10, 0.30))  # Schwelle für Unterwellen
 
     last = float(daily["Close"].iloc[-1])
     last_date = daily.index[-1].strftime("%Y-%m-%d")
@@ -290,6 +296,11 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
     # Status & Signal
     # ------------------------------------------------------------------ #
     near_high = last >= H.price * 0.97
+    impuls_fertig = False
+    if seq and score >= 0.6:
+        w1_len = seq[1].price - seq[0].price
+        w5_len = seq[5].price - seq[4].price
+        impuls_fertig = w5_len >= 0.618 * w1_len
     corr_done_alt = retr_max < FIB_ZONE_TOP and rebound >= mid  # Alternativ: Korrektur ohne Zone vorbei
     bounced_from_zone = FIB_ZONE_TOP <= retr_max <= FIB_INVALID and rebound >= mid
     trigger = None
@@ -300,12 +311,17 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
         trigger = hs[-1].price if hs else H.price
         status, ampel = "Abwärtstrend", "rot"
         signal = f"Kein Long-Einstieg – erst über {trigger:.2f} (letztes Zwischenhoch) wieder interessant".replace(".", ",")
-    elif last >= t2:
+    elif bounced_from_zone and last >= t2:
         status, ampel = "Ziel 2 erreicht", "rot"
         signal = "Teilverkauf 2 (weiteres Drittel), Rest mit Ziel 3"
     elif near_high and c_idx > H.i and bounced_from_zone:
         status, ampel = "Ziel 1 erreicht", "orange"
         signal = "Teilverkauf 1 (ca. 1/3) am alten Hoch"
+    elif near_high and retr_now < 0.15 and impuls_fertig:
+        # 5 Wellen vollständig gezählt und Welle 5 ausgereift -> laut Elliott folgt eine ABC-Korrektur
+        status, ampel = "Impuls vollendet", "orange"
+        zt = f"{zone_top:.2f}".replace(".", ",")
+        signal = f"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung {zt} erwartet"
     elif bounced_from_zone:
         status, ampel = "Welle 5 läuft", "gruen"
         signal = "Halten – Aufwärtswelle aus der Zone gestartet"
@@ -351,7 +367,7 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
     }
 
     # Chartdaten: Wochenkerzen ab ca. 1 Jahr vor S
-    start_chart = max(0, S.i - 52)
+    start_chart = max(0, S.i - (60 if horizon == "kurz" else 52))
     wc = w.iloc[start_chart:]
     candles = [
         {"time": d.strftime("%Y-%m-%d"), "open": r(o), "high": r(h), "low": r(l), "close": r(c)}
@@ -385,4 +401,5 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
         "parameter": {"vol_jahr_pct": round(vol * 100, 1), "zigzag_mittel_pct": round(mid * 100), "grad": grad},
         "einstiegs_trigger": r(trigger),
         "chart": candles,
+        "horizont": horizon,
     }
