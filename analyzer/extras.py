@@ -136,3 +136,27 @@ def fetch_news(ticker, n: int = 5, name: str | None = None) -> list[dict]:
         if len(out) >= n:
             break
     return out
+
+
+def fetch_quartale(ticker, n: int = 4) -> list[dict]:
+    """Die letzten n gemeldeten Quartale: Gewinn je Aktie erwartet vs. gemeldet (Beat/Miss)."""
+    try:
+        ed = ticker.get_earnings_dates(limit=16)
+    except Exception:
+        return []
+    if ed is None or not len(ed):
+        return []
+    out = []
+    for d, row in ed.sort_index(ascending=False).iterrows():
+        ist, soll = row.get("Reported EPS"), row.get("EPS Estimate")
+        if ist is None or ist != ist:  # NaN = noch nicht gemeldet
+            continue
+        ueb = row.get("Surprise(%)")
+        beat = None if soll is None or soll != soll else bool(ist >= soll)
+        out.append({"datum": d.date().isoformat(), "ist": round(float(ist), 2),
+                    "erwartet": None if soll is None or soll != soll else round(float(soll), 2),
+                    "ueberraschung_pct": None if ueb is None or ueb != ueb else round(float(ueb), 1),
+                    "beat": beat})
+        if len(out) >= n:
+            break
+    return out[::-1]  # chronologisch
