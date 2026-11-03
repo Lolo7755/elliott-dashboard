@@ -28,6 +28,8 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
     n = len(daily)
     signals: list[dict] = []
     seen_cycles: set[str] = set()
+    seen_zulauf: set[str] = set()
+    zulauf = {"zone": 0, "direkt": 0, "offen": 0}  # erreicht eine laufende Korrektur die Zone?
 
     ends = list(range(WARMUP_DAYS, n, STEP_DAYS)) + [n]  # letzter Punkt = heute (offenes Signal)
     for end in ends:
@@ -36,9 +38,21 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
             res = analyze(hist, symbol)
         except Exception:
             continue
+        cycle = f'{res["welle"]["start"]["date"]}|{res["welle"]["hoch"]["date"]}'
+        if res["status"] == "Zulaufend" and cycle not in seen_zulauf and cycle not in seen_cycles:
+            seen_zulauf.add(cycle)
+            top, high = float(res["zone"]["oben"]), float(res["welle"]["hoch"]["price"])
+            erg = "offen"
+            for _, row in daily.iloc[end:].iterrows():
+                if row["Low"] <= top:
+                    erg = "zone"
+                    break
+                if row["High"] > high:
+                    erg = "direkt"
+                    break
+            zulauf[erg] += 1
         if res["status"] not in ENTRY_STATUS:
             continue
-        cycle = f'{res["welle"]["start"]["date"]}|{res["welle"]["hoch"]["date"]}'
         if cycle in seen_cycles:
             continue
         seen_cycles.add(cycle)
@@ -76,4 +90,5 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
         "fehler": f,
         "offen": sum(s["ergebnis"] == "offen" for s in signals),
         "quote_pct": round(t / (t + f) * 100) if (t + f) else None,
+        "zulauf": zulauf,
     }
