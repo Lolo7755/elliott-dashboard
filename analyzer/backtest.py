@@ -30,6 +30,8 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
     seen_cycles: set[str] = set()
     seen_zulauf: set[str] = set()
     zulauf = {"zone": 0, "direkt": 0, "offen": 0}  # erreicht eine laufende Korrektur die Zone?
+    seen_imp: set[str] = set()
+    verkauf: list[dict] = []  # Verkaufssignale "Impuls vollendet"
 
     ends = list(range(WARMUP_DAYS, n, STEP_DAYS)) + [n]  # letzter Punkt = heute (offenes Signal)
     for end in ends:
@@ -51,6 +53,23 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
                     erg = "direkt"
                     break
             zulauf[erg] += 1
+        imp_key = res["welle"]["start"]["date"]  # ein Verkaufssignal pro Impuls
+        if res["status"] == "Impuls vollendet" and imp_key not in seen_imp:
+            # Treffer = Kurs fällt um 10 % unter den Verkaufskurs (günstiger Rückkauf möglich),
+            # bevor er 10 % darüber steigt
+            seen_imp.add(imp_key)
+            kurs0 = float(hist["Close"].iloc[-1])
+            down, up = kurs0 * 0.90, kurs0 * 1.10
+            erg = "offen"
+            for _, row in daily.iloc[end:].iterrows():
+                if row["Low"] <= down:
+                    erg = "treffer"
+                    break
+                if row["High"] >= up:
+                    erg = "fehler"
+                    break
+            verkauf.append({"datum": hist.index[-1].strftime("%Y-%m-%d"), "kurs": round(kurs0, 2),
+                            "ziel": round(down, 2), "ergebnis": erg})
         if res["status"] not in ENTRY_STATUS:
             continue
         if cycle in seen_cycles:
@@ -91,4 +110,10 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
         "offen": sum(s["ergebnis"] == "offen" for s in signals),
         "quote_pct": round(t / (t + f) * 100) if (t + f) else None,
         "zulauf": zulauf,
+        "verkauf": {
+            "signale": verkauf,
+            "treffer": sum(v["ergebnis"] == "treffer" for v in verkauf),
+            "fehler": sum(v["ergebnis"] == "fehler" for v in verkauf),
+            "offen": sum(v["ergebnis"] == "offen" for v in verkauf),
+        },
     }
