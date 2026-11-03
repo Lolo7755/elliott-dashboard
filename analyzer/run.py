@@ -12,8 +12,10 @@ Aufruf:  python -m analyzer.run
 """
 from __future__ import annotations
 
+import copy
 import csv
 import json
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -24,9 +26,27 @@ import pandas as pd
 from analyzer.analysts import fetch_analysts
 from analyzer.backtest import backtest
 from analyzer.elliott import analyze
-from analyzer.extras import fetch_meta, fetch_news, fetch_termine
+from analyzer.extras import fetch_meta, fetch_news, fetch_quartale, fetch_termine
 from analyzer.market import fetch_market
 from analyzer.scenarios import build as build_scenarios
+from analyzer.score import entscheidungscheck
+
+
+def _perf(close: pd.Series, tage: int):
+    if len(close) <= tage:
+        return None
+    return round((float(close.iloc[-1]) / float(close.iloc[-1 - tage]) - 1) * 100, 2)
+
+
+def performance(df: pd.DataFrame) -> dict:
+    c = df["Close"].dropna()
+    vorjahr = c[c.index.year < c.index[-1].year]
+    return {"tag": _perf(c, 1), "woche": _perf(c, 5), "monat": _perf(c, 21), "jahr": _perf(c, 252),
+            "ytd": round((float(c.iloc[-1]) / float(vorjahr.iloc[-1]) - 1) * 100, 2) if len(vorjahr) else None}
+
+
+def datei(sym: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]", "_", sym) + ".json"
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
@@ -85,6 +105,14 @@ def main() -> int:
         try:
             df, cur, ticker = fetch(sym)
             res = analyze(df, sym, item["name"], cur)
+            try:
+                res["kurz"] = analyze(df, sym, item["name"], cur, horizon="kurz")
+            except Exception as e:
+                res["kurz"] = None
+                print(f"     {sym}: Kurzfrist-Fehler {e}", file=sys.stderr)
+            res["perf"] = performance(df)
+            res["datei"] = datei(sym)
+            res["quartale"] = fetch_quartale(ticker)
             res["analysten"] = fetch_analysts(ticker, res["kurs"])
             res["meta"] = fetch_meta(ticker)
             res["termine"] = fetch_termine(ticker)
@@ -122,11 +150,17 @@ def main() -> int:
     # Szenarien: Wahrscheinlichkeiten aus den Backtest-Basisraten aller Aktien
     zz = sum(((r.get("backtest") or {}).get("zulauf") or {}).get("zone", 0) for r in results)
     zd = sum(((r.get("backtest") or {}).get("zulauf") or {}).get("direkt", 0) for r in results)
-    rates = {"zone_erfolg": t / (t + f) if (t + f) else None, "zulauf_zone": zz / (zz + zd) if (zz + zd) else None}
+    vt = sum((((r.get("backtest") or {}).get("verkauf") or {}).get("treffer", 0)) for r in results)
+    vf = sum((((r.get("backtest") or {}).get("verkauf") or {}).get("fehler", 0)) for r in results)
+    rates = {"zone_erfolg": t / (t + f) if (t + f) else None, "zulauf_zone": zz / (zz + zd) if (zz + zd) else None,
+             "verkauf_erfolg": vt / (vt + vf) if (vt + vf) else None}
+    gesamt["verkauf"] = {"treffer": vt, "fehler": vf, "quote_pct": round(vt / (vt + vf) * 100) if (vt + vf) else None}
     gesamt["zulauf_zone_pct"] = round(rates["zulauf_zone"] * 100) if rates["zulauf_zone"] is not None else None
     for r in results:
         try:
             r["szenarien"] = build_scenarios(r, rates)
+            if r.get("kurz"):
+                r["kurz"]["szenarien"] = build_scenarios(r["kurz"], rates)
         except Exception as e:
             r["szenarien"] = None
             print(f"     {r['symbol']}: Szenario-Fehler {e}", file=sys.stderr)
@@ -137,10 +171,41 @@ def main() -> int:
         markt = None
         print(f"Markt-Fehler {e}", file=sys.stderr)
 
+    for r in results:
+        try:
+            r["check"] = entscheidungscheck(r)
+        except Exception as e:
+            r["check"] = None
+            print(f"     {r['symbol']}: Score-Fehler {e}", file=sys.stderr)
+
+    # Detaildatei pro Aktie (Charts, Wellen, News) – data.json bleibt schlank
+    (DOCS / "aktien").mkdir(exist_ok=True)
+    summary = []
+    for r in results:
+        (DOCS / "aktien" / r["datei"]).write_text(json.dumps(r, ensure_ascii=False), encoding="utf-8")
+        s = copy.deepcopy(r)
+        for key in ("chart", "news", "szenarien"):
+            s.pop(key, None)
+        if s.get("kurz"):
+            s["kurz"] = {k: s["kurz"].get(k) for k in ("status", "ampel", "signal", "zone", "ziele")}
+        if s.get("backtest"):
+            s["backtest"].pop("signale", None)
+            (s["backtest"].get("verkauf") or {}).pop("signale", None)
+        s["welle"].pop("labels", None)
+        summary.append(s)
+
+    # Ausreißer des Tages (ab ±10 %)
+    beweg = sorted((r for r in results if (r.get("perf") or {}).get("tag") is not None),
+                   key=lambda r: abs(r["perf"]["tag"]), reverse=True)
+    ausreisser = [{"symbol": r["symbol"], "name": r["name"], "tag": r["perf"]["tag"], "kurs": r["kurs"],
+                   "currency": r["currency"], "status": r["status"], "ampel": r["ampel"]}
+                  for r in beweg if abs(r["perf"]["tag"]) >= 10]
+    top = [{"symbol": r["symbol"], "name": r["name"], "tag": r["perf"]["tag"]} for r in beweg[:6]]
+
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (DOCS / "data.json").write_text(
-        json.dumps({"erstellt": now, "trefferquote": gesamt, "markt": markt, "aktien": results, "fehler": errors},
-                   ensure_ascii=False),
+        json.dumps({"erstellt": now, "trefferquote": gesamt, "markt": markt, "ausreisser": ausreisser,
+                    "top_bewegungen": top, "aktien": summary, "fehler": errors}, ensure_ascii=False),
         encoding="utf-8",
     )
 
