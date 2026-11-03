@@ -73,6 +73,7 @@
     <div class="card"><div class="k"><span class="dot gruen"></span> Kaufen / Halten</div><div class="v" id="cG">–</div></div>
     <div class="card"><div class="k"><span class="dot orange"></span> Abwarten / Teilverkauf</div><div class="v" id="cO">–</div></div>
     <div class="card"><div class="k"><span class="dot rot"></span> Abwärtstrend / Verkaufen</div><div class="v" id="cR">–</div></div>
+    <div class="card"><div class="k">🎯 Trefferquote (Backtest)</div><div class="v" id="cQ">–</div><div class="k" id="cQs"></div></div>
   </div>
 
   <div class="today">
@@ -97,6 +98,8 @@
       <th data-s="kurs" class="num">Kurs</th>
       <th data-s="status">Status</th>
       <th>Signal</th>
+      <th data-s="anScore">Analysten</th>
+      <th class="num" data-s="quote">Treffer</th>
       <th class="num hide-m" data-s="dist">Abstand Zone</th>
       <th class="num hide-m">Zone (38,2–50 %)</th>
       <th class="num hide-m" data-s="t1">Ziel 1</th>
@@ -137,6 +140,38 @@ const fmt = (x, c="") => x==null ? "–" : x.toLocaleString("de-DE",{minimumFrac
 const pct = (a, b) => (a/b - 1) * 100;
 const pctTxt = v => !isFinite(v) ? "–" : `<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v.toFixed(1).replace('.',',')} %</span>`;
 
+function anTxt(a){
+  const x = a.analysten;
+  if (!x || !x.rating) return '<span class="mute">–</span>';
+  const pot = x.potenzial_pct != null ? ` ${pctTxt(x.potenzial_pct)}` : "";
+  return `<span class="dot ${x.ampel||''}"></span> ${x.rating}${pot}${x.anzahl ? ` <span class="mute">(${x.anzahl})</span>` : ""}`;
+}
+function qTxt(a){
+  const b = a.backtest;
+  if (!b || b.quote_pct == null) return '<span class="mute">–</span>';
+  const c = b.quote_pct >= 60 ? "pos" : b.quote_pct < 45 ? "neg" : "";
+  return `<span class="${c}">${b.quote_pct} %</span> <span class="mute">(${b.treffer}/${b.treffer + b.fehler})</span>`;
+}
+function anBox(a){
+  const x = a.analysten, c = a.currency;
+  if (!x) return '<span class="mute">Keine Analystendaten verfügbar.</span>';
+  const v = x.verteilung;
+  const vt = v ? `<div style="margin-top:6px">🟢 Strong Buy ${v.strongBuy} · 🟢 Buy ${v.buy} · 🟠 Hold ${v.hold} · 🔴 Sell ${v.sell} · 🔴 Strong Sell ${v.strongSell}</div>` : "";
+  return `<b><span class="dot ${x.ampel||''}"></span> ${x.rating || "–"}</b>${x.anzahl ? ` <span class="mute">· ${x.anzahl} Analysten</span>` : ""}${vt}
+    <div style="margin-top:6px">Ø-Kursziel ${fmt(x.ziel_mittel, c)}${x.potenzial_pct != null ? " (" + pctTxt(x.potenzial_pct) + ")" : ""}<br>
+    <span class="mute">Median ${fmt(x.ziel_median)} · Hoch ${fmt(x.ziel_hoch)} · Tief ${fmt(x.ziel_tief)}</span></div>`;
+}
+function btBox(a){
+  const b = a.backtest;
+  if (!b || !b.signale.length) return '<span class="mute">Keine Zonen-Signale in den letzten Jahren.</span>';
+  const icon = {treffer:"🟢", fehler:"🔴", offen:"⚪"};
+  const rows = b.signale.slice().reverse().map(s =>
+    `<tr><td>${icon[s.ergebnis]} ${s.datum}</td><td class="num">${fmt(s.einstieg)}</td><td class="num">${fmt(s.ziel)}</td><td class="num">${s.ergebnis === "offen" ? "offen" : pctTxt(s.rendite_pct)}</td></tr>`).join("");
+  return `<b>${b.quote_pct != null ? b.quote_pct + " %" : "–"}</b> <span class="mute">· ${b.treffer} Treffer, ${b.fehler} Fehler, ${b.offen} offen</span>
+    <table class="plan" style="border:0;background:none;width:100%;margin-top:6px"><tr class="mute"><td>Signal</td><td class="num">Einstieg</td><td class="num">Ziel</td><td class="num">Ergebnis</td></tr>${rows}</table>
+    <div class="mute" style="font-size:12px;margin-top:4px">Treffer = Ziel (halber Weg zum alten Hoch) vor Invalidierung erreicht.</div>`;
+}
+
 function kategorie(a){
   const s = a.signal.toLowerCase();
   if (a.status==="Abwärtstrend") return "rot";
@@ -148,7 +183,14 @@ function kategorie(a){
 async function load(){
   const r = await fetch("data.json?ts=" + Date.now());
   const d = await r.json();
-  DATA = d.aktien.map(a => ({...a, dist: pct(a.kurs, a.zone.oben), t1: a.ziele.t1}));
+  DATA = d.aktien.map(a => ({...a, dist: pct(a.kurs, a.zone.oben), t1: a.ziele.t1,
+    anScore: (a.analysten && a.analysten.score) || 9,
+    quote: (a.backtest && a.backtest.quote_pct != null) ? a.backtest.quote_pct : -1}));
+  const tq = d.trefferquote;
+  if (tq && tq.quote_pct != null) {
+    document.getElementById("cQ").textContent = tq.quote_pct + " %";
+    document.getElementById("cQs").textContent = `${tq.treffer} Treffer · ${tq.fehler} Fehler · ${tq.offen} offen`;
+  }
   document.getElementById("stand").textContent = "Stand: " + new Date(d.erstellt).toLocaleString("de-DE");
   if (d.demo) document.getElementById("demo").style.display = "block";
   document.getElementById("cAll").textContent = DATA.length;
@@ -176,6 +218,8 @@ function render(){
       <td class="num">${fmt(a.kurs, a.currency)}</td>
       <td>${a.status}${a.status_vorher && a.status_vorher!==a.status?'<span class="tag new">neu</span>':''}</td>
       <td class="sig">${a.signal}</td>
+      <td>${anTxt(a)}</td>
+      <td class="num">${qTxt(a)}</td>
       <td class="num hide-m">${pctTxt(a.dist)}</td>
       <td class="num hide-m">${fmt(a.zone.oben)} – ${fmt(a.zone.unten)}</td>
       <td class="num hide-m">${fmt(a.ziele.t1)}</td>
@@ -223,6 +267,8 @@ function showDetail(sym){
           Zählqualität: ${a.welle.zaehlung_qualitaet ? a.welle.zaehlung_qualitaet + " / 100" : "keine gültige 5-Wellen-Zählung gefunden"}<br>
           <span class="mute">50-Tage ${fmt(a.sma50)} · 200-Tage ${fmt(a.sma200)} · Trend ${a.trend_tageschart}</span>
         </div>
+        <div class="box"><h3>📊 Analysten</h3>${anBox(a)}</div>
+        <div class="box"><h3>🎯 Trefferquote dieser Aktie (Backtest)</h3>${btBox(a)}</div>
         <div class="box"><h3>🤖 KI-Einschätzung</h3>${a.kommentar ? a.kommentar : '<span class="mute">Noch kein Kommentar. Frag Claude nach einer Einschätzung zu diesem Wert.</span>'}</div>
       </div>
     </div>`;
