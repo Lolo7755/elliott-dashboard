@@ -77,7 +77,16 @@ def fetch(symbol: str):
         time.sleep(3 * (attempt + 1))
     if df is None or df.empty:
         raise ValueError("keine Kursdaten")
-    df.index = pd.DatetimeIndex(df.index).tz_localize(None)
+    # Yahoo liefert bei langen Zeiträumen den letzten Handelstag manchmal verspätet.
+    # Darum die letzten Tage separat holen und anhängen (neuere Werte gewinnen).
+    try:
+        neu = t.history(period="5d", interval="1d", auto_adjust=False)
+        if neu is not None and not neu.empty:
+            df = pd.concat([df, neu])
+    except Exception:
+        pass
+    df.index = pd.DatetimeIndex(df.index).tz_localize(None).normalize()
+    df = df[~df.index.duplicated(keep="last")].sort_index()
     try:
         cur = t.fast_info.get("currency") or ""
     except Exception:
@@ -152,8 +161,12 @@ def main() -> int:
     zd = sum(((r.get("backtest") or {}).get("zulauf") or {}).get("direkt", 0) for r in results)
     vt = sum((((r.get("backtest") or {}).get("verkauf") or {}).get("treffer", 0)) for r in results)
     vf = sum((((r.get("backtest") or {}).get("verkauf") or {}).get("fehler", 0)) for r in results)
+    ah = sum((((r.get("backtest") or {}).get("abwaerts") or {}).get("haelt", 0)) for r in results)
+    aa = sum((((r.get("backtest") or {}).get("abwaerts") or {}).get("ausbruch", 0)) for r in results)
     rates = {"zone_erfolg": t / (t + f) if (t + f) else None, "zulauf_zone": zz / (zz + zd) if (zz + zd) else None,
-             "verkauf_erfolg": vt / (vt + vf) if (vt + vf) else None}
+             "verkauf_erfolg": vt / (vt + vf) if (vt + vf) else None,
+             "abwaerts_haelt": ah / (ah + aa) if (ah + aa) else None}
+    gesamt["abwaerts_haelt_pct"] = round(rates["abwaerts_haelt"] * 100) if rates["abwaerts_haelt"] is not None else None
     gesamt["verkauf"] = {"treffer": vt, "fehler": vf, "quote_pct": round(vt / (vt + vf) * 100) if (vt + vf) else None}
     gesamt["zulauf_zone_pct"] = round(rates["zulauf_zone"] * 100) if rates["zulauf_zone"] is not None else None
     for r in results:
