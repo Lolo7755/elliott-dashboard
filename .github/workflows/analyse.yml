@@ -2,8 +2,11 @@ name: Elliott-Analyse
 
 on:
   schedule:
-    # Mo–Fr 22:45 Uhr deutscher Winterzeit (21:45 UTC), nach US-Börsenschluss
-    - cron: "45 21 * * 1-5"
+    # Mo–Fr 22:17 Uhr deutscher Winterzeit (21:17 UTC), kurz nach US-Börsenschluss (22:00 Uhr).
+    # Ergebnis steht nach ca. 10–12 Minuten, also gegen 22:30 Uhr.
+    # Zweiter Lauf um 23:47 Uhr als Absicherung, falls GitHub den ersten verspätet oder auslässt.
+    - cron: "17 21 * * 1-5"
+    - cron: "47 22 * * 1-5"
   workflow_dispatch: {}        # Button "Run workflow" = Analyse sofort starten
   push:
     paths: ["watchlist.csv"]   # Watchlist geändert -> sofort neu analysieren
