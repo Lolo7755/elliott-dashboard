@@ -98,12 +98,16 @@ function renderMood(m){
   const el = document.getElementById("mood");
   if (!m || !m.stimmung) { el.innerHTML = '<div class="k">Marktstimmung</div><div class="sub">Wird beim nächsten Lauf berechnet.</div>'; return; }
   const s = m.stimmung, col = s.wert < 45 ? "neg" : s.wert <= 55 ? "" : "pos";
-  const vt = s.vortag != null ? ` <span class="mute small">Vortag ${s.vortag}</span>` : "";
+  const hist = [["Vortag", s.vortag], ["Vorwoche", s.woche], ["Vormonat", s.monat]].filter(x => x[1] != null)
+    .map(([n, v]) => `${n} <b>${v}</b>`).join(" · ");
+  const chips = (s.teile_cnn || []).map(t => `<span class="fgc" style="background:${moodCol(t.wert)}" title="${t.name}: ${t.wert} (${t.label})">${t.name} ${t.wert}</span>`).join("");
   el.innerHTML = `<div class="k">Marktstimmung · Angst & Gier <span title="${s.erklaerung}" style="cursor:help">ⓘ</span></div><div class="mood">${gauge(s.wert)}
-    <div><div><span class="lbl ${col}">${s.wert} · ${s.label}</span>${vt}</div>
-    <div class="exp">${s.teile.join(" · ")}</div></div></div>`;
+    <div style="min-width:0"><div><span class="lbl ${col}">${s.wert} · ${s.label}</span></div>
+    <div class="exp">${hist}${hist ? " · " : ""}<span class="mute">${s.quelle || ""}</span></div>
+    ${chips ? `<div class="fgchips">${chips}</div>` : `<div class="exp">${(s.teile || []).join(" · ")}</div>`}</div></div>`;
   el.title = s.erklaerung;
 }
+function moodCol(v){ return v < 25 ? "#b91c1c" : v < 45 ? "#ea580c" : v <= 55 ? "#a16207" : v <= 75 ? "#4d7c0f" : "#15803d"; }
 function renderTicker(m){
   if (!m || !m.indizes) return;
   document.getElementById("ticker").innerHTML = m.indizes.map(i =>
@@ -213,6 +217,41 @@ function kategorie(a){
   return "warten";
 }
 
+// ---------- Chance / Risiko ----------
+// CRV = (Kursziel − Kurs) / (Kurs − Stopp). Stopp = Invalidierung der Elliott-Zählung, Ziel = nächstes Kursziel über dem Kurs.
+function crvCalc(v, kurs){
+  if (!v || !v.zone || !v.ziele) return null;
+  const stop = v.zone.invalidierung;
+  const ziel = [v.ziele.t1, v.ziele.t2, v.ziele.t3].find(z => z != null && z > kurs * 1.01);
+  if (stop == null || stop >= kurs || ziel == null) return {ok: false, stop, ziel};
+  const chance = (ziel / kurs - 1) * 100, risiko = (1 - stop / kurs) * 100;
+  const crv = Math.round(chance / risiko * 10) / 10;
+  return {ok: true, stop, ziel, chance, risiko, crv, noetig: 100 / (1 + chance / risiko)};
+}
+const crvCol = c => c >= 2 ? "#16a34a" : c >= 1 ? "#ca8a04" : "#dc2626";
+const crvTxt = c => c.toFixed(1).replace(".", ",") + " : 1";
+function crvBadge(a){
+  const r = crvCalc(a, a.kurs);
+  if (!r || !r.ok) return '<span class="mute" title="Kurs unter der Invalidierung bzw. kein Ziel über dem Kurs">–</span>';
+  return `<span class="score" style="background:${crvCol(r.crv)};min-width:54px" title="Chance +${r.chance.toFixed(0)} % bis ${fmt(r.ziel)} · Risiko −${r.risiko.toFixed(0)} % bis ${fmt(r.stop)}">${crvTxt(r.crv)}</span>`;
+}
+function riskBox(a, v){
+  const r = crvCalc(v, a.kurs), vol = a.parameter && a.parameter.vol_jahr_pct;
+  const volKl = vol == null ? null : vol < 25 ? ["niedrig", "#16a34a"] : vol < 40 ? ["mittel", "#ca8a04"] : ["hoch", "#dc2626"];
+  const volHtml = vol == null ? "" : `<div class="rk"><span>Schwankung (Volatilität p. a.)</span><b style="color:${volKl[1]}">${vol.toLocaleString("de-DE")} % · ${volKl[0]}</b></div>`;
+  if (!r || !r.ok) return `<div class="mute">Kein sinnvolles Chance-Risiko-Verhältnis: ${r && r.stop != null && r.stop >= a.kurs ? "der Kurs liegt bereits unter der Invalidierung (Abwärtstrend) – kein Long-Einstieg." : "kein Kursziel über dem aktuellen Kurs."}</div>${volHtml}`;
+  const tot = r.chance + r.risiko, q = a.backtest && a.backtest.quote_pct;
+  return `<div class="crvhead"><span class="score" style="background:${crvCol(r.crv)};font-size:16px;height:30px;min-width:72px">${crvTxt(r.crv)}</span>
+      <span class="small mute">${r.crv >= 2 ? "Gutes Verhältnis – die Chance ist mindestens doppelt so groß wie das Risiko." : r.crv >= 1 ? "Ausgeglichen – Chance und Risiko etwa gleich groß." : "Ungünstig – das Risiko ist größer als die Chance."}</span></div>
+    <div class="crvbar"><i style="width:${r.risiko / tot * 100}%;background:#dc2626"></i><i style="width:${r.chance / tot * 100}%;background:#16a34a"></i></div>
+    <div class="rk"><span>🔴 Risiko bis Stopp ${fmt(r.stop)}</span><b class="neg">−${r.risiko.toFixed(1).replace(".", ",")} %</b></div>
+    <div class="rk"><span>🟢 Chance bis Ziel ${fmt(r.ziel)}</span><b class="pos">+${r.chance.toFixed(1).replace(".", ",")} %</b></div>
+    <div class="rk"><span>Nötige Trefferquote</span><b>${Math.round(r.noetig)} %</b></div>
+    ${q != null ? `<div class="rk"><span>Trefferquote dieser Aktie (Backtest)</span><b style="color:${q >= r.noetig ? "#16a34a" : "#dc2626"}">${q} % ${q >= r.noetig ? "✓" : "✗"}</b></div>` : ""}
+    ${volHtml}
+    <div class="mute small" style="margin-top:6px">CRV = Chance ÷ Risiko. Stopp = Invalidierung der Wellenzählung, Ziel = nächstes Kursziel über dem Kurs.</div>`;
+}
+
 // ---------- Laden ----------
 async function load(){
   const [d, mk] = await Promise.all([
@@ -226,7 +265,8 @@ async function load(){
     earnings_heute: !!(a.termine && a.termine.earnings_in_tagen != null && a.termine.earnings_in_tagen <= 1),
     w1: a.perf && a.perf.woche != null ? a.perf.woche : -999,
     score: a.check ? a.check.score : -1,
-    kstat: a.kurz ? AMPEL_ORDER[a.kurz.ampel] : 9}));
+    kstat: a.kurz ? AMPEL_ORDER[a.kurz.ampel] : 9,
+    crv: (() => { const r = crvCalc(a, a.kurs); return r && r.ok ? r.crv : -1; })()}));
   const fill = (id, key) => { const el = document.getElementById(id);
     [...new Set(DATA.map(a => a.meta && a.meta[key]).filter(Boolean))].sort().forEach(v => el.add(new Option(v, v))); };
   fill("fLand", "land"); fill("fSektor", "sektor");
@@ -238,8 +278,11 @@ async function load(){
     document.getElementById("cQ").textContent = tq.quote_pct + " %";
     const vk = tq.verkauf && tq.verkauf.quote_pct != null ? ` · Verkauf ${tq.verkauf.quote_pct} %` : "";
     document.getElementById("cQs").textContent = `Kauf ${tq.treffer}/${tq.treffer + tq.fehler}${vk}`;
+    document.getElementById("cQs").title = "Kauf = Zonen-Signale, Verkauf = „Impuls vollendet“ (Backtest über alle Aktien)";
   }
-  document.getElementById("stand").textContent = "Stand " + new Date(d.erstellt).toLocaleString("de-DE", {dateStyle: "medium", timeStyle: "short"});
+  const kursStand = Object.entries(DATA.reduce((m, a) => (m[a.stand] = (m[a.stand] || 0) + 1, m), {})).sort((x, y) => y[1] - x[1])[0];
+  document.getElementById("stand").innerHTML = "Analyse " + new Date(d.erstellt).toLocaleString("de-DE", {dateStyle: "medium", timeStyle: "short"})
+    + (kursStand ? ` · Kurse vom ${dateDe(kursStand[0])}` : "");
   document.getElementById("cAll").textContent = DATA.length;
   const nL = new Set(DATA.map(a => a.meta && a.meta.land).filter(Boolean)).size;
   document.getElementById("cAllS").textContent = nL ? `aus ${nL} Ländern` : "";
@@ -265,6 +308,7 @@ function render(){
       <td class="num">${fmt(a.kurs, a.currency)}</td>
       <td class="num">${wTxt(a.perf && a.perf.woche)}</td>
       <td class="num">${scoreBadge(a.check)}</td>
+      <td class="num hide-m">${crvBadge(a)}</td>
       <td>${a.status}${a.status_vorher && a.status_vorher !== a.status ? '<span class="tag new">neu</span>' : ""}</td>
       <td>${a.kurz ? `<span class="kz"><span class="dot ${a.kurz.ampel}"></span>${a.kurz.status}</span>` : '<span class="mute">–</span>'}</td>
       <td class="sig hide-m">${a.signal}</td>
@@ -410,7 +454,7 @@ async function showDetail(sym, h){
           <span><i style="background:#93c5fd"></i>Nachkauf 61,8 %</span>
           <span><i style="background:var(--red)"></i>Invalidierung</span>
           <span><i style="background:var(--green)"></i>Ziele</span>
-          ${v.szenarien ? `<span><i style="height:0;border-top:3px dashed #22c55e"></i>Hauptszenario</span><span><i style="height:0;border-top:3px dashed #f97316"></i>Alternative</span>` : ""}
+          ${v.szenarien ? `<span><i style="height:0;border-top:3px dashed #22c55e"></i>Hauptszenario ${v.szenarien.haupt.prob_pct != null ? "<b>" + v.szenarien.haupt.prob_pct + " %</b>" : ""}</span><span><i style="height:0;border-top:3px dashed #f97316"></i>Alternative ${v.szenarien.alternative.prob_pct != null ? "<b>" + v.szenarien.alternative.prob_pct + " %</b>" : ""}</span>` : ""}
         </div>
         <div class="mute small" style="margin-top:4px">${horizon === "kurz" ? "Tageskerzen der letzten Monate – kurzfristige Wellen (Wochen bis Monate)." : "Wochenkerzen über mehrere Jahre – übergeordnete Wellen (Monate bis Jahre)."}</div></div>
         <div class="box" style="margin-top:14px"><h3>🌊 Wellenstruktur ${horizon === "kurz" ? "kurzfristig" : "langfristig"}</h3>
@@ -423,6 +467,7 @@ async function showDetail(sym, h){
       <div>
         <div class="box"><h3>Signal ${horizon === "kurz" ? "kurzfristig" : "langfristig"}</h3><div class="sigbig"><span class="dot ${v.ampel}"></span> ${v.status}</div><div style="margin-top:4px">${v.signal}</div>${earnWarn(a)}
           ${hasKurz ? `<div class="mute small" style="margin-top:8px">${horizon === "kurz" ? `Langfristig: <span class="dot ${a.ampel}"></span> ${a.status}` : `Kurzfristig: <span class="dot ${a.kurz.ampel}"></span> ${a.kurz.status}`}</div>` : ""}</div>
+        <div class="box"><h3>⚖️ Chance / Risiko ${horizon === "kurz" ? "kurzfristig" : "langfristig"}</h3>${riskBox(a, v)}</div>
         <div class="box"><h3>✅ Entscheidungscheck</h3>${checkBox(a)}</div>
         <div class="box"><h3>🔮 Szenarien</h3>${scBox(v)}</div>
         <div class="box"><h3>Handlungsplan</h3>
@@ -525,7 +570,7 @@ document.querySelectorAll("[data-sec]").forEach(b => b.onclick = () => {
   b.classList.add("on"); secTab = b.dataset.sec; renderSectors();
 });
 document.querySelectorAll("th[data-s]").forEach(th => th.onclick = () => {
-  const k = th.dataset.s; sortDir = (sortKey === k) ? -sortDir : (["w1", "score"].includes(k) ? -1 : 1); sortKey = k; render();
+  const k = th.dataset.s; sortDir = (sortKey === k) ? -sortDir : (["w1", "score", "crv"].includes(k) ? -1 : 1); sortKey = k; render();
 });
 document.getElementById("q").oninput = render;
 document.getElementById("fLand").onchange = render;
