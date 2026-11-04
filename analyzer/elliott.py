@@ -236,11 +236,11 @@ def _is_invalid(c: dict, last: float) -> bool:
 # --------------------------------------------------------------------------- #
 def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = "", horizon: str = "lang") -> dict:
     """horizon = "lang": Wochenchart, 10 Jahre (Monate bis Jahre)
-       horizon = "kurz": Tageschart, ca. 1,5 Jahre (Wochen bis Monate)"""
+       horizon = "kurz": Tageschart, jüngste Welle der letzten ~6 Monate (Wochen bis Monate)"""
     daily = daily.dropna(subset=["High", "Low", "Close"]).copy()
     vol = annual_vol(daily)
     if horizon == "kurz":
-        w = daily.iloc[-380:][["Open", "High", "Low", "Close"]]
+        w = daily.iloc[-300:][["Open", "High", "Low", "Close"]]  # ca. 14 Monate Tageskerzen
         mid = float(np.clip(0.18 * vol, 0.04, 0.12))
     else:
         w = to_weekly(daily.iloc[-252 * 10:])  # max. 10 Jahre Wochenchart
@@ -253,7 +253,13 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
 
     # Grad wählen: zuerst der Zyklus des 10-Jahres-Hochs. Ist er invalidiert,
     # auf den jüngeren Zyklus (tiefstes Tief danach -> höchstes Hoch danach) wechseln.
-    h_idx, min_i = int(np.argmax(highs)), 0
+    if horizon == "kurz":
+        # Kurzfristig: das Hoch der letzten ~6 Monate (130 Handelstage), Start höchstens ~1 Jahr zurück.
+        # So entsteht eine eigene, kleinere Welle statt einer Kopie der Langfrist-Zählung.
+        recent = max(0, n - 130)
+        h_idx, min_i = recent + int(np.argmax(highs[recent:])), max(0, n - 260)
+    else:
+        h_idx, min_i = int(np.argmax(highs)), 0
     cyc = _cycle(w, piv_mid, h_idx, min_i, last)
     grad = 1
     while _is_invalid(cyc, last) and grad < 4:
