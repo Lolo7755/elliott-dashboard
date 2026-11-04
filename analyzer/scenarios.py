@@ -6,7 +6,8 @@ Wahrscheinlichkeiten stammen aus dem Backtest (keine Bauchzahlen):
     pro Aktie mit der eigenen Quote gemischt (bei wenigen Signalen zählt der Durchschnitt mehr)
   - "zulauf_zone": wie oft eine laufende Korrektur tatsächlich die Zone erreicht hat,
     bevor die Aktie ein neues Hoch machte
-Für Aktien im Abwärtstrend gibt es keine Backtest-Basis -> keine Prozentzahl.
+  - "abwaerts_haelt": wie oft ein Abwärtstrend erst weitere 10 % fiel, bevor der Kurs
+    über das letzte Zwischenhoch ausbrach
 """
 from __future__ import annotations
 
@@ -86,10 +87,12 @@ def build(res: dict, rates: dict) -> dict | None:
         alt = ("Ausbruch über das Zwischenhoch",
                f"Steigt der Kurs über {de(trig)}, beginnt möglicherweise ein neuer Aufwärtszyklus.",
                p((8, trig), (8, trig * 1.12)))
-        prob = None
+        ab = bt.get("abwaerts") or {}
+        prob = _mix(ab.get("haelt", 0), ab.get("ausbruch", 0), rates.get("abwaerts_haelt"))
     else:  # Zulaufend, Neues Hoch, Korrektur evtl. beendet
         base = rates.get("zulauf_zone")
-        prob = base
+        zl = bt.get("zulauf") or {}
+        prob = _mix(zl.get("zone", 0), zl.get("direkt", 0), base) if base is not None else None
         haupt = ("Korrektur läuft bis in die Zone",
                  f"Der Kurs fällt noch in die Zone {de(z['oben'])}–{de(z['unten'])}; dort Teilkäufe, danach Anstieg zum Hoch {de(ziel['t1'])}.",
                  p((corr_w, zmid), (up_w, ziel["t1"])))
