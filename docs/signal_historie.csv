@@ -221,3 +221,37 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-02,GE,315.78,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 254,57 (-19,4 % vom aktuellen Kurs)"
 2026-11-04,9984.T,4100.0,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
 2026-11-02,INFY,12.53,In Zone,Zulaufend,"Abwarten – Kauflimit bei 12,09 (-3,5 % vom aktuellen Kurs)"
+2026-11-04,GOOGL,290.79,In Zone,Zulaufend,"Abwarten – Kauflimit bei 284,36 (-2,2 % vom aktuellen Kurs)"
+2026-11-04,PYPL,60.54,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-04,ROL,38.92,Neues Hoch / Trend läuft,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-04,CSGP,33.19,In Zone,Zulaufend,"Abwarten – Kauflimit bei 32,15 (-3,1 % vom aktuellen Kurs)"
+2026-11-04,AAPL,352.79,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 312,05 erwartet"
+2026-11-04,MSFT,555.34,Welle 5 läuft,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-04,AMZN,267.82,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-04,ANET,179.01,Nachkaufbereich,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,UBER,71.2,In Zone,Zulaufend,"Abwarten – Kauflimit bei 70,63 (-0,8 % vom aktuellen Kurs)"
+2026-11-04,BKNG,172.29,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-04,MELI,1754.66,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,SBUX,108.2,In Zone,Zulaufend,"Abwarten – Kauflimit bei 105,21 (-2,8 % vom aktuellen Kurs)"
+2026-11-04,BAC,51.24,In Zone,Zulaufend,"Abwarten – Kauflimit bei 49,85 (-2,7 % vom aktuellen Kurs)"
+2026-11-04,BLK,1228.19,Welle 5 läuft,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 953,04 erwartet"
+2026-11-04,RY,209.1,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-04,ABBV,291.42,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 247,42 erwartet"
+2026-11-04,TMO,706.85,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-04,ISRG,485.15,In Zone,Zulaufend,"Abwarten – Kauflimit bei 478,04 (-1,5 % vom aktuellen Kurs)"
+2026-11-04,VRTX,549.91,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 418,81 (-23,8 % vom aktuellen Kurs)"
+2026-11-04,GE,331.07,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-04,RTX,197.65,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 166,40 (-15,8 % vom aktuellen Kurs)"
+2026-11-04,ALV.DE,458.4,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-04,DTE.DE,26.76,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-04,BAYN.DE,54.24,Welle 5 läuft,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-04,DBK.DE,32.56,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-04,DHL.DE,60.26,Welle 5 läuft,Ziel 1 erreicht,Teilverkauf 1 (ca. 1/3) am alten Hoch
+2026-11-04,SAN.PA,84.1,Abwärtstrend,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-04,NOVO-B.CO,285.2,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,ITX.MC,59.06,Alternativ: Korrektur beendet,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 43,81 erwartet"
+2026-11-02,9984.T,4410.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-04,HDB,24.43,Nachkaufbereich,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-04,FTNT,128.32,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,LITE,605.6,,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,TTWO,212.02,,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
