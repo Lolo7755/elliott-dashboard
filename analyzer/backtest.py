@@ -32,6 +32,8 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
     zulauf = {"zone": 0, "direkt": 0, "offen": 0}  # erreicht eine laufende Korrektur die Zone?
     seen_imp: set[str] = set()
     verkauf: list[dict] = []  # Verkaufssignale "Impuls vollendet"
+    seen_abw: set[str] = set()
+    abwaerts = {"haelt": 0, "ausbruch": 0, "offen": 0}  # hält ein Abwärtstrend an?
 
     ends = list(range(WARMUP_DAYS, n, STEP_DAYS)) + [n]  # letzter Punkt = heute (offenes Signal)
     for end in ends:
@@ -70,6 +72,19 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
                     break
             verkauf.append({"datum": hist.index[-1].strftime("%Y-%m-%d"), "kurs": round(kurs0, 2),
                             "ziel": round(down, 2), "ergebnis": erg})
+        if res["status"] == "Abwärtstrend" and res.get("einstiegs_trigger") and cycle not in seen_abw:
+            # Hält der Abwärtstrend? "haelt" = erst weitere -10 %, "ausbruch" = erst über das Zwischenhoch
+            seen_abw.add(cycle)
+            kurs0, trig = float(hist["Close"].iloc[-1]), float(res["einstiegs_trigger"])
+            erg = "offen"
+            for _, row in daily.iloc[end:].iterrows():
+                if row["Low"] <= kurs0 * 0.90:
+                    erg = "haelt"
+                    break
+                if row["High"] >= trig:
+                    erg = "ausbruch"
+                    break
+            abwaerts[erg] += 1
         if res["status"] not in ENTRY_STATUS:
             continue
         if cycle in seen_cycles:
@@ -110,6 +125,7 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
         "offen": sum(s["ergebnis"] == "offen" for s in signals),
         "quote_pct": round(t / (t + f) * 100) if (t + f) else None,
         "zulauf": zulauf,
+        "abwaerts": abwaerts,
         "verkauf": {
             "signale": verkauf,
             "treffer": sum(v["ergebnis"] == "treffer" for v in verkauf),
