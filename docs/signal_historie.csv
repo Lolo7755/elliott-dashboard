@@ -293,3 +293,32 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-03,INFY,11.93,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
 2026-11-03,HDB,23.05,Welle 5 läuft,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
 2026-11-03,TTWO,194.99,Welle 5 läuft,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,GOOGL,288.93,In Zone,Zulaufend,"Abwarten – Kauflimit bei 284,36 (-1,6 % vom aktuellen Kurs)"
+2026-11-04,PYPL,60.2,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-04,PG,167.32,In Zone,Zulaufend,"Abwarten – Kauflimit bei 163,39 (-2,3 % vom aktuellen Kurs)"
+2026-11-04,CSGP,32.58,In Zone,Zulaufend,"Abwarten – Kauflimit bei 32,15 (-1,3 % vom aktuellen Kurs)"
+2026-11-04,ZTS,89.2,Abwärtstrend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-04,AAPL,349.51,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 312,07 erwartet"
+2026-11-04,MSFT,555.8,Welle 5 läuft,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-04,AMZN,266.03,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-04,QCOM,173.19,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-04,SNOW,290.6,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-04,ANET,178.48,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,ABNB,176.37,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,BKNG,170.97,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-04,MELI,1739.88,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,MCD,280.22,Nachkaufbereich,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,SBUX,109.7,In Zone,Zulaufend,"Abwarten – Kauflimit bei 105,21 (-4,1 % vom aktuellen Kurs)"
+2026-11-04,BAC,51.63,In Zone,Zulaufend,"Abwarten – Kauflimit bei 49,85 (-3,5 % vom aktuellen Kurs)"
+2026-11-04,AXP,332.59,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-04,BLK,1224.37,Welle 5 läuft,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 953,04 erwartet"
+2026-11-04,RY,209.79,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-04,ABBV,294.83,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 234,65 erwartet"
+2026-11-04,PFE,30.79,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-04,TMO,706.16,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-04,ISRG,482.1,In Zone,Zulaufend,"Abwarten – Kauflimit bei 478,04 (-0,8 % vom aktuellen Kurs)"
+2026-11-05,0700.HK,427.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-05,3690.HK,82.0,Nachkaufbereich,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-04,INFY,12.24,In Zone,Zulaufend,"Abwarten – Kauflimit bei 12,09 (-1,3 % vom aktuellen Kurs)"
+2026-11-04,HDB,24.33,Nachkaufbereich,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-04,TTWO,208.9,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
