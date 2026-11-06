@@ -332,3 +332,43 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-04,ITX.MC,59.06,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 43,81 erwartet"
 2026-11-06,000660.KS,1138000.0,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
 2026-11-06,8035.T,8000.0,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-05,GOOGL,282.57,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-05,PYPL,58.96,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 54,12 (-8,2 % vom aktuellen Kurs)"
+2026-11-05,FISV,62.74,Abwärtstrend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-05,TXN,278.15,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 264,77 (-4,8 % vom aktuellen Kurs)"
+2026-11-05,MA,655.92,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 527,23 (-19,6 % vom aktuellen Kurs)"
+2026-11-05,MRVL,133.55,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-05,CSGP,32.05,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-05,ZTS,82.11,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 81,45 (-0,8 % vom aktuellen Kurs)"
+2026-11-05,AAPL,344.17,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 312,61 (-9,2 % vom aktuellen Kurs)"
+2026-11-05,MSFT,535.93,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 427,08 (-20,3 % vom aktuellen Kurs)"
+2026-11-05,AMZN,260.21,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 208,60 (-19,8 % vom aktuellen Kurs)"
+2026-11-05,AVGO,291.53,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-05,AMD,404.4,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-05,QCOM,156.75,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-05,CSCO,95.72,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-05,NOW,102.36,Nachkaufbereich,Abwärtstrend,"Kein Long-Einstieg – erst über 159,50 (letztes Zwischenhoch) wieder interessant"
+2026-11-05,MU,656.39,In Zone,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-05,ANET,159.16,In Zone,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-05,ABNB,170.13,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-05,MELI,1530.28,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-05,TSLA,343.69,Welle 5 läuft,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-05,COST,1065.59,Alternativ: Korrektur beendet,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 832,92 erwartet"
+2026-11-05,MCD,278.04,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-05,BAC,49.76,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-05,V,422.59,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 340,00 (-19,5 % vom aktuellen Kurs)"
+2026-11-05,AXP,324.97,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 289,38 (-11,0 % vom aktuellen Kurs)"
+2026-11-05,BLK,1170.67,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 959,82 (-18,0 % vom aktuellen Kurs)"
+2026-11-05,HOOD,78.39,Welle 5 läuft,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-05,RY,203.76,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 164,83 (-19,1 % vom aktuellen Kurs)"
+2026-11-05,ABBV,288.24,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 237,24 (-17,7 % vom aktuellen Kurs)"
+2026-11-05,PFE,29.88,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 28,45 (-4,8 % vom aktuellen Kurs)"
+2026-11-05,TMO,676.94,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 606,39 (-10,4 % vom aktuellen Kurs)"
+2026-11-05,ISRG,468.52,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-05,CAT,553.64,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-05,GE,314.73,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 254,57 (-19,1 % vom aktuellen Kurs)"
+2026-11-05,HON,215.78,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 199,02 (-7,8 % vom aktuellen Kurs)"
+2026-11-05,RTX,191.88,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 166,40 (-13,3 % vom aktuellen Kurs)"
+2026-11-05,NESN.SW,87.23,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-06,000660.KS,1202000.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-05,LITE,509.7,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
