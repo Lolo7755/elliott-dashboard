@@ -98,6 +98,10 @@ def entscheidungscheck(r: dict) -> dict:
     if t is not None and t <= 7:
         contra.append(f"Quartalszahlen in {t} Tagen – erhöhte Schwankung")
 
+    mf = r.get("markt_filter") or {}
+    if mf.get("blockiert") or mf.get("reduziert"):
+        contra.insert(0, "Marktfilter: " + (mf.get("hinweise") or ["Marktlage ungünstig"])[0])
+
     score = int(sum(v[0] for v in teile.values()))
     label = ("Stark" if score >= 75 else "Solide" if score >= 60 else "Neutral" if score >= 45
              else "Schwach" if score >= 30 else "Meiden")
