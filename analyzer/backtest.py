@@ -17,13 +17,14 @@ from __future__ import annotations
 import pandas as pd
 
 from analyzer.elliott import analyze
+from analyzer.marktfilter import regime_am, rs20, rs_klasse
 
 STEP_DAYS = 10          # Handelstage zwischen zwei Rückblick-Analysen (~2 Wochen)
 WARMUP_DAYS = 252 * 3   # mindestens 3 Jahre Historie vor der ersten Rückblick-Analyse
 ENTRY_STATUS = ("In Zone", "In Zone (unten)")
 
 
-def backtest(daily: pd.DataFrame, symbol: str) -> dict:
+def backtest(daily: pd.DataFrame, symbol: str, markt: dict | None = None) -> dict:
     daily = daily.dropna(subset=["High", "Low", "Close"])
     n = len(daily)
     signals: list[dict] = []
@@ -104,7 +105,11 @@ def backtest(daily: pd.DataFrame, symbol: str) -> dict:
             if row["High"] >= target:
                 outcome, exit_date, days = "treffer", d, i + 1
                 break
+        rs = rs20(markt, symbol, hist["Close"])
         signals.append({
+            "markt": regime_am(markt, hist.index[-1]),  # Marktlage am Signaltag (ohne Blick nach vorn)
+            "rs_pct": None if rs is None else round(rs * 100, 1),
+            "rs_klasse": rs_klasse(rs),
             "datum": hist.index[-1].strftime("%Y-%m-%d"),
             "einstieg": round(entry, 2),
             "ziel": round(target, 2),
