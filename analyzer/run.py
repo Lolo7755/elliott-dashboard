@@ -30,6 +30,7 @@ from analyzer.extras import fetch_meta, fetch_news, fetch_quartale, fetch_termin
 from analyzer.market import fetch_market
 from analyzer.scenarios import build as build_scenarios
 from analyzer.score import entscheidungscheck
+from analyzer import marktfilter as MF
 
 
 def _perf(close: pd.Series, tage: int):
@@ -108,6 +109,13 @@ def main() -> int:
     if (DOCS / "kommentare.json").exists():
         kommentare = json.loads((DOCS / "kommentare.json").read_text(encoding="utf-8"))
 
+    try:
+        mkt = MF.lade_markt()
+    except Exception as e:
+        mkt = None
+        print(f"Marktfilter: keine Marktdaten ({e})", file=sys.stderr)
+    closes_rs = {}
+
     results, errors = [], []
     for item in load_watchlist():
         sym = item["symbol"]
@@ -120,6 +128,7 @@ def main() -> int:
                 res["kurz"] = None
                 print(f"     {sym}: Kurzfrist-Fehler {e}", file=sys.stderr)
             res["perf"] = performance(df)
+            closes_rs[sym] = MF.rs20(mkt, sym, df["Close"].dropna())
             res["datei"] = datei(sym)
             res["quartale"] = fetch_quartale(ticker)
             res["analysten"] = fetch_analysts(ticker, res["kurs"])
@@ -127,7 +136,7 @@ def main() -> int:
             res["termine"] = fetch_termine(ticker)
             res["news"] = fetch_news(ticker, name=item["name"])
             try:
-                res["backtest"] = backtest(df, sym)
+                res["backtest"] = backtest(df, sym, mkt)
             except Exception as e:
                 res["backtest"] = None
                 print(f"     {sym}: Backtest-Fehler {e}", file=sys.stderr)
@@ -184,6 +193,19 @@ def main() -> int:
         markt = None
         print(f"Markt-Fehler {e}", file=sys.stderr)
 
+    # Marktfilter: Lage heute + Backtest-Auswertung je Marktlage, dann Kaufsignale anpassen
+    mf_test = MF.auswerten(results)
+    mf_lage = MF.lage_heute(mkt)
+    for r in results:
+        try:
+            MF.anwenden(r, mf_lage, mf_test, closes_rs.get(r["symbol"]))
+        except Exception as e:
+            print(f"     {r['symbol']}: Marktfilter-Fehler {e}", file=sys.stderr)
+    marktfilter = {"lage": mf_lage, **mf_test,
+                   "regeln": {"min_signale": MF.MIN_N, "min_abstand_pp": MF.MIN_ABSTAND,
+                              "rs_grenze_pp": round(MF.RS_GRENZE * 100)}}
+    print("Marktfilter:", json.dumps(marktfilter, ensure_ascii=False))
+
     for r in results:
         try:
             r["check"] = entscheidungscheck(r)
@@ -218,7 +240,7 @@ def main() -> int:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (DOCS / "data.json").write_text(
         json.dumps({"erstellt": now, "trefferquote": gesamt, "markt": markt, "ausreisser": ausreisser,
-                    "top_bewegungen": top, "aktien": summary, "fehler": errors}, ensure_ascii=False),
+                    "top_bewegungen": top, "marktfilter": marktfilter, "aktien": summary, "fehler": errors}, ensure_ascii=False),
         encoding="utf-8",
     )
 
