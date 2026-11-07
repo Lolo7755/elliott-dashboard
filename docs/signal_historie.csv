@@ -372,3 +372,24 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-05,NESN.SW,87.23,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
 2026-11-06,000660.KS,1202000.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
 2026-11-05,LITE,509.7,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-06,GOOGL,284.78,In Zone,Zulaufend,"Abwarten – Kauflimit bei 284,36 (-0,1 % vom aktuellen Kurs)"
+2026-11-05,TUI1.DE,7.5,Abwärtstrend,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-06,CSGP,30.55,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-06,ZTS,79.4,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-06,CRM,213.65,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-06,ADBE,239.3,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-06,AMD,449.04,In Zone,Zulaufend,"Abwarten – Kauflimit bei 436,18 (-2,9 % vom aktuellen Kurs)"
+2026-11-06,MU,690.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-06,ANET,170.8,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-06,ABNB,189.99,In Zone (unten),Zulaufend,"Abwarten – Kauflimit bei 182,34 (-4,0 % vom aktuellen Kurs)"
+2026-11-06,BKNG,160.66,Welle 5 läuft,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-06,TSLA,358.22,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-06,COST,1053.56,Impuls vollendet,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-05,ALV.DE,465.1,Neues Hoch / Trend läuft,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 399,39 erwartet"
+2026-11-05,IFX.DE,45.95,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-05,RHM.DE,841.5,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-05,ENR.DE,113.84,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-05,ZAL.DE,28.48,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-05,OR.PA,455.6,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 400,20 erwartet"
+2026-11-05,NOVO-B.CO,271.25,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-06,000660.KS,1132000.0,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
