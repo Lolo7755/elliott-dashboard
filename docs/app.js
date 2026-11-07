@@ -103,16 +103,15 @@ function gauge(v){
 }
 function renderMood(m){
   const el = document.getElementById("mood");
-  if (!m || !m.stimmung) { el.innerHTML = '<div class="k">Marktstimmung</div><div class="sub">Wird beim nächsten Lauf berechnet.</div>'; return; }
-  const s = m.stimmung, col = s.wert < 45 ? "neg" : s.wert <= 55 ? "" : "pos";
+  if (!m || !m.stimmung) { el.innerHTML = '<div class="k">Marktstimmung</div><div class="empty">Wird beim nächsten Lauf berechnet.</div>'; return; }
+  const s = m.stimmung;
   const hist = [["Vortag", s.vortag], ["Vorwoche", s.woche], ["Vormonat", s.monat]].filter(x => x[1] != null)
-    .map(([n, v]) => `${n} <b>${v}</b>`).join(" · ");
+    .map(([n, v]) => `${n} <b>${v}</b>`).join(", ");
   const chips = (s.teile_cnn || []).map(t => `<span class="fgc" style="background:${moodCol(t.wert)}" title="${t.name}: ${t.wert} (${t.label})">${t.name} ${t.wert}</span>`).join("");
-  el.innerHTML = `<div class="k">Marktstimmung · Angst & Gier <span title="${s.erklaerung}" style="cursor:help">ⓘ</span></div><div class="mood">${gauge(s.wert)}
-    <div style="min-width:0"><div><span class="lbl ${col}">${s.wert} · ${s.label}</span></div>
-    <div class="exp">${hist}${hist ? " · " : ""}<span class="mute">${s.quelle || ""}</span></div>
-    ${chips ? `<div class="fgchips">${chips}</div>` : `<div class="exp">${(s.teile || []).join(" · ")}</div>`}</div></div>`;
-  el.title = s.erklaerung;
+  el.innerHTML = `<div class="k" title="${s.erklaerung}">Marktstimmung (Angst & Gier) ⓘ</div><div class="mood">${gauge(s.wert)}
+    <div style="min-width:0"><div class="big" style="color:${moodCol(s.wert)}">${s.wert} · ${s.label}</div>
+    <div class="exp">${hist}</div><div class="exp">${s.quelle || ""}</div></div></div>
+    ${chips ? `<div class="fgchips">${chips}</div>` : `<div class="exp" style="margin-top:8px">${(s.teile || []).join(" · ")}</div>`}`;
 }
 function moodCol(v){ return v < 25 ? "#b91c1c" : v < 45 ? "#ea580c" : v <= 55 ? "#a16207" : v <= 75 ? "#4d7c0f" : "#15803d"; }
 function renderTicker(m){
@@ -123,28 +122,37 @@ function renderTicker(m){
 
 // ---------- Marktfilter ----------
 const LAGE_COL = {gesund: "#16a34a", schwach: "#ea580c", abverkauf: "#dc2626"};
+const LAGE_SATZ = {gesund: "gesund", schwach: "angeschlagen", abverkauf: "im Abverkauf"};
 function renderFilter(mf){
-  const el = document.getElementById("mf");
-  if (!mf || !mf.nach_markt) { el.innerHTML = '<h2>🧭 Marktfilter</h2><div class="empty">Wird beim nächsten Analyse-Lauf berechnet.</div>'; return; }
+  const el = document.getElementById("mf"), hl = document.getElementById("heroLage");
+  if (!mf || !mf.nach_markt) {
+    el.innerHTML = '<div class="empty">Wird beim nächsten Analyse-Lauf berechnet.</div>';
+    hl.innerHTML = '<div class="k">Marktlage</div><div class="empty">Wird beim nächsten Lauf berechnet.</div>'; return;
+  }
   const L = mf.lage, bef = mf.befund || {};
+  const nPaus = DATA.filter(a => a.markt_filter && a.markt_filter.blockiert).length, nRed = DATA.filter(a => a.markt_filter && a.markt_filter.reduziert).length;
+  const aktiv = Object.values(mf.aktiv || {}).some(Boolean);
+  hl.innerHTML = L ? `<div class="k">Marktlage · S&P 500</div><div class="lage"><div class="big" style="color:${LAGE_COL[L.regime]}"><i style="background:${LAGE_COL[L.regime]}"></i>${L.label}</div></div>
+    <div class="lagefacts">
+      <div><b class="${L.spx_5t_pct >= 0 ? "pos" : "neg"}">${num1(L.spx_5t_pct)}</b><span>in 5 Tagen</span></div>
+      <div><b class="${L.spx_vs_200_pct >= 0 ? "pos" : "neg"}">${num1(L.spx_vs_200_pct)}</b><span>ggü. 200-Tage-Linie</span></div>
+      <div><b>${String(L.vix).replace(".", ",")}</b><span>VIX (${L.vix_vs_50_pct >= 0 ? "+" : ""}${L.vix_vs_50_pct} % ggü. Schnitt)</span></div>
+    </div>
+    <div class="exp" style="margin-top:8px">Marktfilter ${aktiv ? "aktiv" : "nur als Hinweis – laut Backtest kein Nachteil"}${nPaus ? ` · ${nPaus} Kaufsignale pausiert` : ""}${nRed ? ` · ${nRed} reduziert` : ""}</div>`
+    : '<div class="k">Marktlage</div><div class="empty">Marktdaten fehlen</div>';
   const befTxt = k => ({nachteil: '<span class="chip r">Filter aktiv</span>', kein_nachteil: '<span class="chip g">kein Nachteil – nur Hinweis</span>',
     zu_wenig: '<span class="chip o">zu wenige Daten – nur Hinweis</span>'})[bef[k]] || "";
   const row = (name, x, col, extra) => { const q = x.quote_pct;
     return `<div class="mfrow"><span>${name}</span><span class="meter" style="margin:0"><i style="width:${q || 0}%;background:${col}"></i></span>
-      <b>${q != null ? q + " %" : "–"}</b><span class="mute small">${x.n} Signale${x.rendite_schnitt_pct != null ? " · Ø " + (x.rendite_schnitt_pct >= 0 ? "+" : "") + String(x.rendite_schnitt_pct).replace(".", ",") + " %" : ""}</span>${extra || ""}</div>`; };
+      <b>${q != null ? q + " %" : "–"}</b><span class="mute small">${x.n} Signale${x.rendite_schnitt_pct != null ? ", Ø " + (x.rendite_schnitt_pct >= 0 ? "+" : "") + String(x.rendite_schnitt_pct).replace(".", ",") + " %" : ""}</span>${extra || ""}</div>`; };
   const m = mf.nach_markt, r = mf.nach_rs;
-  const nPaus = DATA.filter(a => a.markt_filter && a.markt_filter.blockiert).length, nRed = DATA.filter(a => a.markt_filter && a.markt_filter.reduziert).length;
-  el.innerHTML = `<h2>🧭 Marktfilter <span class="mute small">Gesamtmarkt & relative Stärke im Elliott-Signal</span></h2>
-    <div class="mfgrid">
-      <div>${L ? `<div class="k">Marktlage heute</div><div class="mflage" style="color:${LAGE_COL[L.regime]}">● ${L.label}</div>
-        <div class="small">S&P 500 ${num1(L.spx_vs_200_pct)} ggü. 200-Tage-Linie · ${num1(L.spx_5t_pct)} in 5 Tagen<br>VIX ${String(L.vix).replace(".", ",")} (${L.vix_vs_50_pct >= 0 ? "+" : ""}${L.vix_vs_50_pct} % ggü. 50-Tage-Schnitt)</div>
-        <div class="small" style="margin-top:6px">${nPaus ? `<b>${nPaus}</b> Kaufsignale pausiert` : "Keine Kaufsignale pausiert"}${nRed ? ` · <b>${nRed}</b> auf 1/3 reduziert` : ""}</div>` : '<span class="mute">Marktdaten fehlen</span>'}</div>
-      <div><div class="k">Trefferquote der Kaufsignale je Marktlage (Backtest)</div>
+  el.innerHTML = `<div class="mfgrid">
+      <div><div class="k">Trefferquote der Kaufsignale je Marktlage</div>
         ${row("Gesund", m.gesund, LAGE_COL.gesund)}${row("Angeschlagen", m.schwach, LAGE_COL.schwach, befTxt("schwach"))}${row("Abverkauf", m.abverkauf, LAGE_COL.abverkauf, befTxt("abverkauf"))}</div>
-      <div><div class="k">Aktie vs. Index (20 Tage, Backtest)</div>
-        ${row("Mit dem Markt", r.markt, "#16a34a")}${row("Eigene Schwäche", r.eigen, "#dc2626", befTxt("eigen"))}
-        <div class="mute small" style="margin-top:6px">Der Filter greift nur, wenn eine Lage mind. ${mf.regeln.min_abstand_pp} Prozentpunkte schlechter abschneidet (ab ${mf.regeln.min_signale} Signalen).</div></div>
-    </div>`;
+      <div><div class="k">Aktie im Vergleich zu ihrem Index (20 Tage)</div>
+        ${row("Mit dem Markt", r.markt, "#16a34a")}${row("Eigene Schwäche", r.eigen, "#dc2626", befTxt("eigen"))}</div>
+    </div>
+    <p class="mute small" style="margin:10px 0 0">Der Filter pausiert oder reduziert Kaufsignale nur, wenn eine Lage im Backtest mindestens ${mf.regeln.min_abstand_pp} Prozentpunkte schlechter abschneidet (ab ${mf.regeln.min_signale} Signalen). Er prüft sich jeden Abend neu.</p>`;
 }
 
 // ---------- Sektoren-Heatmap ----------
@@ -307,20 +315,31 @@ async function load(){
   renderMood(MARKT); renderTicker(MARKT); renderSectors(); renderCal(); renderFilter(d.marktfilter);
   const stand = DATA.map(a => a.stand).sort().pop();
   renderTodo(stand); renderOutliers();
-  const tq = d.trefferquote;
-  if (tq && tq.quote_pct != null) {
-    document.getElementById("cQ").textContent = tq.quote_pct + " %";
-    const vk = tq.verkauf && tq.verkauf.quote_pct != null ? ` · Verkauf ${tq.verkauf.quote_pct} %` : "";
-    document.getElementById("cQs").textContent = `Kauf ${tq.treffer}/${tq.treffer + tq.fehler}${vk}`;
-    document.getElementById("cQs").title = "Kauf = Zonen-Signale, Verkauf = „Impuls vollendet“ (Backtest über alle Aktien)";
-  }
+  const tq = d.trefferquote || {};
   const kursStand = Object.entries(DATA.reduce((m, a) => (m[a.stand] = (m[a.stand] || 0) + 1, m), {})).sort((x, y) => y[1] - x[1])[0];
   document.getElementById("stand").innerHTML = "Analyse " + new Date(d.erstellt).toLocaleString("de-DE", {dateStyle: "medium", timeStyle: "short"})
     + (kursStand ? ` · Kurse vom ${dateDe(kursStand[0])}` : "");
-  document.getElementById("cAll").textContent = DATA.length;
+  const cnt = k => DATA.filter(a => a.ampel === k).length, n = DATA.length || 1;
   const nL = new Set(DATA.map(a => a.meta && a.meta.land).filter(Boolean)).size;
-  document.getElementById("cAllS").textContent = nL ? `aus ${nL} Ländern` : "";
-  ["gruen", "orange", "rot"].forEach((k, i) => document.getElementById(["cG", "cO", "cR"][i]).textContent = DATA.filter(a => a.ampel === k).length);
+  const parts = [["gruen", "Kaufen / Halten", "var(--green)"], ["orange", "Abwarten / Sichern", "var(--orange)"], ["rot", "Abwärtstrend", "var(--red)"]];
+  document.getElementById("heroWl").innerHTML = `<div class="k">Watchlist · ${DATA.length} Aktien${nL ? ` aus ${nL} Ländern` : ""}</div>
+    <div class="wlbar">${parts.map(([k, , c]) => `<i style="width:${cnt(k) / n * 100}%;background:${c}" title="${cnt(k)}"></i>`).join("")}</div>
+    <div class="wllegend">${parts.map(([k, l]) => `<span><span class="dot ${k}"></span><b>${cnt(k)}</b> ${l}</span>`).join("")}</div>
+    <div class="wlstats">
+      <div title="Zonen-Kaufsignale im Backtest über alle Aktien"><b>${tq.quote_pct != null ? tq.quote_pct + " %" : "–"}</b><span>Trefferquote Kauf${tq.treffer != null ? ` (${tq.treffer}/${tq.treffer + tq.fehler})` : ""}</span></div>
+      <div title="„Impuls vollendet“ im Backtest"><b>${tq.verkauf && tq.verkauf.quote_pct != null ? tq.verkauf.quote_pct + " %" : "–"}</b><span>Trefferquote Verkauf</span></div>
+    </div>`;
+  // Kopfzeile des Abendbriefings
+  const tage = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
+  if (kursStand) { const dt = new Date(kursStand[0]);
+    document.getElementById("heroDate").textContent = `${tage[dt.getDay()]}, ${dt.getDate()}. ${dt.toLocaleString("de-DE", {month: "long"})}`; }
+  const auf = aufgaben(), nk = auf.filter(a => AKTION[a.status][0] === "kauf" && !(a.markt_filter && a.markt_filter.blockiert)).length,
+    nv = auf.filter(a => AKTION[a.status][0] === "verkauf").length, L = d.marktfilter && d.marktfilter.lage, S = MARKT && MARKT.stimmung;
+  const satz = [];
+  if (L) satz.push(`Der Markt ist <b>${LAGE_SATZ[L.regime]}</b>`);
+  if (S) satz.push(`${L ? "die" : "Die"} Stimmung steht bei <b>${S.wert} (${S.label})</b>`);
+  document.getElementById("heroSum").innerHTML = (satz.length ? satz.join(", ") + ". " : "")
+    + (nk || nv ? `Heute gibt es <b>${nk} ${nk === 1 ? "neues Kaufsignal" : "neue Kaufsignale"}</b> und <b>${nv} ${nv === 1 ? "Verkaufssignal" : "Verkaufssignale"}</b>.` : "Heute gibt es keine neuen Signale – bestehende Positionen halten.");
   render();
 }
 
@@ -338,14 +357,14 @@ function render(){
   document.getElementById("tb").innerHTML = rows.map(a => `
     <tr class="row" data-sym="${a.symbol}">
       <td><span class="dot ${a.ampel}"></span></td>
-      <td><b>${a.name}</b> <span class="mute">${a.symbol}</span>${a.meta ? `<div class="mute small">${[a.meta.land, a.meta.sektor].filter(Boolean).join(" · ")}</div>` : ""}</td>
+      <td><span class="nm">${a.name}</span> <span class="mute small">${a.symbol}</span>${a.meta ? `<div class="sub">${[a.meta.land, a.meta.sektor].filter(Boolean).join(", ")}</div>` : ""}</td>
       <td class="num">${fmt(a.kurs, a.currency)}</td>
       <td class="num">${wTxt(a.perf && a.perf.woche)}</td>
       <td class="num">${scoreBadge(a.check)}</td>
       <td class="num hide-m">${crvBadge(a)}</td>
-      <td>${a.status}${a.status_vorher && a.status_vorher !== a.status ? '<span class="tag new">neu</span>' : ""}</td>
-      <td>${a.kurz ? `<span class="kz"><span class="dot ${a.kurz.ampel}"></span>${a.kurz.status}</span>` : '<span class="mute">–</span>'}</td>
-      <td class="sig hide-m">${a.signal}${a.markt_filter && (a.markt_filter.blockiert || a.markt_filter.reduziert) ? ' <span class="tag warn" title="' + a.markt_filter.hinweise.join(" · ") + '">Marktfilter</span>' : ""}</td>
+      <td title="${a.signal.replace(/"/g, "'")}">${a.status}${a.markt_filter && (a.markt_filter.blockiert || a.markt_filter.reduziert) ? ' <span class="tag warn">Filter</span>' : ""}${a.status_vorher && a.status_vorher !== a.status ? '<span class="tag new">neu</span>' : ""}</td>
+      <td class="hide-m">${a.kurz ? `<span class="kz"><span class="dot ${a.kurz.ampel}"></span>${a.kurz.status}</span>` : '<span class="mute">–</span>'}</td>
+      <td class="sig hide-l hide-m">${a.signal}${a.markt_filter && (a.markt_filter.blockiert || a.markt_filter.reduziert) ? ' <span class="tag warn" title="' + a.markt_filter.hinweise.join(" · ") + '">Marktfilter</span>' : ""}</td>
       <td class="hide-m">${anTxt(a)}</td>
       <td class="num hide-l hide-m">${qTxt(a)}</td>
       <td class="hide-m">${a.termine && a.termine.earnings ? dateDe(a.termine.earnings) + earnWarn(a) : '<span class="mute">–</span>'}</td>
@@ -469,59 +488,69 @@ async function showDetail(sym, h){
   const v = horizon === "kurz" ? a.kurz : a, c = a.currency, k = a.kurs;
   const planRow = (label, val, color) => val == null ? "" :
     `<tr><td><span class="dot" style="background:${color}"></span> ${label}</td><td class="num">${fmt(val, c)}</td><td class="num">${pctTxt(pct(val, k))}</td></tr>`;
-  const tab = (h, lbl, x) => `<button data-h="${h}" class="${horizon === h ? "on" : ""}" ${x ? "" : "disabled"}>${lbl}${x ? ` · <span class="dot ${x.ampel}"></span> ${x.status}` : ""}</button>`;
+  const tab = (h, lbl, x) => `<button data-h="${h}" class="${horizon === h ? "on" : ""}" ${x ? "" : "disabled"}>${lbl}${x ? ` <span class="dot ${x.ampel}"></span> ${x.status}` : ""}</button>`;
   const w = v.welle || {};
+  const mf = a.markt_filter || {}, crv = crvCalc(v, k);
   el.innerHTML = `
-    <button class="btn close" id="closeBtn">✕ Schließen</button>
-    <div class="dhead">
-      <div><h2><span class="dot ${a.ampel}"></span> ${a.name} <span class="mute">${a.symbol}</span></h2>
-        <div class="mute">Kurs ${fmt(k, c)} ${a.perf ? pctTxt(a.perf.tag) + " heute" : ""} · Stand ${a.stand}${a.meta ? " · " + [a.meta.land, a.meta.sektor].filter(Boolean).join(" · ") : ""}</div></div>
-      <div class="htabs">${tab("lang", "📅 Langfristig (Monate–Jahre)", a)}${tab("kurz", "⚡ Kurzfristig (Wochen–Monate)", hasKurz ? a.kurz : null)}</div>
-      ${a.check ? `<span class="kbadge">Entscheidungscheck ${scoreBadge(a.check)} ${a.check.label}</span>` : ""}
+    <div class="dtop">
+      <div><h2><span class="dot ${a.ampel}" style="width:12px;height:12px"></span>${a.name}<span class="sym">${a.symbol}</span></h2>
+        <div class="dprice"><b>${fmt(k, c)}</b>${a.perf ? pctTxt(a.perf.tag) + " heute" : ""} <span class="mute">· Stand ${dateDe(a.stand)}${a.meta ? " · " + [a.meta.land, a.meta.sektor].filter(Boolean).join(", ") : ""}</span></div></div>
+      <button class="btn" id="closeBtn">✕ Schließen</button>
     </div>
-    <div class="grid2">
-      <div>
-        <div class="chartbox"><div id="chart"></div>
+    <div class="dtools">
+      <div class="htabs" role="tablist">${tab("lang", "Langfristig", a)}${tab("kurz", "Kurzfristig", hasKurz ? a.kurz : null)}</div>
+      ${a.check ? `<span class="kbadge">Entscheidungscheck ${a.check.label} ${scoreBadge(a.check)}</span>` : ""}
+      ${crv && crv.ok ? `<span class="kbadge">Chance/Risiko <span class="score" style="background:${crvCol(crv.crv)}">${crvTxt(crv.crv)}</span></span>` : ""}
+      ${mf.blockiert || mf.reduziert ? '<span class="tag warn">Marktfilter</span>' : ""}${earnWarn(a)}
+    </div>
+    <div class="dmain">
+      <div class="chartbox"><div id="chart"></div>
         <div class="legend">
-          <span><i style="background:#a855f7"></i>Elliott-Wellen (Zählung)</span>
+          <span><i style="background:#a855f7"></i>Elliott-Wellen</span>
           <span><i style="background:var(--zone)"></i>Einstiegszone</span>
           <span><i style="background:#93c5fd"></i>Nachkauf 61,8 %</span>
           <span><i style="background:var(--red)"></i>Invalidierung</span>
           <span><i style="background:var(--green)"></i>Ziele</span>
           ${v.szenarien ? `<span><i style="height:0;border-top:3px dashed #22c55e"></i>Hauptszenario ${v.szenarien.haupt.prob_pct != null ? "<b>" + v.szenarien.haupt.prob_pct + " %</b>" : ""}</span><span><i style="height:0;border-top:3px dashed #f97316"></i>Alternative ${v.szenarien.alternative.prob_pct != null ? "<b>" + v.szenarien.alternative.prob_pct + " %</b>" : ""}</span>` : ""}
-        </div>
-        <div class="mute small" style="margin-top:4px">${horizon === "kurz" ? "Tageskerzen der letzten Monate – kurzfristige Wellen (Wochen bis Monate)." : "Wochenkerzen über mehrere Jahre – übergeordnete Wellen (Monate bis Jahre)."}</div></div>
-        <div class="box" style="margin-top:14px"><h3>🌊 Wellenstruktur ${horizon === "kurz" ? "kurzfristig" : "langfristig"}</h3>
-          ${w.start ? `Start ${fmt(w.start.price)} (${dateDe(w.start.date)}) → Hoch ${fmt(w.hoch.price)} (${dateDe(w.hoch.date)})<br>
-          Korrektur aktuell ${(w.retracement_aktuell_pct || 0).toLocaleString("de-DE")} % · max. ${(w.retracement_max_pct || 0).toLocaleString("de-DE")} %<br>
-          Zählqualität: ${w.zaehlung_qualitaet ? w.zaehlung_qualitaet + " / 100" : "keine saubere 5-Wellen-Zählung"}<br>` : ""}
-          <span class="mute">50-Tage ${fmt(a.sma50)} · 200-Tage ${fmt(a.sma200)} · Trend ${a.trend_tageschart}</span>
-        </div>
+          <span>${horizon === "kurz" ? "Tageskerzen, Wellen über Wochen bis Monate" : "Wochenkerzen, Wellen über Monate bis Jahre"}</span>
+        </div></div>
+      <div class="dright">
+        <div class="box sigcard" style="--c:var(--${v.ampel === "gruen" ? "green" : v.ampel === "rot" ? "red" : "orange"})"><h3>Signal ${horizon === "kurz" ? "kurzfristig" : "langfristig"}</h3>
+          <div class="sigbig"><span class="dot ${v.ampel}"></span>${v.status}</div><div class="sigtxt">${v.signal}</div>
+          ${horizon === "lang" && mf.hinweise && mf.hinweise.length ? `<div class="mfbox">${mf.hinweise.map(h => `<div>🧭 ${h}</div>`).join("")}${mf.signal_original ? `<div class="mute small">Ohne Marktfilter: ${mf.signal_original}</div>` : ""}</div>` : ""}
+          ${hasKurz ? `<div class="mute small" style="margin-top:10px">${horizon === "kurz" ? `Langfristig: <span class="dot ${a.ampel}"></span> ${a.status}` : `Kurzfristig: <span class="dot ${a.kurz.ampel}"></span> ${a.kurz.status}`}</div>` : ""}</div>
+        <div class="box"><h3>Chance & Risiko</h3>${riskBox(a, v)}</div>
       </div>
-      <div>
-        <div class="box"><h3>Signal ${horizon === "kurz" ? "kurzfristig" : "langfristig"}</h3><div class="sigbig"><span class="dot ${v.ampel}"></span> ${v.status}</div><div style="margin-top:4px">${v.signal}</div>${earnWarn(a)}
-          ${horizon === "lang" && a.markt_filter && a.markt_filter.hinweise && a.markt_filter.hinweise.length ? `<div class="mfbox">${a.markt_filter.hinweise.map(h => `<div>🧭 ${h}</div>`).join("")}${a.markt_filter.signal_original ? `<div class="mute small">Ohne Marktfilter: ${a.markt_filter.signal_original}</div>` : ""}</div>` : ""}
-          ${hasKurz ? `<div class="mute small" style="margin-top:8px">${horizon === "kurz" ? `Langfristig: <span class="dot ${a.ampel}"></span> ${a.status}` : `Kurzfristig: <span class="dot ${a.kurz.ampel}"></span> ${a.kurz.status}`}</div>` : ""}</div>
-        <div class="box"><h3>⚖️ Chance / Risiko ${horizon === "kurz" ? "kurzfristig" : "langfristig"}</h3>${riskBox(a, v)}</div>
-        <div class="box"><h3>✅ Entscheidungscheck</h3>${checkBox(a)}</div>
-        <div class="box"><h3>🔮 Szenarien</h3>${scBox(v)}</div>
-        <div class="box"><h3>Handlungsplan</h3>
-          <table class="plan" style="width:100%">
-            ${v.plan ? planRow("Teilkauf 1 (38,2 %)", v.plan.teilkauf_1, "#3b82f6") + planRow("Teilkauf 2 (50 %)", v.plan.teilkauf_2, "#3b82f6")
-              + planRow("Teilkauf 3 (61,8 %)", v.plan.teilkauf_3, "#93c5fd") + planRow("Invalidierung (78,6 %)", v.plan.invalidierung, "#ef4444")
-              + planRow("Teilverkauf 1 (altes Hoch)", v.plan.teilverkauf_1, "#22c55e") + planRow("Teilverkauf 2 (127,2 %)", v.plan.teilverkauf_2, "#22c55e")
-              + planRow("Teilverkauf 3 (161,8 %)", v.plan.teilverkauf_3, "#22c55e") : ""}
-          </table>
-        </div>
-      </div>
-      <div class="col3">
-        <div class="box"><h3>📈 Performance</h3>${perfBox(a)}</div>
-        <div class="box"><h3>🧾 Letzte 4 Quartale</h3>${quartBox(a)}</div>
-        <div class="box"><h3>📊 Analysten</h3>${anBox(a)}</div>
-        <div class="box"><h3>🎯 Trefferquote dieser Aktie</h3>${btBox(a)}</div>
-        <div class="box"><h3>📅 Termine</h3>${termBox(a)}</div>
-        <div class="box"><h3>📰 News</h3>${newsBox(a)}</div>
-      </div>
+    </div>
+    <div class="drow3">
+      <div class="box"><h3>Szenarien</h3>${scBox(v)}</div>
+      <div class="box"><h3>Handlungsplan</h3>
+        <table class="plan">
+          ${v.plan ? planRow("Teilkauf 1 (38,2 %)", v.plan.teilkauf_1, "#3b82f6") + planRow("Teilkauf 2 (50 %)", v.plan.teilkauf_2, "#3b82f6")
+            + planRow("Teilkauf 3 (61,8 %)", v.plan.teilkauf_3, "#93c5fd") + planRow("Invalidierung (78,6 %)", v.plan.invalidierung, "#ef4444")
+            + planRow("Teilverkauf 1 (altes Hoch)", v.plan.teilverkauf_1, "#22c55e") + planRow("Teilverkauf 2 (127,2 %)", v.plan.teilverkauf_2, "#22c55e")
+            + planRow("Teilverkauf 3 (161,8 %)", v.plan.teilverkauf_3, "#22c55e") : ""}
+        </table></div>
+      <div class="box"><h3>Wellenstruktur</h3>
+        ${w.start ? `<div class="facts">
+          <div><b>${fmt(w.start.price)}</b><span>Start ${dateDe(w.start.date)}</span></div>
+          <div><b>${fmt(w.hoch.price)}</b><span>Hoch ${dateDe(w.hoch.date)}</span></div>
+          <div><b>${(w.retracement_aktuell_pct || 0).toLocaleString("de-DE")} %</b><span>Korrektur aktuell</span></div>
+          <div><b>${(w.retracement_max_pct || 0).toLocaleString("de-DE")} %</b><span>Korrektur maximal</span></div>
+          <div><b>${w.zaehlung_qualitaet ? w.zaehlung_qualitaet + " / 100" : "–"}</b><span>Zählqualität</span></div>
+          <div><b>${a.trend_tageschart || "–"}</b><span>Trend Tageschart</span></div>
+          <div><b>${fmt(a.sma50)}</b><span>50-Tage-Linie</span></div>
+          <div><b>${fmt(a.sma200)}</b><span>200-Tage-Linie</span></div>
+        </div>` : '<span class="mute">Keine Wellendaten.</span>'}</div>
+    </div>
+    <div class="dmason">
+      <div class="box"><h3>Entscheidungscheck</h3>${checkBox(a)}</div>
+      <div class="box"><h3>Performance</h3>${perfBox(a)}</div>
+      <div class="box"><h3>Letzte 4 Quartale</h3>${quartBox(a)}</div>
+      <div class="box"><h3>Analysten</h3>${anBox(a)}</div>
+      <div class="box"><h3>Trefferquote dieser Aktie</h3>${btBox(a)}</div>
+      <div class="box"><h3>Termine</h3>${termBox(a)}</div>
+      <div class="box"><h3>News</h3>${newsBox(a)}</div>
     </div>`;
   ov.style.display = "block"; document.body.style.overflow = "hidden";
   document.getElementById("closeBtn").onclick = closeDetail;
@@ -535,7 +564,7 @@ function drawChart(v, h){
     layout: {background: {color: cssVar("--panel")}, textColor: cssVar("--mute"), fontFamily: "Inter, system-ui, sans-serif"},
     grid: {vertLines: {color: cssVar("--chart-grid")}, horzLines: {color: cssVar("--chart-grid")}},
     rightPriceScale: {borderColor: cssVar("--line")}, timeScale: {borderColor: cssVar("--line")},
-    autoSize: true,
+    autoSize: true, localization: {locale: "de-DE"},
   });
   const s = chart.addCandlestickSeries({upColor: "#22c55e", downColor: "#ef4444", borderVisible: false, wickUpColor: "#22c55e", wickDownColor: "#ef4444"});
   s.setData(v.chart);
@@ -606,6 +635,12 @@ document.querySelectorAll("[data-sec]").forEach(b => b.onclick = () => {
 });
 document.querySelectorAll("th[data-s]").forEach(th => th.onclick = () => {
   const k = th.dataset.s; sortDir = (sortKey === k) ? -sortDir : (["w1", "score", "crv"].includes(k) ? -1 : 1); sortKey = k; render();
+});
+document.querySelectorAll("[data-ptab]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-ptab]").forEach(x => x.classList.toggle("on", x === b));
+  document.getElementById("pane-sek").hidden = b.dataset.ptab !== "sek";
+  document.getElementById("pane-mf").hidden = b.dataset.ptab !== "mf";
+  document.getElementById("secSeg").style.visibility = b.dataset.ptab === "sek" ? "visible" : "hidden";
 });
 document.getElementById("q").oninput = render;
 document.getElementById("fLand").onchange = render;
