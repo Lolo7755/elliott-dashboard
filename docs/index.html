@@ -9,69 +9,87 @@
     const dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
     document.documentElement.dataset.theme = dark ? "dark" : "light"; document.documentElement.dataset.pref = t; })();
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
+<header class="topbar">
   <div class="brand">
-    <div class="logo">EW</div>
+    <svg class="logo" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11"/><polyline points="6,30 12,20 16,25 24,10 28,17 34,6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <div><h1>Elliott-Dashboard</h1><small id="stand">lädt …</small></div>
   </div>
-  <div class="actions">
+  <nav class="actions">
     <a class="btn" id="editWl" target="_blank" rel="noopener">✏️ <span class="lbl">Watchlist</span></a>
     <a class="btn" id="runNow" target="_blank" rel="noopener">▶️ <span class="lbl">Analyse starten</span></a>
     <a class="btn" href="signal_historie.csv" target="_blank">📜 <span class="lbl">Historie</span></a>
-    <div class="seg" title="Darstellung">
-      <button data-theme-set="light">☀️ Hell</button><button data-theme-set="dark">🌙 Dunkel</button><button data-theme-set="auto">Auto</button>
+    <div class="seg" role="group" aria-label="Darstellung">
+      <button data-theme-set="light" title="Hell">☀️</button><button data-theme-set="dark" title="Dunkel">🌙</button><button data-theme-set="auto">Auto</button>
     </div>
-  </div>
+  </nav>
 </header>
 
 <main>
   <div class="ticker" id="ticker"></div>
 
-  <div class="top">
-    <div class="card moodcard" id="mood"><div class="k">Marktstimmung</div><div class="sub">–</div></div>
-    <div class="card"><div class="k"><span class="dot gruen"></span> Kaufen / Halten</div><div class="v" id="cG">–</div></div>
-    <div class="card"><div class="k"><span class="dot orange"></span> Abwarten / Sichern</div><div class="v" id="cO">–</div></div>
-    <div class="card"><div class="k"><span class="dot rot"></span> Abwärtstrend</div><div class="v" id="cR">–</div></div>
-    <div class="card opt"><div class="k">🎯 Trefferquote</div><div class="v" id="cQ">–</div><div class="sub" id="cQs"></div></div>
-    <div class="card opt"><div class="k">Analysierte Werte</div><div class="v" id="cAll">–</div><div class="sub" id="cAllS"></div></div>
-  </div>
+  <section class="hero">
+    <svg class="wave" viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,190 180,80 300,140 560,20 680,95 900,10 1200,150" fill="none" stroke-width="2"/>
+    </svg>
+    <div class="herohead">
+      <h2 id="heroDate">Abendbriefing</h2>
+      <p id="heroSum" class="mute">Daten werden geladen …</p>
+    </div>
+    <div class="herogrid">
+      <div class="hcard" id="mood"></div>
+      <div class="hcard" id="heroLage"></div>
+      <div class="hcard" id="heroWl"></div>
+    </div>
+  </section>
 
-  <div class="panel mfpanel" id="mf"></div>
-
-  <div class="panel sectors">
-    <h2>🏭 Sektoren <span class="seg small" id="secSeg"><button data-sec="tag">Tag</button><button data-sec="woche" class="on">Woche</button><button data-sec="monat">Monat</button><button data-sec="ytd">Seit 1.1.</button></span></h2>
-    <div class="heat" id="heat"></div>
-  </div>
+  <section class="panel tabbed">
+    <div class="phead">
+      <div class="ptabs" role="tablist">
+        <button class="on" data-ptab="sek">Sektoren</button>
+        <button data-ptab="mf">Marktfilter-Backtest</button>
+      </div>
+      <span class="seg small" id="secSeg"><button data-sec="tag">Tag</button><button data-sec="woche" class="on">Woche</button><button data-sec="monat">Monat</button><button data-sec="ytd">Seit 1.1.</button></span>
+    </div>
+    <div class="ppane" id="pane-sek"><div class="heat" id="heat"></div></div>
+    <div class="ppane" id="pane-mf" hidden><div id="mf"></div></div>
+  </section>
 
   <div class="layout">
-    <section>
+    <section class="listing">
       <div class="toolbar">
-        <button class="btn active" data-f="alle">Alle</button>
-        <button class="btn" data-f="kauf">Kaufbereich</button>
-        <button class="btn" data-f="verkauf">Gewinne sichern</button>
-        <button class="btn" data-f="warten">Abwarten</button>
-        <button class="btn" data-f="rot">Abwärtstrend</button>
-        <input type="search" id="q" placeholder="Aktie suchen …">
-        <select id="fLand"><option value="">Alle Länder</option></select>
-        <select id="fSektor"><option value="">Alle Sektoren</option></select>
-        <span class="mute small" id="cnt"></span>
+        <div class="chips">
+          <button class="fbtn active" data-f="alle">Alle</button>
+          <button class="fbtn" data-f="kauf">Kaufbereich</button>
+          <button class="fbtn" data-f="verkauf">Gewinne sichern</button>
+          <button class="fbtn" data-f="warten">Abwarten</button>
+          <button class="fbtn" data-f="rot">Abwärtstrend</button>
+        </div>
+        <div class="filters">
+          <input type="search" id="q" placeholder="Aktie suchen">
+          <select id="fLand"><option value="">Alle Länder</option></select>
+          <select id="fSektor"><option value="">Alle Sektoren</option></select>
+          <span class="mute small" id="cnt"></span>
+        </div>
       </div>
       <div class="tablewrap">
         <table>
           <thead><tr>
-            <th data-s="ampel"></th>
+            <th data-s="ampel" aria-label="Ampel"></th>
             <th data-s="name">Aktie</th>
             <th data-s="kurs" class="num">Kurs</th>
             <th data-s="w1" class="num">Woche</th>
             <th data-s="score" class="num">Score</th>
             <th data-s="crv" class="num hide-m" title="Chance-Risiko-Verhältnis">CRV</th>
             <th data-s="status">Langfristig</th>
-            <th data-s="kstat">Kurzfristig</th>
-            <th class="hide-m">Signal</th>
+            <th data-s="kstat" class="hide-m">Kurzfristig</th>
+            <th class="hide-l hide-m">Signal</th>
             <th data-s="anScore" class="hide-m">Analysten</th>
             <th class="num hide-l hide-m" data-s="quote">Treffer</th>
             <th data-s="earn" class="hide-m">Earnings</th>
@@ -83,31 +101,31 @@
 
     <aside class="side">
       <div class="panel">
-        <h2>🌙 Heute zu tun <span class="mute small" id="todoDate"></span></h2>
+        <h3 class="ph">Heute zu tun <span class="mute small" id="todoDate"></span></h3>
         <div class="scroll todo" id="todo"><div class="empty">–</div></div>
       </div>
       <div class="panel">
-        <h2>⚡ Ausreißer heute <span class="mute small">ab ±10 %</span></h2>
+        <h3 class="ph">Ausreißer heute <span class="mute small">ab ±10 %</span></h3>
         <div class="scroll outl" id="outl"><div class="empty">–</div></div>
       </div>
       <div class="panel">
-        <h2>📅 Termine</h2>
+        <h3 class="ph">Termine</h3>
         <div class="tabs">
-          <button class="btn active" data-t="earn">Earnings · 60 T.</button>
-          <button class="btn" data-t="makro">Makro & Politik</button>
-          <button class="btn" data-t="div">Dividenden</button>
+          <button class="fbtn active" data-t="earn">Earnings</button>
+          <button class="fbtn" data-t="makro">Makro & Politik</button>
+          <button class="fbtn" data-t="div">Dividenden</button>
         </div>
         <div class="scroll cal"><ul class="list" id="cal"><li class="mute">–</li></ul></div>
-        <div class="mute small" id="calInfo" style="margin-top:8px"></div>
+        <div class="mute small" id="calInfo"></div>
       </div>
     </aside>
   </div>
 </main>
 
-<div id="ov"><section id="detail"></section></div>
+<div id="ov"><section id="detail" role="dialog" aria-modal="true"></section></div>
 
 <footer>
-  Regelbasierte Elliott-Wellen-Analyse (Fibonacci-Retracements). Mechanische Zählung – keine Anlageberatung. Szenarien können jederzeit invalidiert werden.
+  Regelbasierte Elliott-Wellen-Analyse mit Fibonacci-Zonen. Die Zählung ist mechanisch – keine Anlageberatung. Szenarien können jederzeit invalidiert werden.
 </footer>
 
 <script src="app.js"></script>
