@@ -78,10 +78,17 @@ function renderTodo(stand){
   const list = aufgaben(), el = document.getElementById("todo");
   document.getElementById("todoDate").textContent = stand ? dateWd(stand) : "";
   if (!list.length) { el.innerHTML = '<div class="empty">Heute keine neuen Aufgaben.<br><span class="small">Bestehende Positionen einfach halten.</span></div>'; return; }
-  const grp = (typ, title) => { const xs = list.filter(a => AKTION[a.status][0] === typ); if (!xs.length) return "";
-    return `<div class="grp">${title} · ${xs.length}</div>` + xs.map(a => { const [t, lbl, txt] = AKTION[a.status];
-      return `<div class="task" data-sym="${a.symbol}"><span class="pill ${t}">${lbl}</span><div><b>${a.name}</b><br><span class="small mute">${txt(a)}</span>${earnWarn(a)}</div></div>`; }).join(""); };
-  el.innerHTML = grp("kauf", "Kaufen") + grp("verkauf", "Verkaufen / Gewinne sichern");
+  const mfOf = a => a.markt_filter || {};
+  const grp = (typ, title, filt) => { const xs = list.filter(a => AKTION[a.status][0] === typ && filt(a))
+      .sort((x, y) => (y.check ? y.check.score : 0) - (x.check ? x.check.score : 0)); if (!xs.length) return "";
+    return `<div class="grp">${title} · ${xs.length}</div>` + xs.map(a => { let [t, lbl, txt] = AKTION[a.status];
+      let sub = txt(a);
+      if (mfOf(a).blockiert) { t = "warten"; lbl = "Pausiert"; sub = mfOf(a).hinweise[0]; }
+      else if (mfOf(a).reduziert) sub = "Nur Teilkauf 1 (ca. 1/3) – Markt angeschlagen";
+      return `<div class="task" data-sym="${a.symbol}"><span class="pill ${t}">${lbl}</span><div><b>${a.name}</b> ${scoreBadge(a.check)}<br><span class="small mute">${sub}</span>${earnWarn(a)}</div></div>`; }).join(""); };
+  el.innerHTML = grp("kauf", "Kaufen (sortiert nach Score)", a => !mfOf(a).blockiert)
+    + grp("kauf", "Kaufzone erreicht – pausiert durch Marktfilter", a => mfOf(a).blockiert)
+    + grp("verkauf", "Verkaufen / Gewinne sichern", () => true);
   el.querySelectorAll(".task").forEach(t => t.onclick = () => showDetail(t.dataset.sym));
 }
 
@@ -114,6 +121,32 @@ function renderTicker(m){
     `<span class="tk"><b>${i.name}</b>${i.kurs.toLocaleString("de-DE", {maximumFractionDigits: i.kurs < 10 ? 4 : 0})} ${pctTxt(i.tag_pct)}</span>`).join("");
 }
 
+// ---------- Marktfilter ----------
+const LAGE_COL = {gesund: "#16a34a", schwach: "#ea580c", abverkauf: "#dc2626"};
+function renderFilter(mf){
+  const el = document.getElementById("mf");
+  if (!mf || !mf.nach_markt) { el.innerHTML = '<h2>🧭 Marktfilter</h2><div class="empty">Wird beim nächsten Analyse-Lauf berechnet.</div>'; return; }
+  const L = mf.lage, bef = mf.befund || {};
+  const befTxt = k => ({nachteil: '<span class="chip r">Filter aktiv</span>', kein_nachteil: '<span class="chip g">kein Nachteil – nur Hinweis</span>',
+    zu_wenig: '<span class="chip o">zu wenige Daten – nur Hinweis</span>'})[bef[k]] || "";
+  const row = (name, x, col, extra) => { const q = x.quote_pct;
+    return `<div class="mfrow"><span>${name}</span><span class="meter" style="margin:0"><i style="width:${q || 0}%;background:${col}"></i></span>
+      <b>${q != null ? q + " %" : "–"}</b><span class="mute small">${x.n} Signale${x.rendite_schnitt_pct != null ? " · Ø " + (x.rendite_schnitt_pct >= 0 ? "+" : "") + String(x.rendite_schnitt_pct).replace(".", ",") + " %" : ""}</span>${extra || ""}</div>`; };
+  const m = mf.nach_markt, r = mf.nach_rs;
+  const nPaus = DATA.filter(a => a.markt_filter && a.markt_filter.blockiert).length, nRed = DATA.filter(a => a.markt_filter && a.markt_filter.reduziert).length;
+  el.innerHTML = `<h2>🧭 Marktfilter <span class="mute small">Gesamtmarkt & relative Stärke im Elliott-Signal</span></h2>
+    <div class="mfgrid">
+      <div>${L ? `<div class="k">Marktlage heute</div><div class="mflage" style="color:${LAGE_COL[L.regime]}">● ${L.label}</div>
+        <div class="small">S&P 500 ${num1(L.spx_vs_200_pct)} ggü. 200-Tage-Linie · ${num1(L.spx_5t_pct)} in 5 Tagen<br>VIX ${String(L.vix).replace(".", ",")} (${L.vix_vs_50_pct >= 0 ? "+" : ""}${L.vix_vs_50_pct} % ggü. 50-Tage-Schnitt)</div>
+        <div class="small" style="margin-top:6px">${nPaus ? `<b>${nPaus}</b> Kaufsignale pausiert` : "Keine Kaufsignale pausiert"}${nRed ? ` · <b>${nRed}</b> auf 1/3 reduziert` : ""}</div>` : '<span class="mute">Marktdaten fehlen</span>'}</div>
+      <div><div class="k">Trefferquote der Kaufsignale je Marktlage (Backtest)</div>
+        ${row("Gesund", m.gesund, LAGE_COL.gesund)}${row("Angeschlagen", m.schwach, LAGE_COL.schwach, befTxt("schwach"))}${row("Abverkauf", m.abverkauf, LAGE_COL.abverkauf, befTxt("abverkauf"))}</div>
+      <div><div class="k">Aktie vs. Index (20 Tage, Backtest)</div>
+        ${row("Mit dem Markt", r.markt, "#16a34a")}${row("Eigene Schwäche", r.eigen, "#dc2626", befTxt("eigen"))}
+        <div class="mute small" style="margin-top:6px">Der Filter greift nur, wenn eine Lage mind. ${mf.regeln.min_abstand_pp} Prozentpunkte schlechter abschneidet (ab ${mf.regeln.min_signale} Signalen).</div></div>
+    </div>`;
+}
+
 // ---------- Sektoren-Heatmap ----------
 const SEC_SCALE = {tag: 2.5, woche: 5, monat: 10, ytd: 30};
 function renderSectors(){
@@ -131,6 +164,7 @@ function hinweis(a, tag){
   if (!a) return ["", ""];
   const k = kategorie(a), sc = a.check ? a.check.score : 50;
   const an = a.analysten && a.analysten.ampel === "gruen";
+  if (a.markt_filter && a.markt_filter.blockiert) return ["o", "Marktfilter: erst Stabilisierung abwarten"];
   if (tag < 0) {
     if (a.status === "Abwärtstrend") return ["r", "Fallendes Messer – Abwärtstrend, nicht kaufen"];
     if (k === "kauf" || (an && sc >= 55)) return ["g", "Kaufpotenzial – Übertreibung, Teilkauf prüfen"];
@@ -270,7 +304,7 @@ async function load(){
   const fill = (id, key) => { const el = document.getElementById(id);
     [...new Set(DATA.map(a => a.meta && a.meta[key]).filter(Boolean))].sort().forEach(v => el.add(new Option(v, v))); };
   fill("fLand", "land"); fill("fSektor", "sektor");
-  renderMood(MARKT); renderTicker(MARKT); renderSectors(); renderCal();
+  renderMood(MARKT); renderTicker(MARKT); renderSectors(); renderCal(); renderFilter(d.marktfilter);
   const stand = DATA.map(a => a.stand).sort().pop();
   renderTodo(stand); renderOutliers();
   const tq = d.trefferquote;
@@ -311,7 +345,7 @@ function render(){
       <td class="num hide-m">${crvBadge(a)}</td>
       <td>${a.status}${a.status_vorher && a.status_vorher !== a.status ? '<span class="tag new">neu</span>' : ""}</td>
       <td>${a.kurz ? `<span class="kz"><span class="dot ${a.kurz.ampel}"></span>${a.kurz.status}</span>` : '<span class="mute">–</span>'}</td>
-      <td class="sig hide-m">${a.signal}</td>
+      <td class="sig hide-m">${a.signal}${a.markt_filter && (a.markt_filter.blockiert || a.markt_filter.reduziert) ? ' <span class="tag warn" title="' + a.markt_filter.hinweise.join(" · ") + '">Marktfilter</span>' : ""}</td>
       <td class="hide-m">${anTxt(a)}</td>
       <td class="num hide-l hide-m">${qTxt(a)}</td>
       <td class="hide-m">${a.termine && a.termine.earnings ? dateDe(a.termine.earnings) + earnWarn(a) : '<span class="mute">–</span>'}</td>
@@ -466,6 +500,7 @@ async function showDetail(sym, h){
       </div>
       <div>
         <div class="box"><h3>Signal ${horizon === "kurz" ? "kurzfristig" : "langfristig"}</h3><div class="sigbig"><span class="dot ${v.ampel}"></span> ${v.status}</div><div style="margin-top:4px">${v.signal}</div>${earnWarn(a)}
+          ${horizon === "lang" && a.markt_filter && a.markt_filter.hinweise && a.markt_filter.hinweise.length ? `<div class="mfbox">${a.markt_filter.hinweise.map(h => `<div>🧭 ${h}</div>`).join("")}${a.markt_filter.signal_original ? `<div class="mute small">Ohne Marktfilter: ${a.markt_filter.signal_original}</div>` : ""}</div>` : ""}
           ${hasKurz ? `<div class="mute small" style="margin-top:8px">${horizon === "kurz" ? `Langfristig: <span class="dot ${a.ampel}"></span> ${a.status}` : `Kurzfristig: <span class="dot ${a.kurz.ampel}"></span> ${a.kurz.status}`}</div>` : ""}</div>
         <div class="box"><h3>⚖️ Chance / Risiko ${horizon === "kurz" ? "kurzfristig" : "langfristig"}</h3>${riskBox(a, v)}</div>
         <div class="box"><h3>✅ Entscheidungscheck</h3>${checkBox(a)}</div>
