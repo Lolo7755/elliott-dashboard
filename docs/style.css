@@ -222,3 +222,11 @@ footer{color:var(--mute);font-size:12px;padding:16px 24px 24px;max-width:2400px;
 .crvbar i{display:block;height:100%}
 .rk{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:3px 0;border-bottom:1px dashed var(--line)}
 .rk:last-of-type{border-bottom:0}
+.mfpanel{margin-bottom:18px}
+.mfgrid{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,1.2fr) minmax(0,1.2fr);gap:22px}
+.mflage{font-size:22px;font-weight:800;margin:2px 0 4px}
+.mfrow{display:grid;grid-template-columns:110px 1fr 48px auto;gap:8px;align-items:center;font-size:12.5px;padding:4px 0}
+.mfrow .chip{grid-column:2 / -1;justify-self:start}
+.mfbox{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--warn-bg);color:var(--txt);font-size:12.5px;display:grid;gap:4px}
+.pill.warten{background:color-mix(in srgb, var(--orange) 16%, transparent);color:var(--orange)}
+@media (max-width:1150px){ .mfgrid{grid-template-columns:1fr} }
