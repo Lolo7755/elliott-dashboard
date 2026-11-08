@@ -32,6 +32,9 @@ from analyzer.market import fetch_market
 from analyzer.scenarios import build as build_scenarios
 from analyzer.score import entscheidungscheck
 from analyzer import marktfilter as MF
+from analyzer import journal as J
+from analyzer.kommentar import abendkommentar
+from analyzer.statistik import saison, uebernacht
 
 
 def _perf(close: pd.Series, tage: int):
@@ -119,6 +122,7 @@ def main() -> int:
         mkt = None
         print(f"Marktfilter: keine Marktdaten ({e})", file=sys.stderr)
     closes_rs = {}
+    kurse = {}
 
     t_start = time.time()
     print(f"Modus: {'schnell (Backtest vom Vortag)' if SCHNELL else 'voll'}")
@@ -127,13 +131,20 @@ def main() -> int:
         sym = item["symbol"]
         try:
             df, cur, ticker = fetch(sym)
-            res = analyze(df, sym, item["name"], cur)
+            kurse[sym] = df
+            res = analyze(df, sym, item["name"], cur, alt=True)
             try:
-                res["kurz"] = analyze(df, sym, item["name"], cur, horizon="kurz")
+                res["kurz"] = analyze(df, sym, item["name"], cur, horizon="kurz", alt=True)
             except Exception as e:
                 res["kurz"] = None
                 print(f"     {sym}: Kurzfrist-Fehler {e}", file=sys.stderr)
             res["perf"] = performance(df)
+            try:
+                res["uebernacht"] = uebernacht(df)
+                res["saison"] = saison(df["Close"])
+            except Exception as e:
+                res["uebernacht"], res["saison"] = None, None
+                print(f"     {sym}: Statistik-Fehler {e}", file=sys.stderr)
             closes_rs[sym] = MF.rs20(mkt, sym, df["Close"].dropna())
             res["datei"] = datei(sym)
             res["quartale"] = fetch_quartale(ticker)
@@ -223,6 +234,68 @@ def main() -> int:
             r["check"] = None
             print(f"     {r['symbol']}: Score-Fehler {e}", file=sys.stderr)
 
+    # Chance/Risiko und Erwartungswert (Trefferquote dieser Aktie, zur Gesamtquote hin gemittelt)
+    p0 = (gesamt["quote_pct"] or 55) / 100
+    for r in results:
+        r["crv"] = J.crv(r, r["kurs"])
+        bt = r.get("backtest") or {}
+        t_, f_ = bt.get("treffer", 0), bt.get("fehler", 0)
+        p = (t_ + 10 * p0) / (t_ + f_ + 10)
+        r["ev"] = round(p * r["crv"] - (1 - p), 2) if r["crv"] is not None else None
+        r["ev_p_pct"] = round(p * 100)
+
+    # Top-Empfehlungen (gleiche Logik wie bisher im Dashboard, ergänzt um den Erwartungswert)
+    def _kat(r):
+        sg = (r.get("signal") or "").lower()
+        if r["status"] == "Abwärtstrend":
+            return "rot"
+        return "kauf" if sg.startswith(("teilkauf", "letzter nachkauf", "kleine position")) else "andere"
+    kand = []
+    for r in results:
+        sc = (r.get("check") or {}).get("score")
+        if _kat(r) != "kauf" or (r.get("markt_filter") or {}).get("blockiert") or sc is None or sc < 55 \
+                or r["crv"] is None or r["crv"] < 1 or (r["ev"] is not None and r["ev"] <= 0):
+            continue
+        neu = bool(r.get("status_vorher")) and r["status"] != r.get("status_vorher")
+        ev_bonus = max(-5, min(5, round((r["ev"] or 0) * 5)))
+        kand.append((sc + (5 if r["crv"] >= 2 else 0) + (5 if neu else 0) + ev_bonus, r["crv"], r["symbol"]))
+    empfehlungen = [x[2] for x in sorted(kand, key=lambda x: (-x[0], -x[1]))[:3]]
+
+    # Live-Bilanz: neue Kaufsignale aufnehmen und mit echten Kursen nachhalten
+    try:
+        lb = J.aktualisieren(DOCS / "live_bilanz.json", results, kurse, set(empfehlungen), DOCS / "signal_historie.csv")
+        live_stat = lb.get("statistik")
+        print("Live-Bilanz:", json.dumps(live_stat.get("alle"), ensure_ascii=False))
+    except Exception as e:
+        live_stat = None
+        print(f"Live-Bilanz-Fehler {e}", file=sys.stderr)
+
+    # Chancen-Finder außerhalb der Watchlist
+    try:
+        from analyzer.chancen import suchen
+        t_ch = time.time()
+        chancen = suchen({r["symbol"] for r in results})
+        chancen["dauer_s"] = round(time.time() - t_ch)
+        print(f"Chancen-Finder: {chancen['geprueft']} Aktien geprüft, {len(chancen['ruecksetzer'])} Rücksetzer, "
+              f"{len(chancen['ausbruch'])} Ausbruch-Kandidaten ({chancen['dauer_s']} s)")
+    except Exception as e:
+        chancen = None
+        print(f"Chancen-Finder-Fehler {e}", file=sys.stderr)
+
+    # Wichtige News: nur Aktien, die sich heute deutlich bewegt haben
+    wichtige_news = []
+    for r in sorted(results, key=lambda r: -abs((r.get("perf") or {}).get("tag") or 0)):
+        tg = (r.get("perf") or {}).get("tag")
+        if tg is None or abs(tg) < 4:
+            break
+        n0 = next((n for n in (r.get("news") or []) if n.get("datum") and n["datum"] >= (pd.Timestamp(r["stand"]) - pd.Timedelta(days=4)).strftime("%Y-%m-%d")), None) \
+            or ((r.get("news") or [None])[0])
+        wichtige_news.append({"symbol": r["symbol"], "name": r["name"], "tag_pct": tg, "woche_pct": r["perf"].get("woche"),
+                              "kurs": r["kurs"], "currency": r.get("currency"), "status": r["status"], "ampel": r["ampel"],
+                              "zone": r["zone"], "news": n0, "news_weitere": (r.get("news") or [])[1:3]})
+        if len(wichtige_news) >= 15:
+            break
+
     # Detaildatei pro Aktie (Charts, Wellen, News) – data.json bleibt schlank
     (DOCS / "aktien").mkdir(exist_ok=True)
     summary = []
@@ -237,6 +310,11 @@ def main() -> int:
             s["backtest"].pop("signale", None)
             (s["backtest"].get("verkauf") or {}).pop("signale", None)
         s["welle"].pop("labels", None)
+        s["welle"].pop("alternative", None)
+        if s.get("saison"):
+            mon = int(r["stand"][5:7])
+            s["saison_monat"] = next((x for x in s["saison"] if x["m"] == mon), None)
+        s.pop("saison", None)
         summary.append(s)
 
     # Ausreißer des Tages (ab ±10 %)
@@ -247,10 +325,26 @@ def main() -> int:
                   for r in beweg if abs(r["perf"]["tag"]) >= 10]
     top = [{"symbol": r["symbol"], "name": r["name"], "tag": r["perf"]["tag"]} for r in beweg[:6]]
 
+    def _aufgabe(r, typ):
+        kauf = r["status"] in J.ENTRY
+        halten = J.ENTRY + ("Welle 5 läuft", "Ziel 1 erreicht", "Ziel 2 erreicht", "Impuls vollendet", "Neues Hoch / Trend läuft")
+        verk = r["status"] in ("Impuls vollendet", "Ziel 1 erreicht", "Ziel 2 erreicht") or \
+            (r["status"] == "Abwärtstrend" and r.get("status_vorher") in halten)
+        return r.get("status_vorher") and r["status"] != r["status_vorher"] and (kauf if typ == "kauf" else verk)
+    try:
+        kommentar = abendkommentar(markt, results, mf_lage, [next(r["name"] for r in results if r["symbol"] == e) for e in empfehlungen],
+                                   sum(bool(_aufgabe(r, "kauf")) and not (r.get("markt_filter") or {}).get("blockiert") for r in results),
+                                   sum(bool(_aufgabe(r, "verkauf")) for r in results))
+    except Exception as e:
+        kommentar = None
+        print(f"Kommentar-Fehler {e}", file=sys.stderr)
+
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (DOCS / "data.json").write_text(
         json.dumps({"erstellt": now, "modus": "schnell" if SCHNELL else "voll", "dauer_s": round(time.time() - t_start), "trefferquote": gesamt, "markt": markt, "ausreisser": ausreisser,
-                    "top_bewegungen": top, "marktfilter": marktfilter, "aktien": summary, "fehler": errors}, ensure_ascii=False),
+                    "top_bewegungen": top, "marktfilter": marktfilter, "empfehlungen": empfehlungen, "kommentar": kommentar,
+                    "live_bilanz": live_stat, "chancen": chancen, "wichtige_news": wichtige_news,
+                    "aktien": summary, "fehler": errors}, ensure_ascii=False),
         encoding="utf-8",
     )
 
