@@ -301,3 +301,104 @@ tr.row:hover{background:linear-gradient(90deg,rgba(20,184,166,.07),rgba(59,130,2
 .pick .rank{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--grad);color:#fff;font:800 13px var(--display)}
 .pick .small{margin-top:3px}
 .when{color:var(--txt);font-weight:600}
+
+/* ===== Fließendes Design: Kacheln verschmelzen mit dem Hintergrund ===== */
+[data-theme="dark"]{
+  --glass:rgba(26,31,40,.46); --glass2:rgba(255,255,255,.035); --edge:rgba(255,255,255,.06);
+  --aurora:
+    radial-gradient(1200px 700px at -5% -10%,rgba(20,184,166,.26),transparent 60%),
+    radial-gradient(1000px 650px at 105% 0%,rgba(59,130,246,.22),transparent 62%),
+    radial-gradient(900px 700px at 50% 55%,rgba(139,92,246,.10),transparent 65%),
+    radial-gradient(1100px 700px at 0% 100%,rgba(59,130,246,.11),transparent 60%),
+    radial-gradient(1000px 700px at 100% 100%,rgba(20,184,166,.10),transparent 60%);
+}
+[data-theme="light"]{
+  --glass:rgba(255,255,255,.52); --glass2:rgba(255,255,255,.45); --edge:rgba(255,255,255,.75);
+  --aurora:
+    radial-gradient(1200px 700px at -5% -10%,rgba(20,184,166,.24),transparent 60%),
+    radial-gradient(1000px 650px at 105% 0%,rgba(59,130,246,.20),transparent 62%),
+    radial-gradient(900px 700px at 50% 55%,rgba(139,92,246,.07),transparent 65%),
+    radial-gradient(1100px 700px at 0% 100%,rgba(59,130,246,.12),transparent 60%),
+    radial-gradient(1000px 700px at 100% 100%,rgba(20,184,166,.14),transparent 60%);
+  --bg:#eaf2f4;
+}
+body{background:var(--aurora),var(--bg);background-attachment:fixed}
+
+/* Kopfzeile ohne harte Linie */
+.topbar{background:color-mix(in srgb,var(--bg) 55%,transparent);backdrop-filter:blur(18px) saturate(1.3);border-bottom:0;
+  box-shadow:0 1px 0 var(--edge)}
+
+/* Hero löst sich in die Seite auf */
+.hero{background:transparent;border:0;box-shadow:none;padding-left:4px;padding-right:4px;overflow:visible}
+.hero .wave{height:85%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
+
+/* Alle Kacheln als mattes Glas */
+.hcard,.panel,.tablewrap,.box,.chartbox,.tk,.htabs,.kbadge{
+  background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
+  box-shadow:0 10px 40px -18px rgba(8,30,50,.35)}
+[data-theme="light"] .hcard{background:var(--glass)}
+.hcard:before,.side .panel:before,.tabbed:before{left:24px;right:24px;opacity:.45;
+  background:linear-gradient(90deg,transparent,#14b8a6 30%,#3b82f6 70%,transparent)}
+
+/* Innere Felder: zarter statt grauer Kästen */
+.lagefacts div,.wlstats div,.facts div,.task,.ol,.empty,.ptabs button.on{background:var(--glass2)}
+.task,.ol{border:1px solid transparent}
+.task:hover,.ol:hover{background:color-mix(in srgb,#14b8a6 9%,transparent);outline:0;border-color:color-mix(in srgb,#14b8a6 30%,transparent)}
+.pick{background:linear-gradient(var(--glass),var(--glass)) padding-box,var(--grad) border-box}
+
+/* Tabelle: Linien nur noch angedeutet */
+th,td{border-bottom-color:color-mix(in srgb,var(--line) 55%,transparent)}
+thead th,[data-theme="light"] thead th{background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(14px)}
+tr.row{transition:background .15s}
+
+/* Filter & Eingaben gläsern */
+.fbtn,input[type=search],select,.btn,.seg{background:var(--glass);border-color:var(--edge);backdrop-filter:blur(10px)}
+.fbtn.active{background:var(--grad)}
+
+/* Detailansicht */
+#ov{background:rgba(6,12,20,.45);backdrop-filter:blur(10px)}
+#detail{background:var(--aurora),color-mix(in srgb,var(--bg2) 88%,transparent);border-color:var(--edge)}
+
+footer{opacity:.8}
+
+/* ===== Markt, News, Chancen, Live-Bilanz ===== */
+.ptabs{flex-wrap:wrap}
+.evb{display:inline-block;min-width:58px;text-align:center;padding:2px 7px;border-radius:8px;border:1.5px solid;font-weight:800;font-size:12px;font-variant-numeric:tabular-nums}
+.kommentar{padding:14px 16px;border-radius:var(--r-md);background:var(--glass2);border:1px solid var(--edge);margin-bottom:14px}
+.kommentar h3{margin:2px 0 6px;font-size:18px;font-weight:800}
+.kommentar p{margin:0;font-size:14px;max-width:110ch}
+.mkgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.mkcol{min-width:0}
+.mkrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:7px 4px;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);font-size:13px}
+.mkrow:last-child{border-bottom:0}
+.mkrow .num{min-width:78px}
+.spark{display:block}
+.sbars{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:6px}
+.sb{display:flex;flex-direction:column;align-items:center;font-size:10px;color:var(--mute)}
+.sb .sbu,.sb .sbd{height:46px;width:100%;display:flex;justify-content:center}
+.sb .sbu{align-items:flex-end;border-bottom:1px solid var(--line)} .sb .sbd{align-items:flex-start}
+.sb i{display:block;width:72%;border-radius:3px}
+.sb.cur span{color:var(--txt);font-weight:800} .sb.cur .sbu,.sb.cur .sbd{background:color-mix(in srgb,#14b8a6 10%,transparent);border-radius:4px}
+.ngrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.ncard{padding:12px 14px;border-radius:var(--r-md);background:var(--glass2);border:1px solid var(--edge);border-left:3px solid var(--c,var(--line))}
+.ncard.up{--c:var(--green)} .ncard.down{--c:var(--red)}
+.nhead{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.nhead .sym{font-weight:800;cursor:pointer} .nhead .sym:hover{color:var(--accent)}
+.ntitle{display:block;font-weight:600;text-decoration:none;margin-bottom:2px} .ntitle:hover{color:var(--accent)}
+.nctx{margin-top:8px;font-size:12.5px}
+.chhead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+.chcard{padding:12px 14px;border-radius:var(--r-md);background:var(--glass2);border:1px solid var(--edge)}
+.chtop{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.chcard .rank{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--grad);color:#fff;font:800 12px var(--display)}
+.chips2{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.chip2{font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
+.chact{display:flex;gap:6px;align-items:center;margin-top:10px}
+.btn.small{padding:4px 9px;font-size:12px}
+.lbtiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:10px}
+.lbt{padding:10px 12px;border-radius:var(--r-sm);background:var(--glass2);border:1px solid var(--edge);display:flex;flex-direction:column;gap:2px;min-width:0}
+.lbt span{font-size:12px;color:var(--mute);font-weight:600}
+.lbt b{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.lbt em{font-style:normal;font-size:11.5px;color:var(--mute)}
+@media (max-width:1250px){ .mkgrid{grid-template-columns:repeat(2,minmax(0,1fr))} .lbtiles{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:760px){ .mkgrid{grid-template-columns:1fr} .lbtiles{grid-template-columns:repeat(2,minmax(0,1fr))} .ngrid,.chgrid{grid-template-columns:1fr} .ptabs button{font-size:14px;padding:4px 8px} }
