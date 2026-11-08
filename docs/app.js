@@ -1,7 +1,7 @@
 "use strict";
 const AMPEL_ORDER = {gruen: 0, orange: 1, rot: 2};
 let DATA = [], MAKRO = [], MARKT = null, AUS = [], TOPMV = [], RAW = {};
-let filter = "alle", sortKey = "ampel", sortDir = 1, chart = null, calTab = "earn", secTab = "woche";
+let filter = "alle", sortKey = "ampel", sortDir = 1, chart = null, calTab = "makro", secTab = "woche";
 let openSym = null, horizon = "lang";
 const DETAIL = {};
 
@@ -246,8 +246,8 @@ function renderCal(){
     document.getElementById("calInfo").textContent = "Dividendentermine der nächsten 90 Tage.";
   } else {
     MAKRO.forEach(t => { if (daysTo(t.datum) >= -1 && daysTo(t.datum) <= 220)
-      items.push([t.datum, `<b>${t.titel}</b><span class="kat">${t.kategorie}</span>${t.info ? `<div class="mute small" style="margin-left:74px">${t.info}</div>` : ""}`]); });
-    document.getElementById("calInfo").textContent = "Notenbanken, Konjunkturdaten, Politik und Börsentermine (Quellen: Fed, EZB, BLS).";
+      items.push([t.datum, `<span class="flag" title="${LAND_NAME[landOf(t)]}">${FLAG[landOf(t)]}</span> <b>${t.titel}</b><span class="kat">${t.kategorie}</span>${t.info ? `<div class="mute small" style="margin-left:74px">${t.info}</div>` : ""}`]); });
+    document.getElementById("calInfo").textContent = "Notenbanken, Konjunkturdaten, Politik und Börsentermine für USA, Deutschland, Eurozone und China (Quellen: Fed, EZB, BLS, BEA, Destatis, Eurostat, ifo, ZEW, NBS).";
   }
   items.sort((x, y) => x[0] < y[0] ? -1 : 1);
   document.getElementById("cal").innerHTML = items.length ? items.map(([d, html]) => {
@@ -342,7 +342,7 @@ async function load(){
   STAND = kursStand0 ? kursStand0[0] : null;
   EMPF = empfehlungen();
   renderTodo(STAND); renderOutliers();
-  renderMarkt(); renderNews(); renderChancen(); renderLive();
+  renderMarkt(); renderNews(); renderChancen(); renderLive(); renderWoche();
   const tq = d.trefferquote || {};
   const kursStand = Object.entries(DATA.reduce((m, a) => (m[a.stand] = (m[a.stand] || 0) + 1, m), {})).sort((x, y) => y[1] - x[1])[0];
   document.getElementById("stand").innerHTML = "Analyse " + new Date(d.erstellt).toLocaleString("de-DE", {dateStyle: "medium", timeStyle: "short"})
@@ -724,7 +724,7 @@ function renderMarkt(){
   const mak = m.makro || [];
   // Termine der Woche: Makro + Quartalszahlen der Watchlist (nächste 7 Tage)
   const tm = [];
-  MAKRO.forEach(t => { const n = daysTo(t.datum); if (n >= 0 && n <= 7) tm.push([t.datum, `<b>${t.titel}</b><span class="kat">${t.kategorie}</span>`]); });
+  MAKRO.forEach(t => { const n = daysTo(t.datum); if (n >= 0 && n <= 7) tm.push([t.datum, `${FLAG[landOf(t)]} <b>${t.titel}</b><span class="kat">${t.kategorie}</span>`]); });
   DATA.forEach(a => { const t = a.termine || {}; if (t.earnings && t.earnings_in_tagen != null && t.earnings_in_tagen <= 7) tm.push([t.earnings, `<span class="dot ${a.ampel}"></span> <b>${a.name}</b> <span class="mute small">Quartalszahlen</span>`]); });
   tm.sort((x, y) => x[0] < y[0] ? -1 : 1);
   const cur = STAND ? Number(STAND.slice(5, 7)) : new Date().getMonth() + 1;
@@ -835,6 +835,68 @@ async function renderLive(){
   el.querySelectorAll("[data-lb]").forEach(b => b.onclick = () => { lbTab = b.dataset.lb; renderLive(); });
   el.querySelectorAll("tr[data-sym]").forEach(x => x.onclick = () => showDetail(x.dataset.sym));
 }
+
+// ---------- Termine: Zwei-Wochen-Übersicht ----------
+const FLAG = {US: "🇺🇸", DE: "🇩🇪", EU: "🇪🇺", CN: "🇨🇳", Global: "🌐"};
+const LAND_NAME = {US: "USA", DE: "Deutschland", EU: "Eurozone", CN: "China", Global: "Weltweit"};
+const landOf = t => t.land || "US";
+const isoOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+let tmTypen = new Set(["makro", "earn", "div"]), tmLaender = new Set(["US", "DE", "EU", "CN"]);
+try {
+  const g = JSON.parse(localStorage.getItem("tmFilter") || "null");
+  if (g) { tmTypen = new Set(g.typen); tmLaender = new Set(g.laender); }
+} catch(e) {}
+function tmMerken(){ try { localStorage.setItem("tmFilter", JSON.stringify({typen: [...tmTypen], laender: [...tmLaender]})); } catch(e) {} }
+function renderWoche(){
+  const el = document.getElementById("wboard"); if (!el) return;
+  // 10 Handelstage ab heute (am Wochenende ab Montag)
+  const start = new Date(new Date().toDateString());
+  while (start.getDay() === 0 || start.getDay() === 6) start.setDate(start.getDate() + 1);
+  const tage = []; const d = new Date(start);
+  while (tage.length < 10) { if (d.getDay() !== 0 && d.getDay() !== 6) tage.push(isoOf(d)); d.setDate(d.getDate() + 1); }
+  const bis = tage[tage.length - 1];
+  // Wochenend-Termine dem folgenden Montag zuordnen
+  const ziel = iso => { const x = new Date(iso); const wd = x.getDay(); if (wd === 6) x.setDate(x.getDate() + 2); if (wd === 0) x.setDate(x.getDate() + 1); return isoOf(x); };
+  const tagKurz = iso => WT[new Date(iso).getDay()];
+  const box = {}; tage.forEach(t => box[t] = {makro: [], earn: [], div: []});
+  const heute = isoOf(new Date());
+  MAKRO.forEach(t => { if (t.datum < heute || t.datum > bis || !tmLaender.has(landOf(t)) && landOf(t) !== "Global") return;
+    const z = ziel(t.datum); if (box[z]) box[z].makro.push({...t, wochenende: z !== t.datum ? tagKurz(t.datum) : ""}); });
+  DATA.forEach(a => { const t = a.termine || {};
+    if (t.earnings && box[t.earnings]) box[t.earnings].earn.push(a);
+    if (t.ex_dividende && box[t.ex_dividende]) box[t.ex_dividende].div.push(a); });
+  const kurzTitel = t => t.titel.replace(/^(Deutschland|China|Eurozone):\s*/, "");
+  const spalte = (iso, i) => {
+    const b = box[iso], heu = iso === heute;
+    const mk = tmTypen.has("makro") ? b.makro.sort((x, y) => (y.wichtig ? 1 : 0) - (x.wichtig ? 1 : 0)).map(t =>
+      `<div class="ev makro${t.wichtig ? " hoch" : ""}" title="${LAND_NAME[landOf(t)]} · ${t.kategorie}${t.info ? " · " + t.info : ""}">
+        <span class="flag">${FLAG[landOf(t)]}</span><span class="evt">${kurzTitel(t)}${t.wochenende ? ` <span class="mute">(${t.wochenende})</span>` : ""}</span></div>`).join("") : "";
+    const er = tmTypen.has("earn") && b.earn.length ? (() => { const xs = b.earn.slice().sort((x, y) => (y.check?.score || 0) - (x.check?.score || 0));
+      return `<div class="ev earn"><span class="evh">${xs.length} ${xs.length === 1 ? "Quartalszahl" : "Quartalszahlen"}</span>
+        <span class="evnames">${xs.slice(0, 4).map(a => `<button class="nm" data-sym="${a.symbol}"><span class="dot ${a.ampel}"></span>${a.name}</button>`).join("")}${xs.length > 4 ? `<span class="mute small">+${xs.length - 4} weitere</span>` : ""}</span></div>`; })() : "";
+    const dv = tmTypen.has("div") && b.div.length ? `<div class="ev div"><span class="evh">Ex-Dividende</span><span class="evnames">${b.div.map(a => `<button class="nm" data-sym="${a.symbol}">${a.name}</button>`).join("")}</span></div>` : "";
+    const inhalt = mk + er + dv;
+    return `<div class="wday${heu ? " heute" : ""}${i === 5 ? " wk2" : ""}">
+      <div class="wdh"><b>${tagKurz(iso)}</b> <span>${dateDe(iso).slice(0, 6)}</span>${heu ? '<em>heute</em>' : ""}</div>
+      ${inhalt || '<div class="ev leer">–</div>'}</div>`;
+  };
+  document.getElementById("tmZeitraum").textContent = `${dateDe(tage[0]).slice(0, 6)} – ${dateDe(bis).slice(0, 6)} · zwei Wochen`;
+  el.innerHTML = `<div class="wlabel">Diese Woche</div><div class="wlabel wk2">Nächste Woche</div>` + tage.map(spalte).join("");
+  el.querySelectorAll("[data-sym]").forEach(x => x.onclick = () => showDetail(x.dataset.sym));
+}
+document.querySelectorAll("#tmTyp .tbtn").forEach(b => {
+  const sync = () => { b.classList.toggle("on", tmTypen.has(b.dataset.typ)); b.setAttribute("aria-pressed", tmTypen.has(b.dataset.typ)); };
+  sync(); b.onclick = () => { tmTypen.has(b.dataset.typ) ? tmTypen.delete(b.dataset.typ) : tmTypen.add(b.dataset.typ); sync(); tmMerken(); renderWoche(); };
+});
+document.querySelectorAll("#tmLand .lbtn").forEach(b => {
+  const sync = () => { b.classList.toggle("on", tmLaender.has(b.dataset.land)); b.setAttribute("aria-pressed", tmLaender.has(b.dataset.land)); };
+  sync(); b.onclick = () => { tmLaender.has(b.dataset.land) ? tmLaender.delete(b.dataset.land) : tmLaender.add(b.dataset.land); sync(); tmMerken(); renderWoche(); };
+});
+document.getElementById("tmAlle").onclick = e => {
+  const l = document.getElementById("tmList"), auf = l.hidden;
+  l.hidden = !auf; e.currentTarget.setAttribute("aria-expanded", auf); e.currentTarget.textContent = auf ? "Alle Termine ▴" : "Alle Termine ▾";
+  if (auf) renderCal();
+};
 
 // ---------- Bedienung ----------
 document.querySelectorAll("[data-f]").forEach(b => b.onclick = () => {
