@@ -1,38 +1,477 @@
 {
-  "hinweis": "Makro- und Politik-Termine. Quellen: Federal Reserve, EZB, US Bureau of Labor Statistics. Stand 03.11.2026 – Liste wird bei Bedarf erweitert.",
-  "termine": [
-    {"datum": "2026-11-03", "titel": "US-Zwischenwahlen (Midterms)", "kategorie": "Politik", "info": "Wahl zu Repräsentantenhaus und einem Drittel des Senats"},
-    {"datum": "2026-11-04", "titel": "Midterms: Auszählung & Marktreaktion", "kategorie": "Politik", "info": "Ergebnisse der US-Zwischenwahlen"},
-    {"datum": "2026-11-06", "titel": "US-Arbeitsmarktbericht (Oktober)", "kategorie": "Konjunktur USA", "info": "Non-Farm Payrolls, 14:30 Uhr"},
-    {"datum": "2026-11-10", "titel": "US-Inflation CPI (Oktober)", "kategorie": "Konjunktur USA", "info": "14:30 Uhr"},
-    {"datum": "2026-11-18", "titel": "Fed-Protokoll (Sitzung Oktober)", "kategorie": "Notenbank", "info": "FOMC Minutes, 20:00 Uhr"},
-    {"datum": "2026-11-26", "titel": "Thanksgiving – US-Börsen geschlossen", "kategorie": "Börse", "info": "Freitag 27.11. verkürzter Handel"},
-    {"datum": "2026-12-04", "titel": "US-Arbeitsmarktbericht (November)", "kategorie": "Konjunktur USA", "info": "Non-Farm Payrolls, 14:30 Uhr"},
-    {"datum": "2026-12-09", "titel": "Fed-Zinsentscheid", "kategorie": "Notenbank", "info": "20:00 Uhr, mit Projektionen & Dot Plot"},
-    {"datum": "2026-12-10", "titel": "US-Inflation CPI (November)", "kategorie": "Konjunktur USA", "info": "14:30 Uhr"},
-    {"datum": "2026-12-17", "titel": "EZB-Zinsentscheid", "kategorie": "Notenbank", "info": "14:15 Uhr, mit Projektionen"},
-    {"datum": "2026-12-18", "titel": "Großer Verfallstag (Hexensabbat)", "kategorie": "Börse", "info": "Verfall von Optionen & Futures – oft hohe Schwankungen"},
-    {"datum": "2026-12-24", "titel": "Heiligabend – Xetra geschlossen", "kategorie": "Börse", "info": "US-Börsen verkürzt"},
-    {"datum": "2026-12-25", "titel": "Weihnachten – Börsen geschlossen", "kategorie": "Börse", "info": ""},
-    {"datum": "2026-12-31", "titel": "Silvester – Xetra geschlossen", "kategorie": "Börse", "info": ""},
-    {"datum": "2027-01-01", "titel": "Neujahr – Börsen geschlossen", "kategorie": "Börse", "info": ""},
-    {"datum": "2027-01-08", "titel": "US-Arbeitsmarktbericht (Dezember)", "kategorie": "Konjunktur USA", "info": "Non-Farm Payrolls, 14:30 Uhr"},
-    {"datum": "2027-01-13", "titel": "US-Inflation CPI (Dezember)", "kategorie": "Konjunktur USA", "info": "14:30 Uhr"},
-    {"datum": "2027-01-27", "titel": "Fed-Zinsentscheid", "kategorie": "Notenbank", "info": "20:00 Uhr"},
-    {"datum": "2027-02-04", "titel": "EZB-Zinsentscheid", "kategorie": "Notenbank", "info": "14:15 Uhr"},
-    {"datum": "2027-02-05", "titel": "US-Arbeitsmarktbericht (Januar)", "kategorie": "Konjunktur USA", "info": "Non-Farm Payrolls, 14:30 Uhr"},
-    {"datum": "2027-02-11", "titel": "US-Inflation CPI (Januar)", "kategorie": "Konjunktur USA", "info": "14:30 Uhr"},
-    {"datum": "2027-03-05", "titel": "US-Arbeitsmarktbericht (Februar)", "kategorie": "Konjunktur USA", "info": "Non-Farm Payrolls, 14:30 Uhr"},
-    {"datum": "2027-03-10", "titel": "US-Inflation CPI (Februar)", "kategorie": "Konjunktur USA", "info": "14:30 Uhr"},
-    {"datum": "2027-03-17", "titel": "Fed-Zinsentscheid", "kategorie": "Notenbank", "info": "19:00 Uhr, mit Projektionen & Dot Plot"},
-    {"datum": "2027-03-18", "titel": "EZB-Zinsentscheid", "kategorie": "Notenbank", "info": "14:15 Uhr, mit Projektionen"},
-    {"datum": "2027-03-19", "titel": "Großer Verfallstag (Hexensabbat)", "kategorie": "Börse", "info": "Verfall von Optionen & Futures"},
-    {"datum": "2027-04-02", "titel": "US-Arbeitsmarktbericht (März)", "kategorie": "Konjunktur USA", "info": "Non-Farm Payrolls, 14:30 Uhr"},
-    {"datum": "2027-04-28", "titel": "Fed-Zinsentscheid", "kategorie": "Notenbank", "info": "20:00 Uhr"},
-    {"datum": "2027-04-29", "titel": "EZB-Zinsentscheid", "kategorie": "Notenbank", "info": "14:15 Uhr"},
-    {"datum": "2027-05-07", "titel": "US-Arbeitsmarktbericht (April)", "kategorie": "Konjunktur USA", "info": "Non-Farm Payrolls, 14:30 Uhr"},
-    {"datum": "2027-06-04", "titel": "US-Arbeitsmarktbericht (Mai)", "kategorie": "Konjunktur USA", "info": "Non-Farm Payrolls, 14:30 Uhr"},
-    {"datum": "2027-06-09", "titel": "Fed-Zinsentscheid", "kategorie": "Notenbank", "info": "20:00 Uhr, mit Projektionen & Dot Plot"},
-    {"datum": "2027-06-10", "titel": "EZB-Zinsentscheid", "kategorie": "Notenbank", "info": "14:15 Uhr, mit Projektionen"}
-  ]
+ "hinweis": "Makro- und Politik-Termine für USA, Deutschland, Eurozone und China. Quellen: Federal Reserve, EZB, BLS, BEA, Census, Destatis, Eurostat, ifo, ZEW, NBS China. Stand 08.11.2026 – als vorläufig markierte Termine können sich um einen Tag verschieben.",
+ "termine": [
+  {
+   "datum": "2026-11-03",
+   "titel": "US-Zwischenwahlen (Midterms)",
+   "kategorie": "Politik",
+   "info": "Wahl zu Repräsentantenhaus und einem Drittel des Senats",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-04",
+   "titel": "Midterms: Auszählung & Marktreaktion",
+   "kategorie": "Politik",
+   "info": "Ergebnisse der US-Zwischenwahlen",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-06",
+   "titel": "US-Arbeitsmarktbericht (Oktober)",
+   "kategorie": "Konjunktur",
+   "info": "Non-Farm Payrolls, 14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-09",
+   "titel": "China: Inflation CPI & Erzeugerpreise PPI (Oktober)",
+   "kategorie": "Konjunktur",
+   "info": "02:30 Uhr dt. Zeit, Statistikamt NBS",
+   "land": "CN",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-10",
+   "titel": "US-Inflation CPI (Oktober)",
+   "kategorie": "Konjunktur",
+   "info": "14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-11",
+   "titel": "Deutschland: Inflation endgültig (Oktober)",
+   "kategorie": "Konjunktur",
+   "info": "08:00 Uhr, Destatis – vorläufig +2,8 %",
+   "land": "DE",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-11-13",
+   "titel": "Eurozone: BIP 3. Quartal (Schnellschätzung)",
+   "kategorie": "Konjunktur",
+   "info": "11:00 Uhr, Eurostat",
+   "land": "EU",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-11-16",
+   "titel": "China: Industrieproduktion, Einzelhandel, Investitionen (Oktober)",
+   "kategorie": "Konjunktur",
+   "info": "03:00 Uhr dt. Zeit, NBS",
+   "land": "CN",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-17",
+   "titel": "Deutschland: ZEW-Konjunkturerwartungen (November)",
+   "kategorie": "Konjunktur",
+   "info": "11:00 Uhr",
+   "land": "DE",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-17",
+   "titel": "US-Einzelhandelsumsätze (Oktober)",
+   "kategorie": "Konjunktur",
+   "info": "14:30 Uhr, Census Bureau",
+   "land": "US",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-11-18",
+   "titel": "Eurozone: Inflation endgültig (Oktober)",
+   "kategorie": "Konjunktur",
+   "info": "11:00 Uhr, Eurostat",
+   "land": "EU",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-11-18",
+   "titel": "Fed-Protokoll (Sitzung Oktober)",
+   "kategorie": "Notenbank",
+   "info": "FOMC Minutes, 20:00 Uhr",
+   "land": "US",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-11-20",
+   "titel": "China: Leitzins LPR",
+   "kategorie": "Notenbank",
+   "info": "02:15 Uhr dt. Zeit, People's Bank of China",
+   "land": "CN",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-11-24",
+   "titel": "Deutschland: ifo-Geschäftsklima (November)",
+   "kategorie": "Konjunktur",
+   "info": "10:00 Uhr",
+   "land": "DE",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-25",
+   "titel": "US-Inflation PCE (Oktober) & BIP Q3 (2. Schätzung)",
+   "kategorie": "Konjunktur",
+   "info": "14:30 Uhr, BEA – Lieblings-Inflationsmaß der Fed",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-26",
+   "titel": "Thanksgiving – US-Börsen geschlossen",
+   "kategorie": "Börse",
+   "info": "Freitag 27.11. verkürzter Handel",
+   "land": "US",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-11-27",
+   "titel": "China: Industriegewinne (Oktober)",
+   "kategorie": "Konjunktur",
+   "info": "02:30 Uhr dt. Zeit, NBS",
+   "land": "CN",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-11-27",
+   "titel": "Deutschland: Inflation vorläufig (November)",
+   "kategorie": "Konjunktur",
+   "info": "14:00 Uhr, Destatis (Termin vorläufig)",
+   "land": "DE",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-11-30",
+   "titel": "China: Einkaufsmanagerindizes PMI (November)",
+   "kategorie": "Konjunktur",
+   "info": "02:30 Uhr dt. Zeit, NBS",
+   "land": "CN",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-01",
+   "titel": "Eurozone: Inflation vorläufig (November)",
+   "kategorie": "Konjunktur",
+   "info": "11:00 Uhr, Eurostat",
+   "land": "EU",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-04",
+   "titel": "US-Arbeitsmarktbericht (November)",
+   "kategorie": "Konjunktur",
+   "info": "Non-Farm Payrolls, 14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-09",
+   "titel": "China: Inflation CPI & Erzeugerpreise PPI (November)",
+   "kategorie": "Konjunktur",
+   "info": "02:30 Uhr dt. Zeit, NBS",
+   "land": "CN",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-09",
+   "titel": "Fed-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "20:00 Uhr, mit Projektionen & Dot Plot",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-10",
+   "titel": "US-Inflation CPI (November)",
+   "kategorie": "Konjunktur",
+   "info": "14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-15",
+   "titel": "China: Industrieproduktion, Einzelhandel, Investitionen (November)",
+   "kategorie": "Konjunktur",
+   "info": "03:00 Uhr dt. Zeit, NBS",
+   "land": "CN",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-15",
+   "titel": "Deutschland: ZEW-Konjunkturerwartungen (Dezember)",
+   "kategorie": "Konjunktur",
+   "info": "11:00 Uhr",
+   "land": "DE",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-16",
+   "titel": "US-Einzelhandelsumsätze (November)",
+   "kategorie": "Konjunktur",
+   "info": "14:30 Uhr, inkl. Black Friday",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-17",
+   "titel": "Deutschland: ifo-Geschäftsklima (Dezember)",
+   "kategorie": "Konjunktur",
+   "info": "10:00 Uhr",
+   "land": "DE",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-17",
+   "titel": "EZB-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "14:15 Uhr, mit Projektionen",
+   "land": "EU",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-18",
+   "titel": "Großer Verfallstag (Hexensabbat)",
+   "kategorie": "Börse",
+   "info": "Verfall von Optionen & Futures – oft hohe Schwankungen",
+   "land": "Global",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-21",
+   "titel": "China: Leitzins LPR",
+   "kategorie": "Notenbank",
+   "info": "02:15 Uhr dt. Zeit, People's Bank of China",
+   "land": "CN",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-12-23",
+   "titel": "US-Inflation PCE (November) & BIP Q3 (3. Schätzung)",
+   "kategorie": "Konjunktur",
+   "info": "14:30 Uhr, BEA",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-24",
+   "titel": "Heiligabend – Xetra geschlossen",
+   "kategorie": "Börse",
+   "info": "US-Börsen verkürzt",
+   "land": "DE",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-12-25",
+   "titel": "Weihnachten – Börsen geschlossen",
+   "kategorie": "Börse",
+   "info": "",
+   "land": "Global",
+   "wichtig": false
+  },
+  {
+   "datum": "2026-12-31",
+   "titel": "China: Einkaufsmanagerindizes PMI (Dezember)",
+   "kategorie": "Konjunktur",
+   "info": "02:30 Uhr dt. Zeit, NBS",
+   "land": "CN",
+   "wichtig": true
+  },
+  {
+   "datum": "2026-12-31",
+   "titel": "Silvester – Xetra geschlossen",
+   "kategorie": "Börse",
+   "info": "",
+   "land": "DE",
+   "wichtig": false
+  },
+  {
+   "datum": "2027-01-01",
+   "titel": "Neujahr – Börsen geschlossen",
+   "kategorie": "Börse",
+   "info": "",
+   "land": "Global",
+   "wichtig": false
+  },
+  {
+   "datum": "2027-01-06",
+   "titel": "Deutschland: Inflation vorläufig (Dezember)",
+   "kategorie": "Konjunktur",
+   "info": "14:00 Uhr, Destatis (Termin vorläufig)",
+   "land": "DE",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-01-08",
+   "titel": "US-Arbeitsmarktbericht (Dezember)",
+   "kategorie": "Konjunktur",
+   "info": "Non-Farm Payrolls, 14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-01-13",
+   "titel": "US-Inflation CPI (Dezember)",
+   "kategorie": "Konjunktur",
+   "info": "14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-01-19",
+   "titel": "Deutschland: ZEW-Konjunkturerwartungen (Januar)",
+   "kategorie": "Konjunktur",
+   "info": "11:00 Uhr",
+   "land": "DE",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-01-27",
+   "titel": "Fed-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "20:00 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-01-29",
+   "titel": "Deutschland: Inflation vorläufig (Januar)",
+   "kategorie": "Konjunktur",
+   "info": "14:00 Uhr, Destatis (Termin vorläufig)",
+   "land": "DE",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-02-04",
+   "titel": "EZB-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "14:15 Uhr",
+   "land": "EU",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-02-05",
+   "titel": "US-Arbeitsmarktbericht (Januar)",
+   "kategorie": "Konjunktur",
+   "info": "Non-Farm Payrolls, 14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-02-11",
+   "titel": "US-Inflation CPI (Januar)",
+   "kategorie": "Konjunktur",
+   "info": "14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-03-05",
+   "titel": "China: Nationaler Volkskongress (Eröffnung)",
+   "kategorie": "Politik",
+   "info": "Wachstumsziel für 2027 – traditionell am 5. März",
+   "land": "CN",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-03-05",
+   "titel": "US-Arbeitsmarktbericht (Februar)",
+   "kategorie": "Konjunktur",
+   "info": "Non-Farm Payrolls, 14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-03-10",
+   "titel": "US-Inflation CPI (Februar)",
+   "kategorie": "Konjunktur",
+   "info": "14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-03-17",
+   "titel": "Fed-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "19:00 Uhr, mit Projektionen & Dot Plot",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-03-18",
+   "titel": "EZB-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "14:15 Uhr, mit Projektionen",
+   "land": "EU",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-03-19",
+   "titel": "Großer Verfallstag (Hexensabbat)",
+   "kategorie": "Börse",
+   "info": "Verfall von Optionen & Futures",
+   "land": "Global",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-04-02",
+   "titel": "US-Arbeitsmarktbericht (März)",
+   "kategorie": "Konjunktur",
+   "info": "Non-Farm Payrolls, 14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-04-28",
+   "titel": "Fed-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "20:00 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-04-29",
+   "titel": "EZB-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "14:15 Uhr",
+   "land": "EU",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-05-07",
+   "titel": "US-Arbeitsmarktbericht (April)",
+   "kategorie": "Konjunktur",
+   "info": "Non-Farm Payrolls, 14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-06-04",
+   "titel": "US-Arbeitsmarktbericht (Mai)",
+   "kategorie": "Konjunktur",
+   "info": "Non-Farm Payrolls, 14:30 Uhr",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-06-09",
+   "titel": "Fed-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "20:00 Uhr, mit Projektionen & Dot Plot",
+   "land": "US",
+   "wichtig": true
+  },
+  {
+   "datum": "2027-06-10",
+   "titel": "EZB-Zinsentscheid",
+   "kategorie": "Notenbank",
+   "info": "14:15 Uhr, mit Projektionen",
+   "land": "EU",
+   "wichtig": true
+  }
+ ]
 }
