@@ -837,7 +837,16 @@ async function renderLive(){
 }
 
 // ---------- Termine: Zwei-Wochen-Übersicht ----------
-const FLAG = {US: "🇺🇸", DE: "🇩🇪", EU: "🇪🇺", CN: "🇨🇳", Global: "🌐"};
+// Kleine SVG-Flaggen (Flaggen-Emojis zeigt Windows nur als Buchstaben an)
+const svgFlag = inner => `<svg class="flg" viewBox="0 0 18 12" width="18" height="12" aria-hidden="true">${inner}</svg>`;
+const EU_STERNE = Array.from({length: 12}, (_, i) => { const w = i * Math.PI / 6; return `<circle cx="${(9 + 3.6 * Math.sin(w)).toFixed(2)}" cy="${(6 - 3.6 * Math.cos(w)).toFixed(2)}" r=".55" fill="#ffcc00"/>`; }).join("");
+const FLAG = {
+  US: svgFlag(`<rect width="18" height="12" fill="#fff"/>${[0, 2, 4, 6, 8, 10].map(y => `<rect y="${y * 12 / 13 * 1.083}" width="18" height="${12 / 13}" fill="#b22234"/>`).join("")}<rect width="8" height="6.5" fill="#3c3b6e"/>`),
+  DE: svgFlag(`<rect width="18" height="4" fill="#000"/><rect y="4" width="18" height="4" fill="#dd0000"/><rect y="8" width="18" height="4" fill="#ffce00"/>`),
+  EU: svgFlag(`<rect width="18" height="12" fill="#003399"/>${EU_STERNE}`),
+  CN: svgFlag(`<rect width="18" height="12" fill="#de2910"/><polygon points="3.6,1.6 4.2,3.3 6,3.3 4.55,4.35 5.1,6.1 3.6,5 2.1,6.1 2.65,4.35 1.2,3.3 3,3.3" fill="#ffde00"/>`),
+  Global: svgFlag(`<rect width="18" height="12" rx="2" fill="#64748b"/><circle cx="9" cy="6" r="4" fill="none" stroke="#fff" stroke-width=".9"/><path d="M5 6h8M9 2c-1.6 1.2-1.6 6.8 0 8M9 2c1.6 1.2 1.6 6.8 0 8" stroke="#fff" stroke-width=".7" fill="none"/>`),
+};
 const LAND_NAME = {US: "USA", DE: "Deutschland", EU: "Eurozone", CN: "China", Global: "Weltweit"};
 const landOf = t => t.land || "US";
 const isoOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -888,6 +897,7 @@ document.querySelectorAll("#tmTyp .tbtn").forEach(b => {
   const sync = () => { b.classList.toggle("on", tmTypen.has(b.dataset.typ)); b.setAttribute("aria-pressed", tmTypen.has(b.dataset.typ)); };
   sync(); b.onclick = () => { tmTypen.has(b.dataset.typ) ? tmTypen.delete(b.dataset.typ) : tmTypen.add(b.dataset.typ); sync(); tmMerken(); renderWoche(); };
 });
+document.querySelectorAll("#tmLand .lbtn").forEach(b => { b.innerHTML = `${FLAG[b.dataset.land]}<span>${{US: "USA", DE: "DE", EU: "EU", CN: "China"}[b.dataset.land]}</span>`; });
 document.querySelectorAll("#tmLand .lbtn").forEach(b => {
   const sync = () => { b.classList.toggle("on", tmLaender.has(b.dataset.land)); b.setAttribute("aria-pressed", tmLaender.has(b.dataset.land)); };
   sync(); b.onclick = () => { tmLaender.has(b.dataset.land) ? tmLaender.delete(b.dataset.land) : tmLaender.add(b.dataset.land); sync(); tmMerken(); renderWoche(); };
