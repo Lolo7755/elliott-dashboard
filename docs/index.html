@@ -14,7 +14,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="flow.css">
 </head>
 <body>
 <header class="topbar">
@@ -56,11 +55,19 @@
     <div class="phead">
       <div class="ptabs" role="tablist">
         <button class="on" data-ptab="sek">Sektoren</button>
+        <button data-ptab="mkt">Markt</button>
+        <button data-ptab="news">News</button>
+        <button data-ptab="ch">Chancen</button>
+        <button data-ptab="lb">Live-Bilanz</button>
         <button data-ptab="mf">Marktfilter-Backtest</button>
       </div>
       <span class="seg small" id="secSeg"><button data-sec="tag">Tag</button><button data-sec="woche" class="on">Woche</button><button data-sec="monat">Monat</button><button data-sec="ytd">Seit 1.1.</button></span>
     </div>
     <div class="ppane" id="pane-sek"><div class="heat" id="heat"></div></div>
+    <div class="ppane" id="pane-mkt" hidden><div id="mkt"></div></div>
+    <div class="ppane" id="pane-news" hidden><div id="newsP"></div></div>
+    <div class="ppane" id="pane-ch" hidden><div id="chP"></div></div>
+    <div class="ppane" id="pane-lb" hidden><div id="lbP"></div></div>
     <div class="ppane" id="pane-mf" hidden><div id="mf"></div></div>
   </section>
 
@@ -90,6 +97,7 @@
             <th data-s="w1" class="num">Woche</th>
             <th data-s="score" class="num">Score</th>
             <th data-s="crv" class="num hide-m" title="Chance-Risiko-Verhältnis">CRV</th>
+            <th data-s="ev" class="num hide-m" title="Erwartungswert pro Trade in R (Vielfache des Risikos)">EV</th>
             <th data-s="status">Langfristig</th>
             <th data-s="kstat" class="hide-m">Kurzfristig</th>
             <th class="hide-l hide-m">Signal</th>
