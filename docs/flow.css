@@ -1,0 +1,59 @@
+/* ===== Test „Fließend“: Kacheln verschmelzen mit dem Hintergrund =====
+   Zum Rückgängigmachen nur den <link> auf flow.css in index.html entfernen. */
+[data-theme="dark"]{
+  --glass:rgba(26,31,40,.46); --glass2:rgba(255,255,255,.035); --edge:rgba(255,255,255,.06);
+  --aurora:
+    radial-gradient(1200px 700px at -5% -10%,rgba(20,184,166,.26),transparent 60%),
+    radial-gradient(1000px 650px at 105% 0%,rgba(59,130,246,.22),transparent 62%),
+    radial-gradient(900px 700px at 50% 55%,rgba(139,92,246,.10),transparent 65%),
+    radial-gradient(1100px 700px at 0% 100%,rgba(59,130,246,.11),transparent 60%),
+    radial-gradient(1000px 700px at 100% 100%,rgba(20,184,166,.10),transparent 60%);
+}
+[data-theme="light"]{
+  --glass:rgba(255,255,255,.52); --glass2:rgba(255,255,255,.45); --edge:rgba(255,255,255,.75);
+  --aurora:
+    radial-gradient(1200px 700px at -5% -10%,rgba(20,184,166,.24),transparent 60%),
+    radial-gradient(1000px 650px at 105% 0%,rgba(59,130,246,.20),transparent 62%),
+    radial-gradient(900px 700px at 50% 55%,rgba(139,92,246,.07),transparent 65%),
+    radial-gradient(1100px 700px at 0% 100%,rgba(59,130,246,.12),transparent 60%),
+    radial-gradient(1000px 700px at 100% 100%,rgba(20,184,166,.14),transparent 60%);
+  --bg:#eaf2f4;
+}
+body{background:var(--aurora),var(--bg);background-attachment:fixed}
+
+/* Kopfzeile ohne harte Linie */
+.topbar{background:color-mix(in srgb,var(--bg) 55%,transparent);backdrop-filter:blur(18px) saturate(1.3);border-bottom:0;
+  box-shadow:0 1px 0 var(--edge)}
+
+/* Hero löst sich in die Seite auf */
+.hero{background:transparent;border:0;box-shadow:none;padding-left:4px;padding-right:4px;overflow:visible}
+.hero .wave{height:85%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
+
+/* Alle Kacheln als mattes Glas */
+.hcard,.panel,.tablewrap,.box,.chartbox,.tk,.htabs,.kbadge{
+  background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
+  box-shadow:0 10px 40px -18px rgba(8,30,50,.35)}
+[data-theme="light"] .hcard{background:var(--glass)}
+.hcard:before,.side .panel:before,.tabbed:before{left:24px;right:24px;opacity:.45;
+  background:linear-gradient(90deg,transparent,#14b8a6 30%,#3b82f6 70%,transparent)}
+
+/* Innere Felder: zarter statt grauer Kästen */
+.lagefacts div,.wlstats div,.facts div,.task,.ol,.empty,.ptabs button.on{background:var(--glass2)}
+.task,.ol{border:1px solid transparent}
+.task:hover,.ol:hover{background:color-mix(in srgb,#14b8a6 9%,transparent);outline:0;border-color:color-mix(in srgb,#14b8a6 30%,transparent)}
+.pick{background:linear-gradient(var(--glass),var(--glass)) padding-box,var(--grad) border-box}
+
+/* Tabelle: Linien nur noch angedeutet */
+th,td{border-bottom-color:color-mix(in srgb,var(--line) 55%,transparent)}
+thead th,[data-theme="light"] thead th{background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(14px)}
+tr.row{transition:background .15s}
+
+/* Filter & Eingaben gläsern */
+.fbtn,input[type=search],select,.btn,.seg{background:var(--glass);border-color:var(--edge);backdrop-filter:blur(10px)}
+.fbtn.active{background:var(--grad)}
+
+/* Detailansicht */
+#ov{background:rgba(6,12,20,.45);backdrop-filter:blur(10px)}
+#detail{background:var(--aurora),color-mix(in srgb,var(--bg2) 88%,transparent);border-color:var(--edge)}
+
+footer{opacity:.8}
