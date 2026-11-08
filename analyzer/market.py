@@ -12,6 +12,8 @@ erreichbar ist, wird der eigene Ersatzwert verwendet.
 """
 from __future__ import annotations
 
+import pandas as pd
+
 INDIZES = [
     ("^GSPC", "S&P 500"), ("^NDX", "Nasdaq 100"), ("^GDAXI", "DAX"), ("^STOXX50E", "Euro Stoxx 50"),
     ("^N225", "Nikkei 225"), ("GC=F", "Gold"), ("EURUSD=X", "EUR/USD"), ("BTC-USD", "Bitcoin"),
@@ -24,6 +26,34 @@ SEKTOREN = [
     ("XLI", "Industrie"), ("ITA", "Rüstung"), ("XLE", "Energie"), ("XLB", "Rohstoffe"),
     ("XLU", "Versorger"), ("XLRE", "Immobilien"), ("TAN", "Solar"), ("IBB", "Biotech"),
 ]
+
+
+MAKRO_WERTE = [
+    ("^TNX", "US-Zins 10 J.", "%"), ("BZ=F", "Öl (Brent)", "$"), ("GC=F", "Gold", "$"),
+    ("EURUSD=X", "EUR/USD", ""), ("^VIX", "VIX (Angst)", ""), ("BTC-USD", "Bitcoin", "$"),
+]
+
+
+def _spark(h, n: int = 63) -> list[float]:
+    """Letzte ~3 Monate als kleine Linie (Schlusskurse)."""
+    x = h.iloc[-n:]
+    return [round(float(v), 4 if float(v) < 10 else 2) for v in x]
+
+
+def fetch_saison_indizes() -> list[dict]:
+    """Saisonalität von S&P 500 und DAX (Monatsrenditen der letzten 20 Jahre)."""
+    import yfinance as yf
+    from analyzer.statistik import saison
+
+    out = []
+    for sym, name in (("^GSPC", "S&P 500"), ("^GDAXI", "DAX")):
+        try:
+            h = yf.Ticker(sym).history(period="20y", interval="1d")["Close"].dropna()
+            h.index = pd.DatetimeIndex(h.index).tz_localize(None)
+            out.append({"symbol": sym, "name": name, "monate": saison(h)})
+        except Exception:
+            pass
+    return out
 
 
 def _perf(h, tage: int):
@@ -120,7 +150,21 @@ def fetch_market(results: list[dict], previous: dict | None = None) -> dict:
             closes[sym] = h
             if len(h) >= 2:
                 indizes.append({"symbol": sym, "name": name, "kurs": round(float(h.iloc[-1]), 2),
-                                "tag_pct": round((float(h.iloc[-1]) / float(h.iloc[-2]) - 1) * 100, 2)})
+                                "tag_pct": round((float(h.iloc[-1]) / float(h.iloc[-2]) - 1) * 100, 2),
+                                "woche_pct": _perf(h, 5), "monat_pct": _perf(h, 21), "jahr_pct": _perf(h, min(252, len(h) - 1)),
+                                "spark": _spark(h)})
+        except Exception:
+            pass
+    makro = []
+    for sym, name, einheit in MAKRO_WERTE:
+        try:
+            h = closes.get(sym)
+            if h is None:
+                h = yf.Ticker(sym).history(period="1y", interval="1d")["Close"].dropna()
+            if len(h) >= 2:
+                makro.append({"symbol": sym, "name": name, "einheit": einheit, "kurs": round(float(h.iloc[-1]), 4 if h.iloc[-1] < 10 else 2),
+                              "tag_pct": round((float(h.iloc[-1]) / float(h.iloc[-2]) - 1) * 100, 2),
+                              "monat_pct": _perf(h, 21), "jahr_pct": _perf(h, min(252, len(h) - 1)), "spark": _spark(h)})
         except Exception:
             pass
 
@@ -188,4 +232,8 @@ def fetch_market(results: list[dict], previous: dict | None = None) -> dict:
         sektoren = fetch_sektoren()
     except Exception:
         sektoren = []
-    return {"indizes": indizes, "stimmung": stimmung, "sektoren": sektoren}
+    try:
+        saison_idx = fetch_saison_indizes()
+    except Exception:
+        saison_idx = []
+    return {"indizes": indizes, "stimmung": stimmung, "sektoren": sektoren, "makro": makro, "saison": saison_idx}
