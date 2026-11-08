@@ -36,6 +36,22 @@ const WT = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
 function daysTo(iso){ return Math.round((new Date(iso) - new Date(new Date().toDateString())) / 864e5); }
 function dateDe(iso){ const [y, m, d] = iso.split("-"); return `${d}.${m}.${y.slice(2)}`; }
 function dateWd(iso){ return `${WT[new Date(iso).getDay()]} ${dateDe(iso)}`; }
+function naechsterHandelstag(iso){
+  const d = new Date(iso + "T12:00:00"); do { d.setDate(d.getDate() + 1); } while (d.getDay() === 0 || d.getDay() === 6);
+  return d.toISOString().slice(0, 10);
+}
+function wdKurz(iso){ const d = new Date(iso + "T12:00:00"); return `${WT[d.getDay()]} ${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.`; }
+let STAND = null, EMPF = [];
+const wann = typ => !STAND ? "" : typ === "kauf" ? `🌙 Kaufen am ${wdKurz(STAND)} abends` : `☀️ Verkaufen am ${wdKurz(naechsterHandelstag(STAND))} morgens`;
+// Top-Empfehlungen: beste Kaufkandidaten nach Score, Chance/Risiko und ob das Signal heute neu ist
+function empfehlungen(){
+  const neu = new Set(aufgaben().map(a => a.symbol));
+  return DATA.filter(a => kategorie(a) === "kauf" && !(a.markt_filter && a.markt_filter.blockiert) && a.check && a.check.score >= 55 && a.crv >= 1)
+    .map(a => ({a, r: a.check.score + (a.crv >= 2 ? 5 : 0) + (neu.has(a.symbol) ? 5 : 0)}))
+    .sort((x, y) => y.r - x.r || y.a.crv - x.a.crv).slice(0, 3).map(x => x.a);
+}
+const isEmpf = a => EMPF.some(e => e.symbol === a.symbol);
+const empfTag = '<span class="tag star">⭐ Empfohlen</span>';
 function earnWarn(a){
   const t = a.termine; if (!t || t.earnings_in_tagen == null || t.earnings_in_tagen > 7) return "";
   return ` <span class="tag warn">⚠️ Earnings ${t.earnings_in_tagen === 0 ? "heute" : "in " + t.earnings_in_tagen + " T."}</span>`;
@@ -76,20 +92,25 @@ function aufgaben(){
 }
 function renderTodo(stand){
   const list = aufgaben(), el = document.getElementById("todo");
-  document.getElementById("todoDate").textContent = stand ? dateWd(stand) : "";
-  if (!list.length) { el.innerHTML = '<div class="empty">Heute keine neuen Aufgaben.<br><span class="small">Bestehende Positionen einfach halten.</span></div>'; return; }
+  document.getElementById("todoDate").textContent = stand ? `Stand ${wdKurz(stand)}` : "";
+  const top = EMPF.length ? `<div class="grp">⭐ Top-Empfehlungen für heute Abend</div>` + EMPF.map((a, i) =>
+    `<div class="pick" data-sym="${a.symbol}"><span class="rank">${i + 1}</span><div style="min-width:0"><b>${a.name}</b> ${scoreBadge(a.check)} <span class="score" style="background:${crvCol(a.crv)}">${crvTxt(a.crv)}</span>
+      <div class="small">${wann("kauf")} · ${a.signal.split(" – ")[0]}</div>
+      <div class="small mute">${(a.check.pro || []).slice(0, 2).join(" · ")}</div></div></div>`).join("") : "";
+  if (!list.length) { el.innerHTML = top + '<div class="empty" style="margin-top:8px">Heute keine neuen Signale.<br><span class="small">Bestehende Positionen einfach halten.</span></div>';
+    el.querySelectorAll("[data-sym]").forEach(t => t.onclick = () => showDetail(t.dataset.sym)); return; }
   const mfOf = a => a.markt_filter || {};
   const grp = (typ, title, filt) => { const xs = list.filter(a => AKTION[a.status][0] === typ && filt(a))
       .sort((x, y) => (y.check ? y.check.score : 0) - (x.check ? x.check.score : 0)); if (!xs.length) return "";
     return `<div class="grp">${title} · ${xs.length}</div>` + xs.map(a => { let [t, lbl, txt] = AKTION[a.status];
-      let sub = txt(a);
+      let sub = `<b class="when">${wann(typ)}</b><br>` + txt(a);
       if (mfOf(a).blockiert) { t = "warten"; lbl = "Pausiert"; sub = mfOf(a).hinweise[0]; }
-      else if (mfOf(a).reduziert) sub = "Nur Teilkauf 1 (ca. 1/3) – Markt angeschlagen";
-      return `<div class="task" data-sym="${a.symbol}"><span class="pill ${t}">${lbl}</span><div><b>${a.name}</b> ${scoreBadge(a.check)}<br><span class="small mute">${sub}</span>${earnWarn(a)}</div></div>`; }).join(""); };
-  el.innerHTML = grp("kauf", "Kaufen (sortiert nach Score)", a => !mfOf(a).blockiert)
+      else if (mfOf(a).reduziert) sub = `<b class="when">${wann(typ)}</b><br>Nur Teilkauf 1 (ca. 1/3) – Markt angeschlagen`;
+      return `<div class="task" data-sym="${a.symbol}"><span class="pill ${t}">${lbl}</span><div><b>${a.name}</b> ${scoreBadge(a.check)}${isEmpf(a) ? " " + empfTag : ""}<br><span class="small mute">${sub}</span>${earnWarn(a)}</div></div>`; }).join(""); };
+  el.innerHTML = top + grp("kauf", "Neue Kaufsignale (nach Score)", a => !mfOf(a).blockiert)
     + grp("kauf", "Kaufzone erreicht – pausiert durch Marktfilter", a => mfOf(a).blockiert)
     + grp("verkauf", "Verkaufen / Gewinne sichern", () => true);
-  el.querySelectorAll(".task").forEach(t => t.onclick = () => showDetail(t.dataset.sym));
+  el.querySelectorAll("[data-sym]").forEach(t => t.onclick = () => showDetail(t.dataset.sym));
 }
 
 // ---------- Marktstimmung & Ticker ----------
@@ -313,8 +334,10 @@ async function load(){
     [...new Set(DATA.map(a => a.meta && a.meta[key]).filter(Boolean))].sort().forEach(v => el.add(new Option(v, v))); };
   fill("fLand", "land"); fill("fSektor", "sektor");
   renderMood(MARKT); renderTicker(MARKT); renderSectors(); renderCal(); renderFilter(d.marktfilter);
-  const stand = DATA.map(a => a.stand).sort().pop();
-  renderTodo(stand); renderOutliers();
+  const kursStand0 = Object.entries(DATA.reduce((m, a) => (m[a.stand] = (m[a.stand] || 0) + 1, m), {})).sort((x, y) => y[1] - x[1])[0];
+  STAND = kursStand0 ? kursStand0[0] : null;
+  EMPF = empfehlungen();
+  renderTodo(STAND); renderOutliers();
   const tq = d.trefferquote || {};
   const kursStand = Object.entries(DATA.reduce((m, a) => (m[a.stand] = (m[a.stand] || 0) + 1, m), {})).sort((x, y) => y[1] - x[1])[0];
   document.getElementById("stand").innerHTML = "Analyse " + new Date(d.erstellt).toLocaleString("de-DE", {dateStyle: "medium", timeStyle: "short"})
@@ -339,6 +362,7 @@ async function load(){
   if (L) satz.push(`Der Markt ist <b>${LAGE_SATZ[L.regime]}</b>`);
   if (S) satz.push(`${L ? "die" : "Die"} Stimmung steht bei <b>${S.wert} (${S.label})</b>`);
   document.getElementById("heroSum").innerHTML = (satz.length ? satz.join(", ") + ". " : "")
+    + (EMPF.length ? `Empfohlen für heute Abend: <b>${EMPF.map(a => a.name).join(", ")}</b>. ` : "")
     + (nk || nv ? `Heute gibt es <b>${nk} ${nk === 1 ? "neues Kaufsignal" : "neue Kaufsignale"}</b> und <b>${nv} ${nv === 1 ? "Verkaufssignal" : "Verkaufssignale"}</b>.` : "Heute gibt es keine neuen Signale – bestehende Positionen halten.");
   render();
 }
@@ -357,7 +381,7 @@ function render(){
   document.getElementById("tb").innerHTML = rows.map(a => `
     <tr class="row" data-sym="${a.symbol}">
       <td><span class="dot ${a.ampel}"></span></td>
-      <td><span class="nm">${a.name}</span> <span class="mute small">${a.symbol}</span>${a.meta ? `<div class="sub">${[a.meta.land, a.meta.sektor].filter(Boolean).join(", ")}</div>` : ""}</td>
+      <td><span class="nm">${a.name}</span> <span class="mute small">${a.symbol}</span>${isEmpf(a) ? " " + empfTag : ""}${a.meta ? `<div class="sub">${[a.meta.land, a.meta.sektor].filter(Boolean).join(", ")}</div>` : ""}</td>
       <td class="num">${fmt(a.kurs, a.currency)}</td>
       <td class="num">${wTxt(a.perf && a.perf.woche)}</td>
       <td class="num">${scoreBadge(a.check)}</td>
@@ -501,7 +525,7 @@ async function showDetail(sym, h){
       <div class="htabs" role="tablist">${tab("lang", "Langfristig", a)}${tab("kurz", "Kurzfristig", hasKurz ? a.kurz : null)}</div>
       ${a.check ? `<span class="kbadge">Entscheidungscheck ${a.check.label} ${scoreBadge(a.check)}</span>` : ""}
       ${crv && crv.ok ? `<span class="kbadge">Chance/Risiko <span class="score" style="background:${crvCol(crv.crv)}">${crvTxt(crv.crv)}</span></span>` : ""}
-      ${mf.blockiert || mf.reduziert ? '<span class="tag warn">Marktfilter</span>' : ""}${earnWarn(a)}
+      ${isEmpf(a0) ? empfTag : ""}${mf.blockiert || mf.reduziert ? '<span class="tag warn">Marktfilter</span>' : ""}${earnWarn(a)}
     </div>
     <div class="dmain">
       <div class="chartbox"><div id="chart"></div>
