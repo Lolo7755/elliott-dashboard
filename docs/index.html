@@ -51,6 +51,36 @@
     </div>
   </section>
 
+  <section class="panel termine" id="termine" aria-labelledby="tmTitel">
+    <div class="tmhead">
+      <h3 class="ph" id="tmTitel">Termine <span class="mute small" id="tmZeitraum"></span></h3>
+      <div class="tmctl">
+        <div class="tabs" id="tmTyp" aria-label="Terminarten">
+          <button class="tbtn on" data-typ="makro" aria-pressed="true"><i class="tdot makro"></i>Makro & Politik</button>
+          <button class="tbtn on" data-typ="earn" aria-pressed="true"><i class="tdot earn"></i>Earnings</button>
+          <button class="tbtn on" data-typ="div" aria-pressed="true"><i class="tdot div"></i>Dividenden</button>
+        </div>
+        <div class="tabs" id="tmLand" aria-label="Länder">
+          <button class="lbtn on" data-land="US" aria-pressed="true" title="USA">🇺🇸</button>
+          <button class="lbtn on" data-land="DE" aria-pressed="true" title="Deutschland">🇩🇪</button>
+          <button class="lbtn on" data-land="EU" aria-pressed="true" title="Eurozone">🇪🇺</button>
+          <button class="lbtn on" data-land="CN" aria-pressed="true" title="China">🇨🇳</button>
+        </div>
+        <button class="btn small" id="tmAlle" aria-expanded="false">Alle Termine ▾</button>
+      </div>
+    </div>
+    <div class="wboard" id="wboard"><div class="empty">–</div></div>
+    <div class="tmlist" id="tmList" hidden>
+      <div class="tabs">
+        <button class="fbtn active" data-t="makro">Makro & Politik</button>
+        <button class="fbtn" data-t="earn">Earnings</button>
+        <button class="fbtn" data-t="div">Dividenden</button>
+      </div>
+      <div class="scroll cal"><ul class="list" id="cal"><li class="mute">–</li></ul></div>
+      <div class="mute small" id="calInfo"></div>
+    </div>
+  </section>
+
   <section class="panel tabbed">
     <div class="phead">
       <div class="ptabs" role="tablist">
@@ -110,7 +140,7 @@
       </div>
     </section>
 
-    <aside class="side">
+    <aside class="side"><div class="side-in">
       <div class="panel">
         <h3 class="ph">Heute zu tun <span class="mute small" id="todoDate"></span></h3>
         <div class="scroll todo" id="todo"><div class="empty">–</div></div>
@@ -119,17 +149,7 @@
         <h3 class="ph">Ausreißer heute <span class="mute small">ab ±10 %</span></h3>
         <div class="scroll outl" id="outl"><div class="empty">–</div></div>
       </div>
-      <div class="panel">
-        <h3 class="ph">Termine</h3>
-        <div class="tabs">
-          <button class="fbtn active" data-t="earn">Earnings</button>
-          <button class="fbtn" data-t="makro">Makro & Politik</button>
-          <button class="fbtn" data-t="div">Dividenden</button>
-        </div>
-        <div class="scroll cal"><ul class="list" id="cal"><li class="mute">–</li></ul></div>
-        <div class="mute small" id="calInfo"></div>
-      </div>
-    </aside>
+    </div></aside>
   </div>
 </main>
 
