@@ -145,6 +145,51 @@ def fit_impulse(pivots: list[Pivot], start: Pivot, end: Pivot):
     return best, best_seq
 
 
+def alt_zaehlung(pivots: list[Pivot], start: Pivot, end: Pivot, haupt: list | None, haupt_score: float):
+    """Zweitbeste gültige 5-Wellen-Zählung im selben Abschnitt, die sich in mindestens
+    zwei der vier inneren Wendepunkte von der Hauptzählung unterscheidet."""
+    inner = [p for p in pivots if start.i < p.i < end.i]
+    Hs = [p for p in inner if p.kind == "H"]
+    Ls = [p for p in inner if p.kind == "L"]
+    S, E = start.price, end.price
+    hk = {p.i for p in (haupt or [])[1:5]}
+    best, best_seq = 0.0, None
+    for h1 in Hs:
+        w1 = h1.price - S
+        if w1 <= 0:
+            continue
+        for l2 in Ls:
+            if l2.i <= h1.i or l2.price <= S:
+                continue
+            for h3 in Hs:
+                if h3.i <= l2.i or h3.price <= h1.price:
+                    continue
+                w3 = h3.price - l2.price
+                for l4 in Ls:
+                    if l4.i <= h3.i or l4.price <= h1.price or E <= h3.price:
+                        continue
+                    w5 = E - l4.price
+                    if w3 < w1 and w3 < w5:
+                        continue
+                    if len(hk & {h1.i, l2.i, h3.i, l4.i}) > 2:
+                        continue
+                    r2 = (h1.price - l2.price) / w1
+                    r4 = (h3.price - l4.price) / w3
+                    score = (0.25 * _closeness(r2, 0.55, 0.25) + 0.30 * _closeness(w3 / w1, 1.618, 0.8)
+                             + 0.25 * _closeness(r4, 0.382, 0.2) + 0.20 * (1.0 if r2 > r4 * 0.8 else 0.5))
+                    if score > best:
+                        best, best_seq = score, [start, h1, l2, h3, l4, end]
+    if not best_seq or best < 0.35:
+        return None
+    gewicht = best / (best + haupt_score) if haupt_score > 0 else 0.5
+    return {
+        "qualitaet": round(best * 100),
+        "gewicht_pct": round(gewicht * 100),
+        "labels": [{"label": f"{k}", "date": p.date, "price": round(p.price, 2)}
+                   for k, p in zip(["0", "1", "2", "3", "4", "5"], best_seq)],
+    }
+
+
 def _decline_into(w: pd.DataFrame, i: int) -> float:
     """
     Rückgang IN das Tief bei Wochenindex i, gemessen vom höchsten Hoch seit dem
@@ -234,7 +279,8 @@ def _is_invalid(c: dict, last: float) -> bool:
 # --------------------------------------------------------------------------- #
 # Hauptanalyse
 # --------------------------------------------------------------------------- #
-def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = "", horizon: str = "lang") -> dict:
+def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = "", horizon: str = "lang",
+            alt: bool = False) -> dict:
     """horizon = "lang": Wochenchart, 10 Jahre (Monate bis Jahre)
        horizon = "kurz": Tageschart, jüngste Welle der letzten ~6 Monate (Wochen bis Monate)"""
     daily = daily.dropna(subset=["High", "Low", "Close"]).copy()
@@ -290,6 +336,12 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
         ]
     if c_idx > H.i:
         labels.append({"label": "Korr.-Tief", "date": corr_low_date, "price": round(corr_low, 2)})
+    alternative = None
+    if alt and seq:
+        try:
+            alternative = alt_zaehlung(piv_mid, S, H, seq, score)
+        except Exception:
+            alternative = None
 
     # Kursziele der nächsten Aufwärtswelle (gemessen ab Korrekturtief)
     base = min(corr_low, last)
@@ -400,6 +452,7 @@ def analyze(daily: pd.DataFrame, symbol: str, name: str = "", currency: str = ""
             "retracement_max_pct": round(retr_max * 100, 1),
             "zaehlung_qualitaet": round(score * 100),
             "labels": labels,
+            "alternative": alternative,
         },
         "zone": {"oben": r(zone_top), "unten": r(zone_bot), "nachkauf": r(nachkauf), "invalidierung": r(invalid)},
         "ziele": {"t1": r(t1), "t2": r(t2), "t3": r(t3)},
