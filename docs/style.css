@@ -452,3 +452,6 @@ footer{opacity:.8}
 }
 @media (max-width:1250px){ .side-in{display:contents} }
 @media (max-width:1500px){ .wboard{grid-template-columns:repeat(10,minmax(152px,1fr))} }
+.flg{display:inline-block;vertical-align:-1px;border-radius:2px;box-shadow:0 0 0 .5px rgba(0,0,0,.25);flex:none}
+.lbtn{font-size:12px;gap:5px}
+.ev .flag{display:inline-flex;padding-top:2px}
