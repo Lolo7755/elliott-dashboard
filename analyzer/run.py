@@ -15,6 +15,7 @@ from __future__ import annotations
 import copy
 import csv
 import json
+import os
 import re
 import sys
 import time
@@ -95,6 +96,9 @@ def fetch(symbol: str):
     return df[["Open", "High", "Low", "Close"]], cur, t
 
 
+SCHNELL = os.environ.get("BACKTEST_MODUS", "voll") == "schnell"
+
+
 def main() -> int:
     DOCS.mkdir(exist_ok=True)
     old, old_markt = {}, {}
@@ -116,6 +120,8 @@ def main() -> int:
         print(f"Marktfilter: keine Marktdaten ({e})", file=sys.stderr)
     closes_rs = {}
 
+    t_start = time.time()
+    print(f"Modus: {'schnell (Backtest vom Vortag)' if SCHNELL else 'voll'}")
     results, errors = [], []
     for item in load_watchlist():
         sym = item["symbol"]
@@ -136,7 +142,11 @@ def main() -> int:
             res["termine"] = fetch_termine(ticker)
             res["news"] = fetch_news(ticker, name=item["name"])
             try:
-                res["backtest"] = backtest(df, sym, mkt)
+                alt_bt = None
+                if SCHNELL and (DOCS / "aktien" / datei(sym)).exists():
+                    # Schnell-Lauf: Backtest vom letzten Voll-Lauf übernehmen (ändert sich von Tag zu Tag kaum)
+                    alt_bt = json.loads((DOCS / "aktien" / datei(sym)).read_text(encoding="utf-8")).get("backtest")
+                res["backtest"] = alt_bt if alt_bt and "signale" in alt_bt else backtest(df, sym, mkt)
             except Exception as e:
                 res["backtest"] = None
                 print(f"     {sym}: Backtest-Fehler {e}", file=sys.stderr)
@@ -239,7 +249,7 @@ def main() -> int:
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (DOCS / "data.json").write_text(
-        json.dumps({"erstellt": now, "trefferquote": gesamt, "markt": markt, "ausreisser": ausreisser,
+        json.dumps({"erstellt": now, "modus": "schnell" if SCHNELL else "voll", "dauer_s": round(time.time() - t_start), "trefferquote": gesamt, "markt": markt, "ausreisser": ausreisser,
                     "top_bewegungen": top, "marktfilter": marktfilter, "aktien": summary, "fehler": errors}, ensure_ascii=False),
         encoding="utf-8",
     )
