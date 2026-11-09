@@ -410,3 +410,32 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-06,DHL.DE,58.02,Ziel 1 erreicht,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
 2026-11-06,ZAL.DE,27.72,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
 2026-11-06,SAN.PA,83.74,Nachkaufbereich,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-09,PYPL,60.05,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-09,TXN,295.73,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-09,CSGP,31.24,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-09,ZTS,82.31,In Zone,Zulaufend,"Abwarten – Kauflimit bei 81,45 (-1,0 % vom aktuellen Kurs)"
+2026-11-09,AAPL,350.69,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 312,61 erwartet"
+2026-11-09,AMZN,266.93,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-09,META,641.37,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-09,AVGO,319.48,In Zone,Zulaufend,"Abwarten – Kauflimit bei 311,86 (-2,4 % vom aktuellen Kurs)"
+2026-11-09,QCOM,171.47,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-09,CSCO,98.65,In Zone,Zulaufend,"Abwarten – Kauflimit bei 97,57 (-1,1 % vom aktuellen Kurs)"
+2026-11-09,ANET,186.23,In Zone (unten),Zulaufend,"Abwarten – Kauflimit bei 185,98 (-0,1 % vom aktuellen Kurs)"
+2026-11-09,UBER,71.15,In Zone,Zulaufend,"Abwarten – Kauflimit bei 70,63 (-0,7 % vom aktuellen Kurs)"
+2026-11-09,TSLA,378.05,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-09,COST,1066.18,Alternativ: Korrektur beendet,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 832,92 erwartet"
+2026-11-09,MCD,281.55,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-09,BAC,50.58,In Zone,Zulaufend,"Abwarten – Kauflimit bei 49,85 (-1,4 % vom aktuellen Kurs)"
+2026-11-09,BLK,1215.06,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 959,82 erwartet"
+2026-11-09,HOOD,83.32,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-09,JNJ,282.11,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-09,CAT,598.89,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-09,ALV.DE,457.0,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 399,39 erwartet"
+2026-11-09,DTE.DE,26.16,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-09,IFX.DE,48.62,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-09,OR.PA,446.8,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 400,20 (-10,4 % vom aktuellen Kurs)"
+2026-11-09,SAN.PA,85.76,Neues Hoch / Trend läuft,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-09,NESN.SW,86.13,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 82,54 (-4,2 % vom aktuellen Kurs)"
+2026-11-09,FTNT,122.47,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-09,LITE,596.16,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-09,TTWO,207.4,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 198,73 (-4,2 % vom aktuellen Kurs)"
