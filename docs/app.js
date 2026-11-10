@@ -84,7 +84,22 @@ const AKTION = {
   "Ziel 2 erreicht":  ["verkauf", "Teilverkauf", a => `weiteres Drittel verkaufen, Rest bis ${fmt(a.ziele.t3)}`],
   "Abwärtstrend":     ["verkauf", "Verkaufen",   a => `Szenario invalidiert – Restposition auflösen`],
 };
+// Aufgaben kommen aus dem Analyse-Lauf (mit Gedächtnis: jeder Teilkauf/-verkauf nur einmal pro Zyklus)
+function aktionVon(a){
+  const t = a._auf;
+  if (!t) return AKTION[a.status];
+  if (t.typ === "kauf") return ["kauf", t.tranche === 1 ? "Kaufen" : "Nachkaufen",
+    x => t.tranche < 3 ? `Teilkauf ${t.tranche} von 3 (ca. 1/3) bei ${fmt(x.kurs, x.currency)} · ${x.status}`
+                       : `Teilkauf 3 von 3 (Rest) bei ${fmt(x.kurs, x.currency)} – Invalidierung ${fmt(x.zone.invalidierung)}`];
+  return ["verkauf", t.stufe === 4 ? "Verkaufen" : "Teilverkauf", {
+    1: x => `Ziel 1 erreicht – ca. 1/3 verkaufen bei ${fmt(x.kurs, x.currency)}`,
+    2: x => `Ziel 2 erreicht – weiteres Drittel verkaufen, Rest bis ${fmt(x.ziele.t3)}`,
+    3: x => `5 Wellen vollendet – Rest verkaufen oder eng absichern`,
+    4: x => `Szenario invalidiert – Restposition auflösen`}[t.stufe]];
+}
 function aufgaben(){
+  if (Array.isArray(RAW.aufgaben)) return RAW.aufgaben.map(t => { const a = DATA.find(x => x.symbol === t.symbol);
+    return a ? Object.assign(Object.create(a), {_auf: t, markt_filter: t.blockiert ? (a.markt_filter || {blockiert: true, hinweise: ["Kaufzone erreicht – pausiert durch Marktfilter"]}) : a.markt_filter}) : null; }).filter(Boolean);
   return DATA.filter(a => {
     if (!a.status_vorher || a.status === a.status_vorher || !AKTION[a.status]) return false;
     if (a.status === "Abwärtstrend") return HALTEN.includes(a.status_vorher);
@@ -96,15 +111,15 @@ function renderTodo(stand){
   document.getElementById("todoDate").textContent = stand ? `Stand ${wdKurz(stand)}` : "";
   const top = EMPF.length ? `<div class="grp">⭐ Top-Empfehlungen für heute Abend</div>` + EMPF.map((a, i) =>
     `<div class="pick" data-sym="${a.symbol}"><span class="rank">${i + 1}</span><div style="min-width:0"><b>${a.name}</b> ${scoreBadge(a.check)} <span class="score" style="background:${crvCol(a.crv)}">${crvTxt(a.crv)}</span>
-      <div class="small">${wann("kauf")} · ${a.signal.split(" – ")[0]}</div>
+      <div class="small">${wann("kauf")} · ${(t => t ? `Teilkauf ${t.tranche} von 3 (ca. 1/3)` : a.signal.split(" – ")[0])((RAW.aufgaben || []).find(t => t.symbol === a.symbol && t.typ === "kauf"))}</div>
       ${a.uebernacht || a.ev != null ? `<div class="small mute">${a.ev != null ? `Erwartungswert ${evTxt(a.ev)}` : ""}${a.uebernacht ? `${a.ev != null ? " · " : ""}Über Nacht ${a.uebernacht.pos_pct} % positiv, Ø ${sgn2(a.uebernacht.mittel_pct)} %` : ""}</div>` : ""}
       <div class="small mute">${(a.check.pro || []).slice(0, 2).join(" · ")}</div></div></div>`).join("") : "";
-  if (!list.length) { el.innerHTML = top + '<div class="empty" style="margin-top:8px">Heute keine neuen Signale.<br><span class="small">Bestehende Positionen einfach halten.</span></div>';
+  if (!list.length) { el.innerHTML = top + '<div class="empty" style="margin-top:8px">Heute nichts zu tun.<br><span class="small">Keine neuen Teilkäufe oder Verkäufe – bestehende Positionen einfach halten.</span></div>';
     el.querySelectorAll("[data-sym]").forEach(t => t.onclick = () => showDetail(t.dataset.sym)); return; }
   const mfOf = a => a.markt_filter || {};
-  const grp = (typ, title, filt) => { const xs = list.filter(a => AKTION[a.status][0] === typ && filt(a))
+  const grp = (typ, title, filt) => { const xs = list.filter(a => aktionVon(a)[0] === typ && filt(a))
       .sort((x, y) => (y.check ? y.check.score : 0) - (x.check ? x.check.score : 0)); if (!xs.length) return "";
-    return `<div class="grp">${title} · ${xs.length}</div>` + xs.map(a => { let [t, lbl, txt] = AKTION[a.status];
+    return `<div class="grp">${title} · ${xs.length}</div>` + xs.map(a => { let [t, lbl, txt] = aktionVon(a);
       let sub = `<b class="when">${wann(typ)}</b><br>` + txt(a);
       if (mfOf(a).blockiert) { t = "warten"; lbl = "Pausiert"; sub = mfOf(a).hinweise[0]; }
       else if (mfOf(a).reduziert) sub = `<b class="when">${wann(typ)}</b><br>Nur Teilkauf 1 (ca. 1/3) – Markt angeschlagen`;
@@ -361,8 +376,8 @@ async function load(){
   const tage = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
   if (kursStand) { const dt = new Date(kursStand[0]);
     document.getElementById("heroDate").textContent = `${tage[dt.getDay()]}, ${dt.getDate()}. ${dt.toLocaleString("de-DE", {month: "long"})}`; }
-  const auf = aufgaben(), nk = auf.filter(a => AKTION[a.status][0] === "kauf" && !(a.markt_filter && a.markt_filter.blockiert)).length,
-    nv = auf.filter(a => AKTION[a.status][0] === "verkauf").length, L = d.marktfilter && d.marktfilter.lage, S = MARKT && MARKT.stimmung;
+  const auf = aufgaben(), nk = auf.filter(a => aktionVon(a)[0] === "kauf" && !(a.markt_filter && a.markt_filter.blockiert)).length,
+    nv = auf.filter(a => aktionVon(a)[0] === "verkauf").length, L = d.marktfilter && d.marktfilter.lage, S = MARKT && MARKT.stimmung;
   const satz = [];
   if (L) satz.push(`Der Markt ist <b>${LAGE_SATZ[L.regime]}</b>`);
   if (S) satz.push(`${L ? "die" : "Die"} Stimmung steht bei <b>${S.wert} (${S.label})</b>`);
@@ -392,7 +407,7 @@ function render(){
       <td class="num">${scoreBadge(a.check)}</td>
       <td class="num hide-m">${crvBadge(a)}</td>
       <td class="num hide-m">${evBadge(a)}</td>
-      <td title="${a.signal.replace(/"/g, "'")}">${a.status}${a.markt_filter && (a.markt_filter.blockiert || a.markt_filter.reduziert) ? ' <span class="tag warn">Filter</span>' : ""}${a.status_vorher && a.status_vorher !== a.status ? '<span class="tag new">neu</span>' : ""}</td>
+      <td title="${a.signal.replace(/"/g, "'")}">${a.status}${a.markt_filter && (a.markt_filter.blockiert || a.markt_filter.reduziert) ? ' <span class="tag warn">Filter</span>' : ""}${(Array.isArray(RAW.aufgaben) ? RAW.aufgaben.some(t => t.symbol === a.symbol) : a.status_vorher && a.status_vorher !== a.status) ? '<span class="tag new" title="Heute steht für diese Aktie eine Aufgabe an">neu</span>' : ""}</td>
       <td class="hide-m">${a.kurz ? `<span class="kz"><span class="dot ${a.kurz.ampel}"></span>${a.kurz.status}</span>` : '<span class="mute">–</span>'}</td>
       <td class="sig hide-l hide-m">${a.signal}${a.markt_filter && (a.markt_filter.blockiert || a.markt_filter.reduziert) ? ' <span class="tag warn" title="' + a.markt_filter.hinweise.join(" · ") + '">Marktfilter</span>' : ""}</td>
       <td class="hide-m">${anTxt(a)}</td>
