@@ -33,6 +33,7 @@ from analyzer.scenarios import build as build_scenarios
 from analyzer.score import entscheidungscheck
 from analyzer import marktfilter as MF
 from analyzer import journal as J
+from analyzer import aufgaben as AUF
 from analyzer.kommentar import abendkommentar
 from analyzer.statistik import saison, uebernacht
 
@@ -244,7 +245,16 @@ def main() -> int:
         r["ev"] = round(p * r["crv"] - (1 - p), 2) if r["crv"] is not None else None
         r["ev_p_pct"] = round(p * 100)
 
-    # Top-Empfehlungen (gleiche Logik wie bisher im Dashboard, ergänzt um den Erwartungswert)
+    # Tagesaufgaben mit Gedächtnis: jeder Teilkauf/Teilverkauf kommt pro Zyklus nur einmal
+    try:
+        aufgaben = AUF.aktualisieren(DOCS / "aufgaben_zustand.json", results, DOCS / "signal_historie.csv")
+    except Exception as e:
+        aufgaben = None
+        print(f"Aufgaben-Fehler {e}", file=sys.stderr)
+    kauf_heute = {a["symbol"] for a in (aufgaben or []) if a["typ"] == "kauf" and not a.get("blockiert")}
+    print(f"Aufgaben heute: {len(aufgaben or [])} ({len(kauf_heute)} Käufe)")
+
+    # Top-Empfehlungen: nur unter den heutigen neuen Kaufaufgaben, ergänzt um den Erwartungswert
     def _kat(r):
         sg = (r.get("signal") or "").lower()
         if r["status"] == "Abwärtstrend":
@@ -253,6 +263,8 @@ def main() -> int:
     kand = []
     for r in results:
         sc = (r.get("check") or {}).get("score")
+        if aufgaben is not None and r["symbol"] not in kauf_heute:
+            continue
         if _kat(r) != "kauf" or (r.get("markt_filter") or {}).get("blockiert") or sc is None or sc < 55 \
                 or r["crv"] is None or r["crv"] < 1 or (r["ev"] is not None and r["ev"] <= 0):
             continue
@@ -332,9 +344,12 @@ def main() -> int:
             (r["status"] == "Abwärtstrend" and r.get("status_vorher") in halten)
         return r.get("status_vorher") and r["status"] != r["status_vorher"] and (kauf if typ == "kauf" else verk)
     try:
-        kommentar = abendkommentar(markt, results, mf_lage, [next(r["name"] for r in results if r["symbol"] == e) for e in empfehlungen],
-                                   sum(bool(_aufgabe(r, "kauf")) and not (r.get("markt_filter") or {}).get("blockiert") for r in results),
-                                   sum(bool(_aufgabe(r, "verkauf")) for r in results))
+        if aufgaben is not None:
+            n_k, n_v = len(kauf_heute), sum(a["typ"] == "verkauf" for a in aufgaben)
+        else:
+            n_k = sum(bool(_aufgabe(r, "kauf")) and not (r.get("markt_filter") or {}).get("blockiert") for r in results)
+            n_v = sum(bool(_aufgabe(r, "verkauf")) for r in results)
+        kommentar = abendkommentar(markt, results, mf_lage, [next(r["name"] for r in results if r["symbol"] == e) for e in empfehlungen], n_k, n_v)
     except Exception as e:
         kommentar = None
         print(f"Kommentar-Fehler {e}", file=sys.stderr)
@@ -342,7 +357,7 @@ def main() -> int:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (DOCS / "data.json").write_text(
         json.dumps({"erstellt": now, "modus": "schnell" if SCHNELL else "voll", "dauer_s": round(time.time() - t_start), "trefferquote": gesamt, "markt": markt, "ausreisser": ausreisser,
-                    "top_bewegungen": top, "marktfilter": marktfilter, "empfehlungen": empfehlungen, "kommentar": kommentar,
+                    "top_bewegungen": top, "marktfilter": marktfilter, "empfehlungen": empfehlungen, "aufgaben": aufgaben, "kommentar": kommentar,
                     "live_bilanz": live_stat, "chancen": chancen, "wichtige_news": wichtige_news,
                     "aktien": summary, "fehler": errors}, ensure_ascii=False),
         encoding="utf-8",
