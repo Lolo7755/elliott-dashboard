@@ -439,3 +439,11 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-09,FTNT,122.47,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
 2026-11-09,LITE,596.16,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
 2026-11-09,TTWO,207.4,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 198,73 (-4,2 % vom aktuellen Kurs)"
+2026-11-06,ALV.DE,451.1,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 399,39 (-11,5 % vom aktuellen Kurs)"
+2026-11-06,DTE.DE,25.91,Welle 5 läuft,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-06,IFX.DE,45.76,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-06,OR.PA,449.8,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 400,20 erwartet"
+2026-11-06,SAN.PA,83.74,Nachkaufbereich,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-10,000660.KS,1211000.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-10,8035.T,8975.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-10,3690.HK,76.85,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
