@@ -486,3 +486,16 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-10,AMD,515.21,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
 2026-11-10,RTX,200.27,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
 2026-11-10,TTWO,224.64,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-11,PYPL,59.48,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 54,12 (-9,0 % vom aktuellen Kurs)"
+2026-11-11,MRVL,168.8,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,META,628.77,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,QCOM,176.57,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-11,SNOW,301.27,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,MU,811.3,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-11,ANET,196.72,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-11,ABNB,181.13,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-11,MCD,274.87,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,ABBV,294.88,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 237,24 erwartet"
+2026-11-11,DHL.DE,59.92,Welle 5 läuft,Ziel 1 erreicht,Teilverkauf 1 (ca. 1/3) am alten Hoch
+2026-11-11,RR.L,1342.6,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-10,0700.HK,417.8,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
