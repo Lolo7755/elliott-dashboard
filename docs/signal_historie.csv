@@ -470,3 +470,15 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-10,8035.T,9006.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
 2026-11-09,DTE.DE,26.16,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
 2026-11-09,ZAL.DE,27.41,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-09,PYPL,60.05,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-09,CSGP,31.24,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-09,AMD,508.58,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 436,18 (-14,2 % vom aktuellen Kurs)"
+2026-11-09,SNOW,291.14,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-09,ANET,186.17,In Zone,Zulaufend,"Abwarten – Kauflimit bei 185,98 (-0,1 % vom aktuellen Kurs)"
+2026-11-09,UBER,71.17,In Zone,Zulaufend,"Abwarten – Kauflimit bei 70,63 (-0,8 % vom aktuellen Kurs)"
+2026-11-09,HOOD,83.32,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-09,ABBV,293.3,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 237,24 (-19,1 % vom aktuellen Kurs)"
+2026-11-09,RTX,196.31,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 166,40 (-15,2 % vom aktuellen Kurs)"
+2026-11-11,0700.HK,397.2,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-09,LITE,596.16,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-09,TTWO,207.4,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 198,73 (-4,2 % vom aktuellen Kurs)"
