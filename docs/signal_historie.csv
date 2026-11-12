@@ -499,3 +499,19 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-11,DHL.DE,59.92,Welle 5 läuft,Ziel 1 erreicht,Teilverkauf 1 (ca. 1/3) am alten Hoch
 2026-11-11,RR.L,1342.6,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
 2026-11-10,0700.HK,417.8,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-10,MRVL,154.39,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-10,META,641.39,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-10,QCOM,173.53,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-10,MU,725.11,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-10,ANET,185.02,Welle 5 läuft,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-10,UBER,70.05,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-10,ABNB,186.9,In Zone,Zulaufend,"Abwarten – Kauflimit bei 182,34 (-2,4 % vom aktuellen Kurs)"
+2026-11-10,MCD,282.17,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-10,HOOD,81.33,Welle 5 läuft,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-10,DTE.DE,25.92,Welle 5 läuft,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-10,DHL.DE,58.74,Ziel 1 erreicht,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-10,ZAL.DE,28.24,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-10,RR.L,1330.8,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 1013,17 (-23,9 % vom aktuellen Kurs)"
+2026-11-12,8035.T,9572.0,In Zone (unten),Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-12,0700.HK,402.8,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-10,LITE,585.57,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
