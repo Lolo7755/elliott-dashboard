@@ -516,3 +516,13 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-12,0700.HK,402.8,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
 2026-11-10,LITE,585.57,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
 2026-11-12,005930.KS,212250.0,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-11,MRVL,168.8,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,META,628.77,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,QCOM,176.57,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-11,MU,811.3,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-11,ANET,196.68,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-11,UBER,70.68,In Zone,Zulaufend,"Abwarten – Kauflimit bei 70,63 (-0,1 % vom aktuellen Kurs)"
+2026-11-11,ABNB,181.13,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-11,MCD,274.8,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,HOOD,84.58,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-11,LITE,648.06,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
