@@ -455,3 +455,60 @@ footer{opacity:.8}
 .flg{display:inline-block;vertical-align:-1px;border-radius:2px;box-shadow:0 0 0 .5px rgba(0,0,0,.25);flex:none}
 .lbtn{font-size:12px;gap:5px}
 .ev .flag{display:inline-flex;padding-top:2px}
+
+/* ---------- Verlauf & Aktienwunsch ---------- */
+.phr{display:inline-flex;align-items:baseline;gap:10px}
+.vbtn{font:inherit;font-size:12px;font-weight:600;color:var(--mute);background:none;border:0;padding:2px 0;cursor:pointer;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--mute) 45%,transparent);text-underline-offset:3px}
+.vbtn:hover,.vbtn:focus-visible{color:var(--accent);text-decoration-color:currentColor}
+button.btn{font:inherit;color:inherit;cursor:pointer}
+.mdl{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px 16px;overflow:auto;background:rgba(6,12,20,.45);backdrop-filter:blur(10px)}
+.mdl[hidden]{display:none}
+.mbox{width:min(520px,100%);background:var(--aurora),color-mix(in srgb,var(--bg2) 92%,transparent);border:1px solid var(--edge);border-radius:22px;padding:20px 22px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.mbox-wide{width:min(980px,100%)}
+.mhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mhead h2{font-size:19px;margin:0}
+.mx{font:inherit;font-size:16px;background:none;border:0;color:var(--mute);cursor:pointer;padding:4px 8px;border-radius:8px}
+.mx:hover,.mx:focus-visible{color:var(--txt);background:var(--glass)}
+.mintro{margin:4px 0 14px}
+.vgrid{display:grid;grid-template-columns:330px 1fr;gap:20px;align-items:start}
+.vnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.vnav .btn[disabled]{opacity:.35;cursor:default}
+.vwd,.vdays{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.vwd span{font-size:11px;color:var(--mute);text-align:center;padding-bottom:2px}
+.vday{font:inherit;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:space-between;height:54px;padding:6px 2px;border-radius:12px;border:1px solid var(--line);background:var(--glass);cursor:pointer}
+.vday:hover:not([disabled]){border-color:var(--accent)}
+.vday.sel{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
+.vday.heute .vn{color:var(--accent);font-weight:800}
+.vday.aus{opacity:.35;cursor:default;background:none}
+.vday.leer{visibility:hidden}
+.vn{font-size:13px;font-weight:600}
+.vdots{display:flex;gap:3px;min-height:16px}
+.vdots i,.vleg i{font-style:normal;font-size:10.5px;font-weight:700;line-height:16px;min-width:16px;padding:0 4px;border-radius:8px;text-align:center}
+.dk{background:color-mix(in srgb,var(--green) 22%,transparent);color:var(--green)}
+.dv{background:color-mix(in srgb,var(--red) 20%,transparent);color:var(--red)}
+.d0{color:var(--mute)}
+.vleg{display:flex;gap:14px;margin-top:10px}
+.vleg i{display:inline-block;width:10px;min-width:10px;height:10px;padding:0;margin-right:5px;vertical-align:-1px}
+.vtag{min-height:300px;max-height:62vh;overflow:auto;padding-right:4px}
+.vth{font-size:16px;margin:2px 0 8px}
+.vrow{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:12px;border:1px solid transparent;cursor:pointer}
+.vrow:hover,.vrow:focus-visible{border-color:var(--line);background:var(--glass)}
+.vtyp{flex:none;font-size:11px;font-weight:700;padding:2px 7px;border-radius:7px;margin-top:2px}
+.vrow.kauf .vtyp{background:color-mix(in srgb,var(--green) 18%,transparent);color:var(--green)}
+.vrow.verkauf .vtyp{background:color-mix(in srgb,var(--red) 16%,transparent);color:var(--red)}
+.vmain{min-width:0}
+.vmain .pos{color:var(--green)}.vmain .neg{color:var(--red)}
+.wform label{display:block;margin:12px 0 6px}
+.wrow{display:flex;gap:8px}
+.wrow input{flex:1;min-width:0;font:inherit;padding:9px 12px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--glass);color:inherit}
+.wrow input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.wgo{white-space:nowrap}
+.wh{margin:16px 0 6px;color:var(--mute);font-weight:600}
+.wliste{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto}
+.wz{display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
+.wst{flex:none;font-size:11px;font-weight:700;padding:2px 7px;border-radius:7px;margin-top:2px;min-width:92px;text-align:center}
+.wst.ok{background:color-mix(in srgb,var(--green) 18%,transparent);color:var(--green)}
+.wst.info{background:var(--glass2);color:var(--mute)}
+.wst.warn{background:color-mix(in srgb,#f59e0b 20%,transparent);color:#b7791f}
+.wst.neg{background:color-mix(in srgb,var(--red) 16%,transparent);color:var(--red)}
+@media (max-width:760px){ .vgrid{grid-template-columns:1fr} .vtag{max-height:none} .mdl{padding:0} .mbox{border-radius:0;min-height:100%} }
