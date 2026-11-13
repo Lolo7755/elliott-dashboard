@@ -272,6 +272,10 @@ def main() -> int:
         ev_bonus = max(-5, min(5, round((r["ev"] or 0) * 5)))
         kand.append((sc + (5 if r["crv"] >= 2 else 0) + (5 if neu else 0) + ev_bonus, r["crv"], r["symbol"]))
     empfehlungen = [x[2] for x in sorted(kand, key=lambda x: (-x[0], -x[1]))[:3]]
+    try:
+        AUF.verlauf(DOCS / "aufgaben_historie.json", aufgaben, results, empfehlungen, DOCS / "signal_historie.csv")
+    except Exception as e:
+        print(f"Aufgaben-Verlauf-Fehler {e}", file=sys.stderr)
 
     # Live-Bilanz: neue Kaufsignale aufnehmen und mit echten Kursen nachhalten
     try:
