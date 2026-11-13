@@ -23,6 +23,7 @@
   </div>
   <nav class="actions">
     <a class="btn" id="editWl" target="_blank" rel="noopener">✏️ <span class="lbl">Watchlist</span></a>
+    <button class="btn" id="wishBtn" type="button">＋ <span class="lbl">Aktie wünschen</span></button>
     <a class="btn" id="runNow" target="_blank" rel="noopener">▶️ <span class="lbl">Analyse starten</span></a>
     <a class="btn" href="signal_historie.csv" target="_blank">📜 <span class="lbl">Historie</span></a>
     <div class="seg" role="group" aria-label="Darstellung">
@@ -142,7 +143,7 @@
 
     <aside class="side"><div class="side-in">
       <div class="panel">
-        <h3 class="ph">Heute zu tun <span class="mute small" id="todoDate"></span></h3>
+        <h3 class="ph">Heute zu tun <span class="phr"><span class="mute small" id="todoDate"></span><button class="vbtn" id="verlaufBtn" type="button" title="Welche Käufe und Verkäufe an welchem Tag anstanden">Verlauf</button></span></h3>
         <div class="scroll todo" id="todo"><div class="empty">–</div></div>
       </div>
       <div class="panel">
@@ -154,6 +155,25 @@
 </main>
 
 <div id="ov"><section id="detail" role="dialog" aria-modal="true"></section></div>
+<div class="mdl" id="mVerlauf" hidden><section class="mbox mbox-wide" role="dialog" aria-modal="true" aria-labelledby="vTitel">
+  <header class="mhead"><h2 id="vTitel">Verlauf der Aufgaben</h2><button class="mx" data-close type="button" aria-label="Schließen">✕</button></header>
+  <p class="mute small mintro">Was an welchem Abend zu tun gewesen wäre – zum Nachholen, falls du einen Abend verpasst hast. Kurs „damals“ ist der Schlusskurs des Tages.</p>
+  <div class="vgrid">
+    <div class="vcal"><div class="vnav"><button class="btn small" id="vPrev" type="button" aria-label="Vormonat">‹</button><b id="vMonat"></b><button class="btn small" id="vNext" type="button" aria-label="Nächster Monat">›</button></div>
+      <div class="vwd"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span></div><div class="vdays" id="vDays"></div>
+      <div class="vleg small mute"><span><i class="dk"></i>Kauf</span><span><i class="dv"></i>Verkauf</span></div></div>
+    <div class="vtag" id="vTag"></div>
+  </div>
+</section></div>
+<div class="mdl" id="mWunsch" hidden><section class="mbox" role="dialog" aria-modal="true" aria-labelledby="wTitel">
+  <header class="mhead"><h2 id="wTitel">Aktie wünschen</h2><button class="mx" data-close type="button" aria-label="Schließen">✕</button></header>
+  <form id="wForm" class="wform">
+    <label for="wIn" class="small">Name der Firma – mehrere mit Komma trennen</label>
+    <div class="wrow"><input id="wIn" type="text" placeholder="z. B. Mercedes, Rheinmetall" autocomplete="off" required><button class="btn wgo" type="submit">Weiter zu GitHub</button></div>
+    <p class="small mute">Auf GitHub öffnet sich ein vorausgefülltes Issue – dort nur noch auf <b>Create</b> klicken. Das System findet die passende Aktie, trägt sie ein und startet die Analyse. Nach ca. 6–8 Minuten ist sie im Dashboard.</p>
+  </form>
+  <h3 class="wh small">Letzte Wünsche</h3><div id="wListe" class="wliste"><div class="empty small">Noch keine Wünsche.</div></div>
+</section></div>
 
 <footer>
   Regelbasierte Elliott-Wellen-Analyse mit Fibonacci-Zonen. Die Zählung ist mechanisch – keine Anlageberatung. Szenarien können jederzeit invalidiert werden.
