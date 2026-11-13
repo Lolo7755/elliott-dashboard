@@ -539,3 +539,13 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-12,RR.L,1369.6,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
 2026-11-11,005930.KS,206000.0,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
 2026-11-11,8035.T,9272.0,Welle 5 läuft,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,AVGO,345.22,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 311,86 (-9,7 % vom aktuellen Kurs)"
+2026-11-11,UBER,70.68,In Zone,Zulaufend,"Abwarten – Kauflimit bei 70,63 (-0,1 % vom aktuellen Kurs)"
+2026-11-11,MELI,1512.02,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,HOOD,84.58,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-11,LLY,1437.29,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 1222,85 (-14,9 % vom aktuellen Kurs)"
+2026-11-11,TMO,717.71,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-11,ZAL.DE,27.75,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-11,PUM.DE,26.51,In Zone,Zulaufend,"Abwarten – Kauflimit bei 26,22 (-1,1 % vom aktuellen Kurs)"
+2026-11-13,005930.KS,213000.0,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-13,8035.T,9580.0,In Zone (unten),Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
