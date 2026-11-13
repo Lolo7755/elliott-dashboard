@@ -25,6 +25,7 @@ const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(
   const base = (m && repo) ? `https://github.com/${m[1]}/${repo}` : "https://github.com";
   document.getElementById("editWl").href = (m && repo) ? `${base}/edit/main/watchlist.csv` : base;
   document.getElementById("runNow").href = (m && repo) ? `${base}/actions/workflows/analyse.yml` : base;
+  window.REPO_BASE = (m && repo) ? base : "https://github.com/Lolo7755/elliott-dashboard";
 })();
 
 // ---------- Formatierung ----------
@@ -948,6 +949,95 @@ document.getElementById("q").oninput = render;
 document.getElementById("fLand").onchange = render;
 document.getElementById("fSektor").onchange = render;
 document.getElementById("ov").onclick = e => { if (e.target.id === "ov") closeDetail(); };
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
+document.addEventListener("keydown", e => { if (e.key !== "Escape") return; const m = document.querySelector(".mdl:not([hidden])"); m ? modalZu(m) : closeDetail(); });
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (document.documentElement.dataset.pref === "auto") applyTheme("auto"); });
 load().catch(e => { document.getElementById("stand").textContent = "Fehler beim Laden der Daten: " + e; });
+
+// ---------- Kleine Fenster (Verlauf, Wunsch) ----------
+function modalAuf(id){ const m = document.getElementById(id); m.hidden = false; document.body.style.overflow = "hidden";
+  const f = m.querySelector("input,button.vday.sel,button"); if (f) setTimeout(() => f.focus(), 30); }
+function modalZu(m){ m.hidden = true; if (document.getElementById("ov").style.display !== "block") document.body.style.overflow = ""; }
+document.querySelectorAll(".mdl").forEach(m => { m.addEventListener("click", e => { if (e.target === m || e.target.closest("[data-close]")) modalZu(m); }); });
+
+// ---------- Verlauf: welche Aufgaben an welchem Tag anstanden ----------
+let VH = null, vMonat = null, vSel = null;
+const isoD = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+function vText(t){
+  if (t.typ === "kauf") return t.tranche >= 3 ? "Teilkauf 3 von 3 (Rest)" : `Teilkauf ${t.tranche} von 3 (ca. 1/3)`;
+  return {1: "Ziel 1 erreicht – ca. 1/3 verkaufen", 2: "Ziel 2 erreicht – weiteres Drittel verkaufen",
+          3: "5 Wellen vollendet – Rest verkaufen oder eng absichern", 4: "Szenario invalidiert – Restposition auflösen"}[t.stufe] || "Verkaufen";
+}
+async function verlaufLaden(){
+  if (VH) return VH;
+  try { const r = await fetch("aufgaben_historie.json?ts=" + Date.now()); VH = r.ok ? await r.json() : {tage: {}}; } catch(e) { VH = {tage: {}}; }
+  return VH;
+}
+async function verlaufOeffnen(){
+  modalAuf("mVerlauf");
+  const h = await verlaufLaden(), tage = Object.keys(h.tage).sort();
+  if (!vSel) vSel = [...tage].reverse().find(d => h.tage[d].length) || STAND || isoD(new Date());
+  const d = new Date(vSel + "T12:00:00"); vMonat = new Date(d.getFullYear(), d.getMonth(), 1);
+  renderVerlauf();
+}
+function renderVerlauf(){
+  const h = VH || {tage: {}}, tage = Object.keys(h.tage).sort(), erst = tage[0], letzt = tage[tage.length - 1];
+  document.getElementById("vMonat").textContent = `${MONATE_LANG[vMonat.getMonth()]} ${vMonat.getFullYear()}`;
+  const vor = new Date(vMonat.getFullYear(), vMonat.getMonth() - 1, 1), nach = new Date(vMonat.getFullYear(), vMonat.getMonth() + 1, 1);
+  document.getElementById("vPrev").disabled = !erst || isoD(new Date(vMonat - 1)) < erst;
+  document.getElementById("vNext").disabled = !letzt || isoD(nach) > letzt;
+  document.getElementById("vPrev").onclick = () => { vMonat = vor; renderVerlauf(); };
+  document.getElementById("vNext").onclick = () => { vMonat = nach; renderVerlauf(); };
+  let html = "", lead = (vMonat.getDay() + 6) % 7;
+  if (lead < 5) html += '<span class="vday leer"></span>'.repeat(lead);
+  for (let d = new Date(vMonat); d.getMonth() === vMonat.getMonth(); d.setDate(d.getDate() + 1)) {
+    const wd = d.getDay(); if (wd === 0 || wd === 6) continue;
+    const iso = isoD(d), xs = h.tage[iso], k = xs ? xs.filter(t => t.typ === "kauf").length : 0, v = xs ? xs.length - k : 0;
+    const bekannt = !!xs, zukunft = letzt && iso > letzt;
+    html += `<button type="button" class="vday${bekannt ? "" : " aus"}${iso === vSel ? " sel" : ""}${iso === STAND ? " heute" : ""}" data-d="${iso}" ${bekannt ? "" : "disabled"}
+      aria-label="${wdKurz(iso)} ${bekannt ? `${k} Käufe, ${v} Verkäufe` : (zukunft ? "noch offen" : "keine Daten")}">
+      <span class="vn">${d.getDate()}</span><span class="vdots">${k ? `<i class="dk">${k}</i>` : ""}${v ? `<i class="dv">${v}</i>` : ""}${bekannt && !k && !v ? '<i class="d0">–</i>' : ""}</span></button>`;
+  }
+  const el = document.getElementById("vDays"); el.innerHTML = html;
+  el.querySelectorAll(".vday[data-d]:not([disabled])").forEach(b => b.onclick = () => { vSel = b.dataset.d; renderVerlauf(); });
+  renderVerlaufTag();
+}
+function renderVerlaufTag(){
+  const xs = ((VH && VH.tage[vSel]) || []).slice().sort((a, b) => (a.typ > b.typ ? 1 : -1) || (b.empfohlen ? 1 : 0) - (a.empfohlen ? 1 : 0));
+  const el = document.getElementById("vTag");
+  const titel = `<h3 class="vth">${wdKurz(vSel)}${vSel === STAND ? ' <span class="mute small">heute</span>' : ""}</h3>`;
+  if (!xs.length) { el.innerHTML = titel + '<div class="empty">An diesem Abend gab es nichts zu tun.</div>'; return; }
+  const zeile = t => { const a = DATA.find(x => x.symbol === t.symbol), jetzt = a ? a.kurs : null, cur = t.currency || (a && a.currency) || "";
+    const ch = jetzt != null && t.kurs ? (jetzt / t.kurs - 1) * 100 : null, gut = ch == null ? "" : ((t.typ === "kauf") === (ch >= 0) ? "pos" : "neg");
+    return `<div class="vrow ${t.typ}" ${a ? `data-sym="${t.symbol}" role="button" tabindex="0"` : ""}>
+      <span class="vtyp">${t.typ === "kauf" ? "Kauf" : "Verkauf"}</span>
+      <div class="vmain"><b>${t.empfohlen ? "⭐ " : ""}${t.name}</b> <span class="mute small">${t.symbol}</span>
+        <div class="small">${vText(t)}${t.blockiert ? ' · <span class="mute">pausiert durch Marktfilter</span>' : ""}</div>
+        <div class="small mute">damals ${fmt(t.kurs, cur)}${jetzt != null && vSel !== STAND ? ` · jetzt ${fmt(jetzt, cur)} <b class="${gut}">${sgn2(ch)} %</b>` : ""}${t.stopp ? ` · Stopp ${fmt(t.stopp)}` : ""}${t.nachgetragen ? " · nachgetragen" : ""}</div></div></div>`; };
+  const k = xs.filter(t => t.typ === "kauf"), v = xs.filter(t => t.typ !== "kauf");
+  el.innerHTML = titel + (k.length ? `<div class="grp">Kaufen · ${k.length}</div>` + k.map(zeile).join("") : "")
+    + (v.length ? `<div class="grp">Verkaufen · ${v.length}</div>` + v.map(zeile).join("") : "");
+  el.querySelectorAll("[data-sym]").forEach(r => { const go = () => { modalZu(document.getElementById("mVerlauf")); showDetail(r.dataset.sym); };
+    r.onclick = go; r.onkeydown = e => { if (e.key === "Enter") go(); }; });
+}
+document.getElementById("verlaufBtn").onclick = verlaufOeffnen;
+
+// ---------- Aktienwunsch: per GitHub-Issue, der Rest läuft automatisch ----------
+const W_STATUS = {hinzugefuegt: ["ok", "hinzugefügt"], schon_drin: ["info", "schon drin"], zu_wenig_daten: ["warn", "zu wenig Kursdaten"], nicht_gefunden: ["neg", "nicht gefunden"]};
+async function wunschOeffnen(){
+  modalAuf("mWunsch");
+  const el = document.getElementById("wListe");
+  try { const r = await fetch("wuensche.json?ts=" + Date.now()); const w = r.ok ? (await r.json()).wuensche || [] : [];
+    if (w.length) el.innerHTML = w.slice(0, 12).map(x => { const [c, t] = W_STATUS[x.status] || ["info", x.status];
+      return `<div class="wz"><span class="wst ${c}">${t}</span><div><b>${x.eingabe}</b>${x.symbol ? ` → ${x.name || ""} <span class="mute small">${x.symbol}${x.boerse ? " · " + x.boerse : ""}</span>` : ""}
+        <div class="small mute">${(x.datum || "").slice(0, 10).split("-").reverse().join(".")}</div></div></div>`; }).join("");
+  } catch(e) {}
+}
+document.getElementById("wishBtn").onclick = wunschOeffnen;
+document.getElementById("wForm").onsubmit = e => {
+  e.preventDefault();
+  const v = document.getElementById("wIn").value.trim(); if (!v) return;
+  const url = `${window.REPO_BASE}/issues/new?title=${encodeURIComponent("Aktienwunsch: " + v)}&body=${encodeURIComponent("Wird automatisch bearbeitet – einfach auf „Create“ klicken.")}`;
+  window.open(url, "_blank", "noopener");
+  document.getElementById("wIn").value = "";
+  modalZu(document.getElementById("mWunsch"));
+};
