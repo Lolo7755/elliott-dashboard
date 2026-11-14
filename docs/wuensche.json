@@ -1,0 +1,20 @@
+{
+ "wuensche": [
+  {
+   "datum": "2026-11-14 11:11",
+   "eingabe": "Wird automatisch bearbeitet – einfach auf „Create“ klicken.",
+   "issue": 1,
+   "status": "nicht_gefunden"
+  },
+  {
+   "datum": "2026-11-14 11:11",
+   "eingabe": "Zscaler",
+   "issue": 1,
+   "symbol": "ZS",
+   "boerse": "Nasdaq",
+   "name": "Zscaler",
+   "currency": "USD",
+   "status": "hinzugefuegt"
+  }
+ ]
+}
