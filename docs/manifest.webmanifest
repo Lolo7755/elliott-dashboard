@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Elliott-Dashboard",
+  "short_name": "Elliott",
+  "description": "Regelbasierte Elliott-Wellen-Analyse mit Fibonacci-Zonen, Tagesaufgaben und Terminen. Keine Anlageberatung.",
+  "lang": "de",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#12151b",
+  "theme_color": "#12151b",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
