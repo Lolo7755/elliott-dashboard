@@ -14,6 +14,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#12151b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Elliott">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Regelbasierte Elliott-Wellen-Analyse mit Fibonacci-Zonen. Keine Anlageberatung.">
 </head>
 <body>
 <header class="topbar">
@@ -25,6 +36,7 @@
     <a class="btn" id="editWl" target="_blank" rel="noopener">✏️ <span class="lbl">Watchlist</span></a>
     <button class="btn" id="wishBtn" type="button">＋ <span class="lbl">Aktie wünschen</span></button>
     <a class="btn" id="runNow" target="_blank" rel="noopener">▶️ <span class="lbl">Analyse starten</span></a>
+    <button class="btn" id="installBtn" type="button" hidden>⬇️ <span class="lbl">App installieren</span></button>
     <a class="btn" href="signal_historie.csv" target="_blank">📜 <span class="lbl">Historie</span></a>
     <div class="seg" role="group" aria-label="Darstellung">
       <button data-theme-set="light" title="Hell">☀️</button><button data-theme-set="dark" title="Dunkel">🌙</button><button data-theme-set="auto">Auto</button>
@@ -176,7 +188,8 @@
 </section></div>
 
 <footer>
-  Regelbasierte Elliott-Wellen-Analyse mit Fibonacci-Zonen. Die Zählung ist mechanisch – keine Anlageberatung. Szenarien können jederzeit invalidiert werden.
+  Regelbasierte Elliott-Wellen-Analyse mit Fibonacci-Zonen. Die Zählung ist mechanisch – keine Anlageberatung. Szenarien können jederzeit invalidiert werden.<br>
+  <b>Hinweis:</b> Alle Inhalte sind automatisch erzeugte, technische Auswertungen zu Informationszwecken und keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung und keine Aufforderung zum Handel. Kursdaten ohne Gewähr (Quelle: Yahoo Finance), Wertpapiergeschäfte sind mit Verlustrisiken bis zum Totalverlust verbunden. Entscheidungen triffst du selbst und auf eigenes Risiko.
 </footer>
 
 <script src="app.js"></script>
