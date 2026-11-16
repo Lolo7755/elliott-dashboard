@@ -1041,3 +1041,14 @@ document.getElementById("wForm").onsubmit = e => {
   document.getElementById("wIn").value = "";
   modalZu(document.getElementById("mWunsch"));
 };
+
+// ---------- Als App installierbar (PWA) ----------
+if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+let installEvt = null;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; document.getElementById("installBtn").hidden = false; });
+addEventListener("appinstalled", () => { installEvt = null; document.getElementById("installBtn").hidden = true; });
+document.getElementById("installBtn").onclick = async () => {
+  if (!installEvt) return;
+  installEvt.prompt(); await installEvt.userChoice.catch(() => {});
+  installEvt = null; document.getElementById("installBtn").hidden = true;
+};
