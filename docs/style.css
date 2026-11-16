@@ -512,3 +512,8 @@ button.btn{font:inherit;color:inherit;cursor:pointer}
 .wst.warn{background:color-mix(in srgb,#f59e0b 20%,transparent);color:#b7791f}
 .wst.neg{background:color-mix(in srgb,var(--red) 16%,transparent);color:var(--red)}
 @media (max-width:760px){ .vgrid{grid-template-columns:1fr} .vtag{max-height:none} .mdl{padding:0} .mbox{border-radius:0;min-height:100%} }
+
+/* ---------- Handy: Seite darf nicht seitlich verrutschen ---------- */
+html,body{overflow-x:clip}
+.listing,.side{min-width:0}
+@media (max-width:1250px){ .listing{width:100%} }
