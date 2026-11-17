@@ -517,3 +517,13 @@ button.btn{font:inherit;color:inherit;cursor:pointer}
 html,body{overflow-x:clip}
 .listing,.side{min-width:0}
 @media (max-width:1250px){ .listing{width:100%} }
+
+/* ---------- Update-Hinweis & Was ist neu ---------- */
+.upd{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:var(--r-sm);border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 16%,var(--panel));color:var(--txt);cursor:pointer;white-space:nowrap}
+.upd:hover,.upd:focus-visible{background:color-mix(in srgb,var(--accent) 28%,var(--panel))}
+.upd[hidden]{display:none}
+.neul{display:flex;flex-direction:column;gap:12px;margin-top:10px;max-height:60vh;overflow:auto}
+.neue ul{margin:4px 0 0;padding-left:18px}
+.neue li{margin:3px 0;line-height:1.45}
+footer .vbtn{margin-top:8px}
+@media (max-width:760px){ .upd{flex-basis:100%;order:-1} }
