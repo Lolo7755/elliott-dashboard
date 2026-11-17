@@ -1097,3 +1097,7 @@ document.getElementById("neuBtn").onclick = () => neuZeigen(null);
   setInterval(updPruefen, 5 * 60 * 1000);
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") updPruefen(); });
 })();
+
+// ---------- Einmaliger Hinweis „keine Anlageberatung“ ----------
+if (lsGet("mc_hinweis") !== "1") document.getElementById("erstInfo").hidden = false;
+document.getElementById("erstOk").onclick = () => { lsSet("mc_hinweis", "1"); document.getElementById("erstInfo").hidden = true; };
