@@ -1,6 +1,10 @@
 {
-  "version": "2026-11-17.2",
+  "version": "2026-11-17.3",
   "aenderungen": [
+    {"version": "2026-11-17.3", "datum": "17.11.2026", "punkte": [
+      "Kurzer Hinweis „keine Anlageberatung“ beim ersten Start und klein unter „Heute zu tun“",
+      "Schutz gegen veraltete Kursdaten: Liefert Yahoo ältere Kurse als beim letzten Lauf, bleibt das letzte richtige Ergebnis stehen – alte Signale tauchen nicht mehr erneut auf"
+    ]},
     {"version": "2026-11-17.2", "datum": "17.11.2026", "punkte": [
       "Update-Hinweis: Oben rechts erscheint ein Hinweis, sobald eine neue Analyse oder eine neue Version da ist",
       "„Was ist neu?“ – diese Liste, auch unten im Seitenende abrufbar"
