@@ -33,6 +33,7 @@
     <div><h1>MarketCompass <span class="mute" style="font-size:.6em;font-weight:500;white-space:nowrap">(Stock Signals)</span></h1><small id="stand">lädt …</small></div>
   </div>
   <nav class="actions">
+    <button class="upd" id="updBtn" type="button" hidden></button>
     <a class="btn" id="editWl" target="_blank" rel="noopener">✏️ <span class="lbl">Watchlist</span></a>
     <button class="btn" id="wishBtn" type="button">＋ <span class="lbl">Aktie wünschen</span></button>
     <a class="btn" id="runNow" target="_blank" rel="noopener">▶️ <span class="lbl">Analyse starten</span></a>
@@ -177,6 +178,10 @@
     <div class="vtag" id="vTag"></div>
   </div>
 </section></div>
+<div class="mdl" id="mNeu" hidden><section class="mbox" role="dialog" aria-modal="true" aria-labelledby="nTitel">
+  <header class="mhead"><h2 id="nTitel">Was ist neu?</h2><button class="mx" data-close type="button" aria-label="Schließen">✕</button></header>
+  <div id="neuListe" class="neul"></div>
+</section></div>
 <div class="mdl" id="mWunsch" hidden><section class="mbox" role="dialog" aria-modal="true" aria-labelledby="wTitel">
   <header class="mhead"><h2 id="wTitel">Aktie wünschen</h2><button class="mx" data-close type="button" aria-label="Schließen">✕</button></header>
   <form id="wForm" class="wform">
@@ -189,7 +194,8 @@
 
 <footer>
   Regelbasierte Elliott-Wellen-Analyse mit Fibonacci-Zonen. Die Zählung ist mechanisch – keine Anlageberatung. Szenarien können jederzeit invalidiert werden.<br>
-  <b>Hinweis:</b> Alle Inhalte sind automatisch erzeugte, technische Auswertungen zu Informationszwecken und keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung und keine Aufforderung zum Handel. Kursdaten ohne Gewähr (Quelle: Yahoo Finance), Wertpapiergeschäfte sind mit Verlustrisiken bis zum Totalverlust verbunden. Entscheidungen triffst du selbst und auf eigenes Risiko.
+  <b>Hinweis:</b> Alle Inhalte sind automatisch erzeugte, technische Auswertungen zu Informationszwecken und keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung und keine Aufforderung zum Handel. Kursdaten ohne Gewähr (Quelle: Yahoo Finance), Wertpapiergeschäfte sind mit Verlustrisiken bis zum Totalverlust verbunden. Entscheidungen triffst du selbst und auf eigenes Risiko.<br>
+  <button class="vbtn" id="neuBtn" type="button">Was ist neu?</button>
 </footer>
 
 <script src="app.js"></script>
