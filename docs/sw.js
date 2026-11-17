@@ -1,7 +1,7 @@
 // Service Worker des Elliott-Dashboards: macht die Seite installierbar und zeigt offline den letzten Stand.
 // Strategie: immer zuerst frisch aus dem Netz laden (Daten ändern sich täglich), nur bei fehlender
 // Verbindung aus dem Zwischenspeicher. Externe Bibliotheken/Schriften: aus dem Speicher, im Hintergrund erneuern.
-const CACHE = "elliott-v1";
+const CACHE = "elliott-v2";
 const SHELL = ["./", "index.html", "style.css", "app.js", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 const EXTERN = ["unpkg.com", "fonts.googleapis.com", "fonts.gstatic.com"];
 
@@ -17,7 +17,7 @@ const ohneQuery = req => { const u = new URL(req.url); u.search = ""; return u.h
 
 self.addEventListener("fetch", e => {
   const req = e.request;
-  if (req.method !== "GET") return;
+  if (req.method !== "GET" || req.headers.has("range")) return;
   const url = new URL(req.url);
   if (url.origin === self.location.origin) {
     e.respondWith((async () => {
