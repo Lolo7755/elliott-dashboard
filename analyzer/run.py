@@ -132,6 +132,26 @@ def main() -> int:
         sym = item["symbol"]
         try:
             df, cur, ticker = fetch(sym)
+            prev = old.get(sym)
+            # Schutz gegen veraltete Yahoo-Daten: liefert Yahoo einen älteren letzten Handelstag als beim
+            # vorigen Lauf (z. B. Freitag statt Montag), darf der Lauf nicht "zurückspringen" – sonst tauchen
+            # alte Signale und Aufgaben erneut auf. Erst nochmal laden, sonst das letzte Ergebnis behalten.
+            if prev and prev.get("stand") and df.index[-1].strftime("%Y-%m-%d") < prev["stand"]:
+                time.sleep(5)
+                df2, cur2, t2 = fetch(sym)
+                if df2.index[-1] > df.index[-1]:
+                    df, cur, ticker = df2, cur2, t2
+            if prev and prev.get("stand") and df.index[-1].strftime("%Y-%m-%d") < prev["stand"] \
+                    and (DOCS / "aktien" / datei(sym)).exists():
+                res = json.loads((DOCS / "aktien" / datei(sym)).read_text(encoding="utf-8"))
+                res["veraltet"] = True
+                res["status_letzter_lauf"] = prev["status"]
+                kurse[sym] = df
+                closes_rs[sym] = MF.rs20(mkt, sym, df["Close"].dropna())
+                results.append(res)
+                print(f"ALT  {sym:11s} Yahoo liefert nur Daten bis {df.index[-1]:%d.%m.} – Ergebnis vom {prev['stand']} behalten")
+                time.sleep(0.3)
+                continue
             kurse[sym] = df
             res = analyze(df, sym, item["name"], cur, alt=True)
             try:
@@ -163,7 +183,6 @@ def main() -> int:
                 res["backtest"] = None
                 print(f"     {sym}: Backtest-Fehler {e}", file=sys.stderr)
             res["kommentar"] = kommentare.get(sym)
-            prev = old.get(sym)
             if prev and prev.get("stand") == res["stand"]:
                 # erneuter Lauf am selben Börsentag: weiterhin gegen den Vortag vergleichen,
                 # damit die Tagesaufgaben bei manuellen Zusatzläufen nicht verschwinden
