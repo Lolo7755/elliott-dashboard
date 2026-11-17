@@ -1057,8 +1057,13 @@ document.getElementById("installBtn").onclick = async () => {
 // Prüft alle 5 Minuten (und beim Zurückkehren in die App), ob es eine neue Version (version.json)
 // oder eine neue Analyse (data.json) gibt, und blendet dann oben rechts einen Hinweis ein.
 let VER = null, DATA_TAG = null;
-const datenTag = async () => { try { const r = await fetch("data.json", {method: "HEAD", cache: "no-store"});
-  return r.ok ? (r.headers.get("etag") || r.headers.get("last-modified")) : null; } catch(e) { return null; } };
+// Zeitstempel "erstellt" steht ganz am Anfang von data.json – nur die ersten Bytes laden statt der ganzen Datei.
+const datenTag = async () => { try {
+  const r = await fetch("data.json?probe=" + Date.now(), {headers: {Range: "bytes=0-127"}, cache: "no-store"});
+  if (!r.ok || !r.body) return null;
+  const rd = r.body.getReader(); const {value} = await rd.read(); rd.cancel().catch(() => {});
+  const m = new TextDecoder().decode(value || new Uint8Array()).match(/"erstellt":\s*"([^"]+)"/);
+  return m ? m[1] : null; } catch(e) { return null; } };
 const holeVersion = async () => { try { const r = await fetch("version.json?ts=" + Date.now(), {cache: "no-store"}); return r.ok ? await r.json() : null; } catch(e) { return null; } };
 const lsGet = k => { try { return localStorage.getItem(k); } catch(e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} };
