@@ -94,6 +94,8 @@ def aktualisieren(pfad: Path, results: list[dict], historie: Path) -> list[dict]
     for r in results:
         e = j["aktien"].setdefault(r["symbol"], {"basis": None, "heute": None})
         h = e.get("heute")
+        if h and r["stand"] < h["datum"]:
+            continue  # ältere Kursdaten als beim letzten Lauf: Zustand nicht zurückdrehen, keine Aufgabe
         if h and h["datum"] != r["stand"]:
             e["basis"] = h["zustand"]  # neuer Börsentag: gestriges Ergebnis wird zur Basis
         basis = e.get("basis")
