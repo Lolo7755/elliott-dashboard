@@ -1,0 +1,25 @@
+{
+  "version": "2026-11-17.2",
+  "aenderungen": [
+    {"version": "2026-11-17.2", "datum": "17.11.2026", "punkte": [
+      "Update-Hinweis: Oben rechts erscheint ein Hinweis, sobald eine neue Analyse oder eine neue Version da ist",
+      "„Was ist neu?“ – diese Liste, auch unten im Seitenende abrufbar"
+    ]},
+    {"version": "2026-11-17.1", "datum": "17.11.2026", "punkte": [
+      "Neuer Name: MarketCompass (Stock Signals)",
+      "Handy: Die Seite lässt sich nicht mehr seitlich verschieben, nur noch die Aktientabelle selbst"
+    ]},
+    {"version": "2026-11-16.1", "datum": "16.11.2026", "punkte": [
+      "Als App installierbar – am PC, auf Android und auf dem iPhone, mit eigenem Icon",
+      "Offline wird der zuletzt geladene Stand angezeigt",
+      "Ausführlicherer Hinweis „keine Anlageberatung“ im Seitenende"
+    ]},
+    {"version": "2026-11-13.1", "datum": "13.11.2026", "punkte": [
+      "Verlauf: Kalender, welche Käufe und Verkäufe an welchem Abend anstanden – zum Nachholen",
+      "Aktie wünschen: Firmenname eingeben, die passende Aktie wird automatisch gefunden und hinzugefügt"
+    ]},
+    {"version": "2026-11-10.1", "datum": "10.11.2026", "punkte": [
+      "„Heute zu tun“ zeigt jede Aufgabe nur noch einmal – Teilkauf 1 → 2 → 3 der Reihe nach"
+    ]}
+  ]
+}
