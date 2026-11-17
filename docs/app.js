@@ -1052,3 +1052,43 @@ document.getElementById("installBtn").onclick = async () => {
   installEvt.prompt(); await installEvt.userChoice.catch(() => {});
   installEvt = null; document.getElementById("installBtn").hidden = true;
 };
+
+// ---------- Update-Hinweis & „Was ist neu?“ ----------
+// Prüft alle 5 Minuten (und beim Zurückkehren in die App), ob es eine neue Version (version.json)
+// oder eine neue Analyse (data.json) gibt, und blendet dann oben rechts einen Hinweis ein.
+let VER = null, DATA_TAG = null;
+const datenTag = async () => { try { const r = await fetch("data.json", {method: "HEAD", cache: "no-store"});
+  return r.ok ? (r.headers.get("etag") || r.headers.get("last-modified")) : null; } catch(e) { return null; } };
+const holeVersion = async () => { try { const r = await fetch("version.json?ts=" + Date.now(), {cache: "no-store"}); return r.ok ? await r.json() : null; } catch(e) { return null; } };
+const lsGet = k => { try { return localStorage.getItem(k); } catch(e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} };
+function neuZeigen(abVersion){
+  if (!VER) return;
+  const liste = VER.aenderungen.filter(a => !abVersion || a.version > abVersion);
+  document.getElementById("neuListe").innerHTML = (liste.length ? liste : VER.aenderungen).slice(0, 12).map(a =>
+    `<div class="neue"><div class="small mute">${a.datum}</div><ul>${a.punkte.map(p => `<li>${p}</li>`).join("")}</ul></div>`).join("");
+  modalAuf("mNeu");
+}
+function updHinweis(art){
+  const b = document.getElementById("updBtn");
+  if (b.dataset.art === "version") return; // neue Version hat Vorrang
+  b.dataset.art = art;
+  b.textContent = art === "version" ? "✨ Update verfügbar – neu laden" : "🔄 Neue Analyse – anzeigen";
+  b.title = art === "version" ? "Eine neue Version des Dashboards ist da" : "Die Abendanalyse wurde aktualisiert";
+  b.hidden = false;
+}
+async function updPruefen(){
+  const [v, t] = await Promise.all([holeVersion(), datenTag()]);
+  if (v && VER && v.version !== VER.version) updHinweis("version");
+  else if (t && DATA_TAG && t !== DATA_TAG) updHinweis("daten");
+}
+document.getElementById("updBtn").onclick = () => location.reload();
+document.getElementById("neuBtn").onclick = () => neuZeigen(null);
+(async () => {
+  [VER, DATA_TAG] = await Promise.all([holeVersion(), datenTag()]);
+  if (VER) { const gesehen = lsGet("mc_version") || "2026-11-17.1"; // erste Einführung: einmal zeigen, was neu ist
+    if (gesehen && gesehen < VER.version) neuZeigen(gesehen);
+    lsSet("mc_version", VER.version); }
+  setInterval(updPruefen, 5 * 60 * 1000);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") updPruefen(); });
+})();
