@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Kurswelle",
-  "short_name": "Kurswelle",
+  "name": "Marktkompass",
+  "short_name": "Marktkompass",
   "description": "Dein tägliches Börsen-Briefing: regelbasierte Elliott-Wellen-Analyse mit Fibonacci-Zonen, Tagesaufgaben und Terminen. Keine Anlageberatung.",
   "lang": "de",
   "dir": "ltr",
