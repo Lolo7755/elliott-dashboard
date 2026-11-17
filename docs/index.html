@@ -158,6 +158,7 @@
       <div class="panel">
         <h3 class="ph">Heute zu tun <span class="phr"><span class="mute small" id="todoDate"></span><button class="vbtn" id="verlaufBtn" type="button" title="Welche Käufe und Verkäufe an welchem Tag anstanden">Verlauf</button></span></h3>
         <div class="scroll todo" id="todo"><div class="empty">–</div></div>
+        <p class="hinw">Automatisch berechnete Signale · keine Anlageberatung</p>
       </div>
       <div class="panel">
         <h3 class="ph">Ausreißer heute <span class="mute small">ab ±10 %</span></h3>
@@ -178,6 +179,10 @@
     <div class="vtag" id="vTag"></div>
   </div>
 </section></div>
+<div class="erstinfo" id="erstInfo" role="note" hidden>
+  <p><b>Hinweis:</b> MarketCompass zeigt automatisch berechnete, technische Signale zu Informationszwecken. Das ist keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Prüfe jede Entscheidung selbst – du handelst auf eigenes Risiko.</p>
+  <button class="upd" id="erstOk" type="button">Verstanden</button>
+</div>
 <div class="mdl" id="mNeu" hidden><section class="mbox" role="dialog" aria-modal="true" aria-labelledby="nTitel">
   <header class="mhead"><h2 id="nTitel">Was ist neu?</h2><button class="mx" data-close type="button" aria-label="Schließen">✕</button></header>
   <div id="neuListe" class="neul"></div>
