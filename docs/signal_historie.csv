@@ -682,3 +682,18 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-18,8035.T,8428.0,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
 2026-11-16,INFY,12.31,In Zone,Zulaufend,"Abwarten – Kauflimit bei 12,09 (-1,8 % vom aktuellen Kurs)"
 2026-11-16,TTWO,213.47,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-17,FISV,62.31,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 57,10 (-8,4 % vom aktuellen Kurs)"
+2026-11-17,MA,645.73,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 527,23 (-18,4 % vom aktuellen Kurs)"
+2026-11-17,CSGP,30.59,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-17,CRM,194.52,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-17,ADBE,235.55,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-17,QCOM,166.67,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-17,IBM,231.09,Welle 5 läuft,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-17,ABNB,180.94,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-17,BAC,49.44,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-17,LLY,1415.55,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 1236,60 (-12,6 % vom aktuellen Kurs)"
+2026-11-17,JNJ,278.7,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 233,11 (-16,4 % vom aktuellen Kurs)"
+2026-11-17,ABBV,292.82,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 237,24 (-19,0 % vom aktuellen Kurs)"
+2026-11-17,ISRG,430.53,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-17,INFY,12.07,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-17,TTWO,203.93,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 198,73 (-2,5 % vom aktuellen Kurs)"
