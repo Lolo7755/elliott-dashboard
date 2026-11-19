@@ -748,3 +748,29 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-18,NOVN.SW,131.48,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 110,16 (-16,2 % vom aktuellen Kurs)"
 2026-11-18,BHP,70.33,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
 2026-11-18,TTWO,216.61,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-19,FISV,56.62,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-19,TXN,285.75,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 264,77 (-7,3 % vom aktuellen Kurs)"
+2026-11-19,UNH,330.38,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-19,ZTS,80.8,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-19,AAPL,349.21,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 315,98 (-9,5 % vom aktuellen Kurs)"
+2026-11-19,AMZN,257.37,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 208,60 (-19,0 % vom aktuellen Kurs)"
+2026-11-19,META,596.22,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-19,AMD,489.19,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 436,18 (-10,8 % vom aktuellen Kurs)"
+2026-11-19,BKNG,147.32,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-19,SBUX,104.47,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-19,DIS,120.27,Ziel 1 erreicht,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-19,KO,96.1,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 76,00 (-20,9 % vom aktuellen Kurs)"
+2026-11-19,HON,217.84,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 199,02 (-8,6 % vom aktuellen Kurs)"
+2026-11-19,BA,160.54,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-19,ALV.DE,457.5,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 405,57 (-11,4 % vom aktuellen Kurs)"
+2026-11-19,BAS.DE,50.68,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-19,DHL.DE,58.98,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 49,92 (-15,4 % vom aktuellen Kurs)"
+2026-11-19,PUM.DE,24.75,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-19,SAN.PA,83.79,Nachkaufbereich,Zulaufend,"Abwarten – Kauflimit bei 81,65 (-2,6 % vom aktuellen Kurs)"
+2026-11-19,NESN.SW,84.45,Neues Hoch / Trend läuft,Zulaufend,"Abwarten – Kauflimit bei 83,09 (-1,6 % vom aktuellen Kurs)"
+2026-11-19,NOVO-B.CO,265.15,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-19,AZN.L,13304.0,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-19,ITX.MC,58.44,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 44,66 (-23,6 % vom aktuellen Kurs)"
+2026-11-19,INFY,11.64,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-19,TTWO,208.65,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 198,73 (-4,8 % vom aktuellen Kurs)"
+2026-11-19,ZS,205.71,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
