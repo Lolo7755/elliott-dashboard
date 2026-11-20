@@ -774,3 +774,28 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-19,INFY,11.64,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
 2026-11-19,TTWO,208.65,Welle 5 läuft,Zulaufend,"Abwarten – Kauflimit bei 198,73 (-4,8 % vom aktuellen Kurs)"
 2026-11-19,ZS,205.71,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-18,FISV,60.48,In Zone,Zulaufend,"Abwarten – Kauflimit bei 57,10 (-5,6 % vom aktuellen Kurs)"
+2026-11-18,TXN,292.43,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-18,UNH,349.91,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-18,ZTS,85.57,In Zone,Zulaufend,"Abwarten – Kauflimit bei 81,45 (-4,8 % vom aktuellen Kurs)"
+2026-11-18,AAPL,352.45,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 315,98 erwartet"
+2026-11-18,AMZN,267.74,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-18,META,616.38,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-18,AMD,530.14,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-18,BKNG,153.28,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-18,SBUX,109.11,In Zone,Zulaufend,"Abwarten – Kauflimit bei 105,21 (-3,6 % vom aktuellen Kurs)"
+2026-11-18,DIS,122.36,Welle 5 läuft,Ziel 1 erreicht,Teilverkauf 1 (ca. 1/3) am alten Hoch
+2026-11-18,KO,98.09,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 76,00 erwartet"
+2026-11-18,HON,222.7,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-18,BA,162.91,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-18,DHL.DE,59.94,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 49,92 erwartet"
+2026-11-18,PUM.DE,25.31,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-18,SAN.PA,86.25,Zulaufend,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-18,NESN.SW,86.03,Zulaufend,Neues Hoch / Trend läuft,Kein Einstieg im Hoch – auf Korrektur warten; Bestand halten
+2026-11-18,NOVO-B.CO,271.45,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-18,AZN.L,13646.0,In Zone,Zulaufend,"Abwarten – Kauflimit bei 13379,45 (-2,0 % vom aktuellen Kurs)"
+2026-11-18,ITX.MC,59.36,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 44,66 erwartet"
+2026-11-20,8035.T,8357.0,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-18,INFY,11.78,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-18,TTWO,216.61,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-18,ZS,197.83,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
