@@ -893,3 +893,31 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-20,INFY,12.03,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
 2026-11-20,TTWO,210.0,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
 2026-11-20,ZS,194.82,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-23,PYPL,55.24,In Zone,Zulaufend,"Abwarten – Kauflimit bei 54,12 (-2,0 % vom aktuellen Kurs)"
+2026-11-23,TXN,291.14,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-23,CSGP,30.2,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-23,NVDA,165.05,In Zone (unten),Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-23,AVGO,313.55,In Zone,Zulaufend,"Abwarten – Kauflimit bei 311,86 (-0,5 % vom aktuellen Kurs)"
+2026-11-23,AMD,453.46,In Zone,Zulaufend,"Abwarten – Kauflimit bei 427,81 (-5,7 % vom aktuellen Kurs)"
+2026-11-23,QCOM,165.38,Abwärtstrend,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-23,IBM,232.87,In Zone,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-23,CRWD,208.97,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-23,SNOW,271.18,In Zone,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-23,MU,707.7,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-23,ANET,178.16,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-23,ABNB,173.96,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-23,TSLA,385.46,In Zone (unten),Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-23,SBUX,106.36,In Zone,Zulaufend,"Abwarten – Kauflimit bei 105,21 (-1,1 % vom aktuellen Kurs)"
+2026-11-23,GS,823.77,In Zone,Zulaufend,"Abwarten – Kauflimit bei 819,30 (-0,5 % vom aktuellen Kurs)"
+2026-11-23,MS,172.6,In Zone,Zulaufend,"Abwarten – Kauflimit bei 170,05 (-1,5 % vom aktuellen Kurs)"
+2026-11-23,HOOD,67.37,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-23,GE,321.3,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-23,HON,221.97,Zulaufend,Welle 5 läuft,Halten – Aufwärtswelle aus der Zone gestartet
+2026-11-23,BA,162.49,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-23,BAS.DE,49.97,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-23,PUM.DE,23.67,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-23,SAN.PA,85.26,Zulaufend,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-23,AZN.L,13540.0,In Zone,Zulaufend,"Abwarten – Kauflimit bei 13379,45 (-1,2 % vom aktuellen Kurs)"
+2026-11-23,TSM,363.43,In Zone,Zulaufend,"Abwarten – Kauflimit bei 323,96 (-10,9 % vom aktuellen Kurs)"
+2026-11-23,INFY,12.1,In Zone,Zulaufend,"Abwarten – Kauflimit bei 12,09 (-0,1 % vom aktuellen Kurs)"
+2026-11-23,ZS,229.24,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
