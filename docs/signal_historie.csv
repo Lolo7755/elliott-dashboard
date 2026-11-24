@@ -924,3 +924,28 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-20,IFX.DE,45.44,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
 2026-11-20,ASML.AS,1168.0,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
 2026-11-24,8035.T,8973.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-24,FISV,58.62,In Zone,Zulaufend,"Abwarten – Kauflimit bei 57,10 (-2,6 % vom aktuellen Kurs)"
+2026-11-24,TXN,258.44,Welle 5 läuft,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-24,CSGP,32.64,In Zone (unten),Zulaufend,"Abwarten – Kauflimit bei 32,15 (-1,5 % vom aktuellen Kurs)"
+2026-11-24,ZTS,81.49,In Zone,Zulaufend,"Abwarten – Kauflimit bei 81,45 (-0,0 % vom aktuellen Kurs)"
+2026-11-24,AAPL,354.07,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 315,98 erwartet"
+2026-11-24,AVGO,301.08,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-24,CRM,193.24,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-24,ADBE,232.08,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-24,AMD,413.27,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-24,CRWD,210.86,In Zone,Zulaufend,"Abwarten – Kauflimit bei 210,09 (-0,4 % vom aktuellen Kurs)"
+2026-11-24,MU,630.07,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-24,ANET,168.54,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-24,MCD,280.85,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-24,DIS,122.53,Welle 5 läuft,Ziel 1 erreicht,Teilverkauf 1 (ca. 1/3) am alten Hoch
+2026-11-24,KO,97.73,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 76,00 erwartet"
+2026-11-24,GS,806.0,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-24,MS,168.8,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-24,ABBV,300.35,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 237,24 erwartet"
+2026-11-24,MRK,141.63,In Zone,Zulaufend,"Abwarten – Kauflimit bei 138,19 (-2,4 % vom aktuellen Kurs)"
+2026-11-24,PFE,28.48,In Zone (unten),Zulaufend,"Abwarten – Kauflimit bei 28,45 (-0,1 % vom aktuellen Kurs)"
+2026-11-24,VRTX,563.92,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 418,81 erwartet"
+2026-11-24,GE,318.04,Alternativ: Korrektur beendet,Zulaufend,"Abwarten – Kauflimit bei 254,57 (-20,0 % vom aktuellen Kurs)"
+2026-11-24,SAN.PA,93.58,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-24,NOVO-B.CO,274.65,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-20,8035.T,8309.0,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
