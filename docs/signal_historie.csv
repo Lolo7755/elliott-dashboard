@@ -984,3 +984,24 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-25,BAS.DE,49.2,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
 2026-11-25,ENR.DE,112.46,In Zone,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
 2026-11-27,9984.T,2911.0,Abwärtstrend,Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-27,MA,666.96,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 527,23 erwartet"
+2026-11-27,AVGO,312.34,In Zone,Zulaufend,"Abwarten – Kauflimit bei 311,86 (-0,2 % vom aktuellen Kurs)"
+2026-11-27,QCOM,179.27,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-27,CRWD,217.2,In Zone,Zulaufend,"Abwarten – Kauflimit bei 210,09 (-3,3 % vom aktuellen Kurs)"
+2026-11-27,PANW,366.76,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-27,ANET,174.73,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-27,MELI,1532.92,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-27,COST,1097.81,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 849,71 erwartet"
+2026-11-27,KO,97.4,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 76,00 (-22,0 % vom aktuellen Kurs)"
+2026-11-27,MS,170.88,In Zone,Zulaufend,"Abwarten – Kauflimit bei 170,05 (-0,5 % vom aktuellen Kurs)"
+2026-11-27,V,429.56,Zulaufend,Impuls vollendet,"Teilverkauf (ca. 1/3) – 5 Wellen vollendet, Korrektur Richtung 340,00 erwartet"
+2026-11-27,ABBV,291.88,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 237,27 (-18,7 % vom aktuellen Kurs)"
+2026-11-27,VRTX,534.57,Impuls vollendet,Zulaufend,"Abwarten – Kauflimit bei 420,71 (-21,3 % vom aktuellen Kurs)"
+2026-11-27,GE,323.94,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-27,RTX,198.48,Zulaufend,Alternativ: Korrektur beendet,Kleine Position möglich – Hauptszenario erwartet aber noch die Zone
+2026-11-27,BAS.DE,50.54,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
+2026-11-27,ENR.DE,119.18,In Zone (unten),In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-27,SAN.PA,97.65,Zulaufend,In Zone,Teilkauf 1 (ca. 1/3) – Langfrist-Einstiegsbereich erreicht
+2026-11-26,005930.KS,171300.0,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
+2026-11-27,BHP,73.66,In Zone,Zulaufend,"Abwarten – Kauflimit bei 71,15 (-3,4 % vom aktuellen Kurs)"
+2026-11-27,FTNT,139.48,In Zone,Zulaufend,"Abwarten – Kauflimit bei 138,68 (-0,6 % vom aktuellen Kurs)"
