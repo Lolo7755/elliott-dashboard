@@ -1005,3 +1005,5 @@ datum,symbol,kurs,status_alt,status_neu,signal_neu
 2026-11-26,005930.KS,171300.0,In Zone (unten),Nachkaufbereich,Letzter Nachkauf (Rest) – Invalidierung nah
 2026-11-27,BHP,73.66,In Zone,Zulaufend,"Abwarten – Kauflimit bei 71,15 (-3,4 % vom aktuellen Kurs)"
 2026-11-27,FTNT,139.48,In Zone,Zulaufend,"Abwarten – Kauflimit bei 138,68 (-0,6 % vom aktuellen Kurs)"
+2026-11-26,SAN.PA,98.83,In Zone,Zulaufend,"Abwarten – Kauflimit bei 97,73 (-1,1 % vom aktuellen Kurs)"
+2026-11-27,005930.KS,179100.0,Nachkaufbereich,In Zone (unten),Teilkauf 2 / Nachkauf (ca. 1/3)
